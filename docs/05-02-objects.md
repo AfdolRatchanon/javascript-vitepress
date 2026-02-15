@@ -1,170 +1,238 @@
-# 05-2: Objects (การจัดเก็บข้อมูลแบบคู่) 🔑
+# 05-2: Objects (ออบเจกต์ — การจัดเก็บข้อมูลแบบคู่) 🔑
 
 > **"The key to performance is elegance, not battalions of special cases."**
 > — *Jon Bentley*
 
-ถ้า Array เก็บข้อมูลเป็น **"รายการ" (List)** แล้ว Object คือการเก็บข้อมูลเป็น **"บัตรประจำตัว" (Profile)** ที่มีชื่อกำกับแต่ละค่า
+ถ้า Array เป็น **"ตู้ล็อกเกอร์"** ที่จัดเรียงด้วยหมายเลข (0, 1, 2...) แล้ว Object ก็เป็น **"สมุดรายชื่อ"** ที่จัดเรียงด้วย **ชื่อ (Key)** ครับ
 
-ลองคิดดูว่า Array เก็บได้แค่ `["Dolar", 25, "Bangkok"]` — แต่เราไม่รู้เลยว่าตัวไหนคือชื่อ ตัวไหนคืออายุ!
-**Object** แก้ปัญหานี้ด้วยการเก็บข้อมูลเป็นคู่ **Key-Value Pair** (กุญแจ-ค่า)
+> **💡 Analogy (เปรียบเทียบ):**
+> Object เหมือน **"บัตรประชาชน"** ครับ:
+> - **Key** = หัวข้อ (ชื่อ, นามสกุล, ที่อยู่)
+> - **Value** = ข้อมูล ("สมชาย", "ใจดี", "กรุงเทพ")
+> - ทุก Key มี Value คู่กัน — ถ้ารู้ Key ก็หา Value ได้ทันที!
 
-## 1. Object Literal (การสร้าง Object) 📦
-เราสร้าง Object ด้วย **Curly Braces `{}`**:
+## 1. การสร้าง Object (Creation) 🏗️
+
+ตาม [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object):
+
+### วิธีที่ 1: Object Literal `{}` (ใช้บ่อยที่สุด!)
 
 ```javascript
-// Object ว่าง
-const emptyBox = {};
-
-// Object ที่มีข้อมูล (Properties)
 const student = {
-    name: "Dolar",       // Key: "name", Value: "Dolar"
-    age: 25,             // Key: "age",  Value: 25
-    city: "Bangkok",     // Key: "city", Value: "Bangkok"
-    isStudent: true,     // Key: "isStudent", Value: true
+    name: "Dolar",          // Key: "name",  Value: "Dolar"
+    age: 25,                // Key: "age",   Value: 25
+    city: "Bangkok",        // Key: "city",  Value: "Bangkok"
+    isStudent: true,        // Key: "isStudent", Value: true
+    hobbies: ["Coding", "Gaming"],  // Value เป็น Array ก็ได้!
 };
 ```
 
-> **คำศัพท์เทคนิค:**
-> *   **Property** (คุณสมบัติ): ข้อมูลแต่ละคู่ใน Object (เช่น `name: "Dolar"`)
-> *   **Key** (กุญแจ): ชื่อของ Property (เช่น `name`) — เป็น String เสมอ
-> *   **Value** (ค่า): ข้อมูลที่เก็บไว้ (เช่น `"Dolar"`) — เป็นอะไรก็ได้!
-> *   **Object Literal** (การสร้าง Object ด้วย `{}`): วิธีสร้าง Object ที่นิยมใช้มากที่สุด
+### วิธีที่ 2: `new Object()` (แทบไม่ใช้ในยุคปัจจุบัน)
 
-## 2. Accessing Properties (การเข้าถึงข้อมูล) 🔍
-มี 2 แบบ:
-
-### A. Dot Notation (ใช้จุด) — **นิยมที่สุด** ✅
 ```javascript
-console.log(student.name); // "Dolar"
-console.log(student.age);  // 25
+const student = new Object();
+student.name = "Dolar";
+student.age = 25;
+// ❌ ไม่แนะนำ — ยาวกว่า และทำสิ่งเดียวกัน
 ```
 
-### B. Bracket Notation (ใช้วงเล็บเหลี่ยม) — **ยืดหยุ่นกว่า**
-ใช้เมื่อ Key **มีช่องว่าง**, **เป็นตัวแปร**, หรือ **มีอักขระพิเศษ**
+### วิธีที่ 3: `Object.create()` (สำหรับ Prototype Chain)
 
 ```javascript
-// Key มีช่องว่าง
-const car = { "brand name": "Toyota" };
-console.log(car["brand name"]); // "Toyota"
+const personProto = {
+    greet() { return `Hi, I'm ${this.name}`; }
+};
+const dolar = Object.create(personProto);
+dolar.name = "Dolar";
+console.log(dolar.greet()); // "Hi, I'm Dolar"
+```
 
-// Key เป็นตัวแปร (Dynamic Key)
+> **สรุป:** ใช้ **Object Literal `{}`** เป็นหลัก — สั้น กระชับ อ่านง่าย!
+
+---
+
+## 2. การเข้าถึง Property (Access) 🔍
+
+มี 2 วิธี:
+
+```javascript
+const student = { name: "Dolar", age: 25, "fav food": "Pad Thai" };
+
+// ✅ Dot Notation — ใช้บ่อย สั้น อ่านง่าย
+console.log(student.name);    // "Dolar"
+console.log(student.age);     // 25
+
+// ✅ Bracket Notation — ใช้เมื่อ Key เป็นกรณีพิเศษ
+console.log(student["name"]); // "Dolar"
+console.log(student["fav food"]); // "Pad Thai" (Key มี Space!)
+```
+
+### 📊 Dot vs Bracket Notation
+
+| | **Dot `.`** | **Bracket `[]`** |
+|:--|:-----------|:-----------------|
+| **Syntax** | `obj.key` | `obj["key"]` |
+| **Key มี Space** | ❌ ไม่ได้ | ✅ ได้ |
+| **Key เป็นตัวแปร** | ❌ ไม่ได้ | ✅ ได้ |
+| **Key เริ่มด้วยตัวเลข** | ❌ ไม่ได้ | ✅ ได้ |
+| **อ่านง่าย** | ⭐⭐⭐ | ⭐⭐ |
+| **ใช้เมื่อ** | Key เป็นชื่อปกติ | Key เป็นกรณีพิเศษ |
+
+### Dynamic Key (Key เป็นตัวแปร):
+
+```javascript
 const field = "age";
-console.log(student[field]); // 25 (เหมือนเขียน student["age"])
+console.log(student[field]);   // 25 (เหมือน student["age"])
+// console.log(student.field); // ❌ undefined! (JS มองหา Key ชื่อ "field" จริงๆ)
+
+// ⭐ ใช้วนลูปด้วย Bracket:
+const keys = ["name", "age", "city"];
+keys.forEach(key => {
+    console.log(`${key}: ${student[key]}`);
+});
 ```
 
-> **กฎง่ายๆ:** ใช้ **Dot** เป็นค่าเริ่มต้น ใช้ **Bracket** เมื่อจำเป็นเท่านั้น
+### Optional Chaining `?.` (ES2020):
 
-### 🧠 Challenge: Dot or Bracket?
-โค้ดไหนจะทำงานได้ โค้ดไหนจะ Error?
 ```javascript
-const pet = { name: "Cat", "color type": "orange" };
-const key = "name";
+const user = { name: "Dolar", address: null };
+
+// ❌ เดิม: ต้อง check ก่อนไม่งั้น Error
+// if (user.address && user.address.city) { ... }
+
+// ✅ ใช้ ?. — ถ้าเป็น null/undefined → return undefined (ไม่ Error!)
+console.log(user.address?.city);      // undefined ✅
+console.log(user.address?.city?.zip); // undefined ✅ (chain ได้หลาย .)
 ```
-1. `pet.name`
-2. `pet.color type`
-3. `pet["color type"]`
-4. `pet[key]`
 
-::: details ✨ ดูเฉลย
-1. ✅ `"Cat"` — Dot Notation ปกติ
-2. ❌ **SyntaxError** — Key มีช่องว่าง ใช้ Dot ไม่ได้!
-3. ✅ `"orange"` — Bracket Notation รองรับช่องว่าง
-4. ✅ `"Cat"` — Bracket + Variable: `key` = `"name"` → `pet["name"]`
-:::
+---
 
-## 3. Modifying Properties (การแก้ไข/เพิ่ม/ลบ) ✏️
+## 3. แก้ไข / เพิ่ม / ลบ Property (CRUD) ✏️
 
 ```javascript
 const user = { name: "Dolar", level: 1 };
 
-// แก้ไขค่า (Update)
-user.level = 10;
+// ✏️ Update — แก้ไขค่า
+user.level = 10;                       // level: 1 → 10
+user["name"] = "Dolar Pro";           // name: "Dolar" → "Dolar Pro"
 
-// เพิ่ม Property ใหม่ (Add)
+// ➕ Add — เพิ่ม Property ใหม่
 user.score = 9999;
+user.skills = ["JavaScript", "React"];
 
-// ลบ Property (Delete)
+// 🗑️ Delete — ลบ Property
 delete user.score;
 
-console.log(user); // { name: "Dolar", level: 10 }
+console.log(user);
+// { name: "Dolar Pro", level: 10, skills: ["JavaScript", "React"] }
 ```
 
-> ⚠️ **ทำไม `const` แก้ไขได้?**
-> เพราะ `const` ห้ามแค่ **เปลี่ยนกล่อง (Reference)** แต่ **แก้ไส้ในของกล่อง (Properties) ได้ตลอด!**
-> (เดี๋ยวจะเจาะลึกเรื่องนี้ในบท 05-3)
+### ⚠️ ทำไม `const` แก้ไขข้างในได้?
 
-## 4. Object Methods (ฟังก์ชันใน Object) 🏃
+```
+const = ห้ามเปลี่ยน "กล่อง" (Reference) ❌
+        แต่แก้ "ของในกล่อง" (Properties) ได้ ✅
 
-ถ้า Value ของ Property เป็น **Function** เราเรียกมันว่า **Method** (เมธอดดด):
+const user = { name: "Dolar" };  // สร้างกล่อง
+
+user.name = "Somchai";           // ✅ แก้ของในกล่อง → ได้!
+user = { name: "Noi" };         // ❌ TypeError! เปลี่ยนกล่อง → ไม่ได้!
+```
+
+### Object.freeze() — แช่แข็งห้ามแก้!
 
 ```javascript
-const calculator = {
-    brand: "Casio",
+const config = Object.freeze({
+    API_URL: "https://api.example.com",
+    MAX_RETRIES: 3,
+});
 
-    // Method (Short Syntax — ES6)
-    add(a, b) {
-        return a + b;
-    },
-
-    // Method (Traditional Syntax)
-    subtract: function(a, b) {
-        return a - b;
-    },
-};
-
-console.log(calculator.add(10, 5));      // 15
-console.log(calculator.subtract(10, 5)); // 5
+config.API_URL = "https://evil.com"; // ❌ ไม่มีผล! (Silently fails)
+console.log(config.API_URL); // "https://api.example.com" (ค่าเดิม)
 ```
 
-## 5. The `this` Keyword (คำสั่งมหัศจรรย์) 🪄
+---
 
-ภายใน Method เราสามารถใช้ `this` เพื่ออ้างอิงถึง **Object ตัวเอง** ได้:
+## 4. Methods — ฟังก์ชันใน Object 🎮
+
+ถ้า Value ของ Property เป็น **Function** เราเรียกมันว่า **Method**:
 
 ```javascript
 const player = {
     name: "Dolar",
     hp: 100,
+    maxHp: 100,
 
+    // ❌ วิธีเดิม (verbose)
+    attack: function() {
+        console.log(`${this.name} attacks!`);
+    },
+
+    // ✅ วิธีลัด (ES6 — ใช้แบบนี้!)
     takeDamage(amount) {
-        this.hp -= amount; // "this" = player (ตัวมันเอง)
+        this.hp -= amount;
         console.log(`${this.name} took ${amount} damage! HP: ${this.hp}`);
+    },
+
+    // ✅ Method ที่ return ค่า
+    getHealthBar() {
+        const pct = Math.round((this.hp / this.maxHp) * 100);
+        return `HP: [${"█".repeat(pct / 10)}${"░".repeat(10 - pct / 10)}] ${pct}%`;
     },
 };
 
 player.takeDamage(30); // "Dolar took 30 damage! HP: 70"
-player.takeDamage(50); // "Dolar took 50 damage! HP: 20"
+console.log(player.getHealthBar()); // "HP: [███████░░░] 70%"
 ```
 
-> **คำศัพท์เทคนิค:**
-> *   **Method** (เมธอด): ฟังก์ชันที่เป็น Property ของ Object
-> *   **`this`** (ตัวอ้างอิงตัวเอง): Keyword ที่ชี้ไปยัง Object ที่เป็นเจ้าของ Method ในขณะนั้น
-> *   **Short Method Syntax** (รูปแบบย่อ): `add(a, b) {}` แทน `add: function(a, b) {}`
+### ⚠️ `this` กับ Arrow Function — กับดัก!
 
-### 🧠 Challenge: this Prediction
-โค้ดนี้จะได้ผลลัพธ์อะไร?
 ```javascript
 const hero = {
     name: "Batman",
+
+    // ✅ Regular method — this = hero
     greet() {
-        console.log("I am " + this.name);
+        console.log(`I'm ${this.name}`);
+    },
+
+    // ❌ Arrow function — this ≠ hero! (ไม่ bind this ของตัวเอง)
+    greetArrow: () => {
+        console.log(`I'm ${this.name}`); // this = window/global ❌
     },
 };
 
-hero.greet();
-hero.name = "Superman";
-hero.greet();
+hero.greet();      // "I'm Batman" ✅
+hero.greetArrow(); // "I'm undefined" ❌
 ```
 
-::: details ✨ ดูเฉลย
-1. `"I am Batman"` — `this.name` คือ `hero.name` = `"Batman"`
-2. `"I am Superman"` — เราเปลี่ยน `hero.name` แล้ว `this` ก็ชี้ไปค่าตัวใหม่
-:::
+> **กฎ:** ใช้ **Regular Function** สำหรับ Object Methods ที่ต้องใช้ `this` เสมอ!
 
-## 6. Iterating Over Objects (การวนลูปอ่าน Object) 🔄
+---
 
-ต่างจาก Array ที่ใช้ `for...of` ได้ตรงๆ — **Object ใช้ `for...in`** หรือ `Object.keys()`/`.values()`/`.entries()`:
+## 5. Checking Properties (ตรวจสอบ Key) 🔎
 
-### A. `for...in` Loop
+```javascript
+const user = { name: "Dolar", age: 25, score: 0 };
+
+// ✅ วิธีที่ 1: "in" operator
+console.log("name" in user);    // true
+console.log("email" in user);   // false
+
+// ✅ วิธีที่ 2: hasOwnProperty()
+console.log(user.hasOwnProperty("age"));   // true
+console.log(user.hasOwnProperty("email")); // false
+
+// ⚠️ วิธีที่ 3: !== undefined (ระวัง!)
+console.log(user.score !== undefined); // true (แม้ score = 0)
+console.log(user.email !== undefined); // false
+```
+
+---
+
+## 6. Object Iteration (วนลูป) 🔄
+
+### A. `for...in` Loop:
 ```javascript
 const profile = { name: "Dolar", age: 25, city: "BKK" };
 
@@ -176,33 +244,124 @@ for (const key in profile) {
 // city: BKK
 ```
 
-### B. `Object.keys()` / `Object.values()` / `Object.entries()`
-```javascript
-console.log(Object.keys(profile));   // ["name", "age", "city"]
-console.log(Object.values(profile)); // ["Dolar", 25, "BKK"]
-console.log(Object.entries(profile));
-// [ ["name","Dolar"], ["age",25], ["city","BKK"] ]
+### B. `Object.keys()` / `Object.values()` / `Object.entries()`:
 
-// ใช้คู่กับ for...of
+```javascript
+const profile = { name: "Dolar", age: 25, city: "BKK" };
+
+// 🔑 Object.keys() — ได้ Array ของ Key ทั้งหมด
+console.log(Object.keys(profile));   // ["name", "age", "city"]
+
+// 📦 Object.values() — ได้ Array ของ Value ทั้งหมด
+console.log(Object.values(profile)); // ["Dolar", 25, "BKK"]
+
+// 🔗 Object.entries() — ได้ Array ของ [Key, Value] pairs
+console.log(Object.entries(profile));
+// [["name", "Dolar"], ["age", 25], ["city", "BKK"]]
+
+// ⭐ Object.entries() + Destructuring = อ่านง่ายสุด!
 for (const [key, value] of Object.entries(profile)) {
-    console.log(`${key} = ${value}`);
+    console.log(`${key}: ${value}`);
 }
 ```
 
-> **📊 Comparison: Array vs Object Iteration**
->
-> | ใช้กับ | **Array** | **Object** |
-> | :--- | :--- | :--- |
-> | วนลูป | `for...of` (ค่า) / `for` (index) | `for...in` (key) / `Object.entries()` |
-> | เหมาะกับ | ข้อมูลเรียงลำดับ (Ordered) | ข้อมูลแบบ Key-Value (Unordered) |
+### 📊 Object Iteration Methods
+
+| Method | ได้อะไร | ตัวอย่าง |
+|:-------|:-------|:---------|
+| `for...in` | Key (String) | `"name"`, `"age"` |
+| `Object.keys(obj)` | Array ของ Key | `["name", "age"]` |
+| `Object.values(obj)` | Array ของ Value | `["Dolar", 25]` |
+| `Object.entries(obj)` | Array ของ `[key, value]` | `[["name", "Dolar"]]` |
 
 ---
 
-## 7. Challenge: The Profile Maker 👤
-จงสร้าง Object ชื่อ `myProfile` ที่มี:
-1.  `name` — ชื่อจริงของคุณ
-2.  `hobbies` — Array ของงานอดิเรกอย่างน้อย 3 อย่าง
-3.  `introduce()` — Method ที่ return ข้อความ "Hi, I'm [name] and I love [hobby แรก]!"
+## 7. Destructuring & Spread (ES6) 💎
+
+### Destructuring — แกะค่าออกจาก Object:
+
+```javascript
+const user = { name: "Dolar", age: 25, city: "Bangkok" };
+
+// ❌ เดิม: ต้องเข้าถึงทีละตัว
+// const name = user.name;
+// const age = user.age;
+
+// ✅ Destructuring — แกะหลายค่าในบรรทัดเดียว!
+const { name, age, city } = user;
+console.log(name); // "Dolar"
+console.log(age);  // 25
+
+// ⭐ Rename (เปลี่ยนชื่อตัวแปร)
+const { name: userName, age: userAge } = user;
+console.log(userName); // "Dolar"
+
+// ⭐ Default Value (ค่าเริ่มต้นถ้าไม่มี Key)
+const { name: n, email = "N/A" } = user;
+console.log(email); // "N/A" (ไม่มี email ใน user)
+```
+
+### Spread `...` — คัดลอก/รวม Object:
+
+```javascript
+// Copy Object
+const original = { name: "Dolar", age: 25 };
+const copy = { ...original };
+copy.name = "Somchai";
+console.log(original.name); // "Dolar" (ไม่โดนกระทบ!)
+
+// Merge Objects (รวม Object)
+const defaults = { theme: "light", lang: "th" };
+const userPrefs = { theme: "dark" };
+const settings = { ...defaults, ...userPrefs };
+console.log(settings); // { theme: "dark", lang: "th" }
+// ⭐ ค่าที่ซ้ำกัน → ตัวหลังจะ overwrite ตัวแรก
+
+// ⭐ เพิ่ม Property ใหม่ตอน Copy
+const updatedUser = { ...original, level: 10, score: 999 };
+console.log(updatedUser);
+// { name: "Dolar", age: 25, level: 10, score: 999 }
+```
+
+---
+
+## 8. Nested Objects (Object ซ้อน Object) 🪆
+
+```javascript
+const company = {
+    name: "TechCorp",
+    address: {
+        city: "Bangkok",
+        zip: "10100",
+        coords: {
+            lat: 13.756,
+            lng: 100.502,
+        },
+    },
+    employees: [
+        { name: "Dolar", role: "Developer" },
+        { name: "Somchai", role: "Designer" },
+    ],
+};
+
+// เข้าถึงข้อมูลซ้อนๆ
+console.log(company.address.city);          // "Bangkok"
+console.log(company.address.coords.lat);    // 13.756
+console.log(company.employees[0].name);     // "Dolar"
+
+// ⭐ Optional Chaining สำหรับ Nested
+console.log(company.address?.country?.code); // undefined (ไม่ Error!)
+```
+
+---
+
+## 9. Challenges 🏆
+
+### 🎯 Challenge 1: Build a Profile
+สร้าง Object ชื่อ `myProfile` ที่มี:
+1. `name` — ชื่อของคุณ
+2. `hobbies` — Array ของงานอดิเรก (อย่างน้อย 3 อัน)
+3. `introduce()` — Method ที่ return `"Hi, I'm [name] and I love [hobby แรก]!"`
 
 ::: details ✨ ดูเฉลย
 ```javascript
@@ -215,12 +374,56 @@ const myProfile = {
     },
 };
 
-console.log(myProfile.introduce()); // "Hi, I'm Dolar and I love Coding!"
+console.log(myProfile.introduce());
+// "Hi, I'm Dolar and I love Coding!"
 ```
-**จุดสังเกต:**
-*   `this.hobbies[0]` — เข้าถึง Array ที่เป็น Property ของ Object โดยใช้ `this`
-*   Template Literal `` ` `` ช่วยให้เขียน String ผสมตัวแปรได้ง่าย
 :::
+
+### 🎯 Challenge 2: Merge Power
+รวม 2 Object นี้เข้าด้วยกัน โดยให้ `userSettings` overwrite `defaults`:
+```javascript
+const defaults = { theme: "light", fontSize: 14, lang: "en" };
+const userSettings = { theme: "dark", fontSize: 18 };
+```
+
+::: details ✨ ดูเฉลย
+```javascript
+const merged = { ...defaults, ...userSettings };
+console.log(merged);
+// { theme: "dark", fontSize: 18, lang: "en" }
+// ⭐ theme และ fontSize ถูก overwrite ด้วยค่าจาก userSettings
+```
+:::
+
+### 🎯 Challenge 3: Predict the Output
+```javascript
+const a = { x: 1 };
+const b = a;
+b.x = 99;
+console.log(a.x);  // ?
+```
+
+::: details ✨ ดูเฉลย
+**`99`** ครับ! เพราะ `const b = a` ไม่ได้ Copy Object — แค่ให้ `b` **ชี้ไปที่เดียวกัน** กับ `a` (Reference!) ดังนั้นแก้ `b.x` ก็เท่ากับแก้ `a.x`
+
+ถ้าต้องการ Copy จริง ใช้: `const b = { ...a };`
+:::
+
+---
+
+> **📖 คำศัพท์เทคนิค (Glossary):**
+> *   **Object:** โครงสร้างข้อมูลที่เก็บข้อมูลเป็นคู่ Key-Value
+> *   **Property:** ข้อมูลแต่ละคู่ Key:Value ใน Object (เช่น `name: "Dolar"`)
+> *   **Key (Property Name):** ชื่อที่ใช้เข้าถึง Value ใน Object
+> *   **Value:** ข้อมูลที่จับคู่กับ Key
+> *   **Method:** ฟังก์ชันที่เป็น Property ของ Object
+> *   **`this`:** Keyword ที่อ้างถึง Object ที่กำลังเรียกใช้ Method อยู่
+> *   **Dot Notation:** การเข้าถึง Property ด้วยจุด (`obj.key`)
+> *   **Bracket Notation:** การเข้าถึง Property ด้วยวงเล็บใหญ่ (`obj["key"]`)
+> *   **Destructuring:** Syntax ที่แกะค่าจาก Object/Array ออกมาเป็นตัวแปร
+> *   **Spread (`...`):** Syntax ที่กระจาย Property ทั้งหมดออกจาก Object
+> *   **Optional Chaining (`?.`):** เข้าถึง Property โดยไม่ Error ถ้าค่าเป็น null/undefined
+> *   **Object.freeze():** Method ที่ทำให้ Object ไม่สามารถแก้ไขได้อีก
 
 ---
 👉 **[ไปต่อ: 05-3 - Reference vs Value (Deep Dive)](/05-03-reference-vs-value)**
