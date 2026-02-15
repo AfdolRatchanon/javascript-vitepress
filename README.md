@@ -30,7 +30,7 @@
 ## 🗺️ เนื้อหาในคอร์ส
 
 | Module | หัวข้อ | บทเรียน | โปรเจกต์ |
-|:------:|:-------|:-------:|:--------:|
+|:------:|:-------|:-------:|:--------|
 | 0 | Setup Environment | 1 | - |
 | 1 | Introduction | 3 | 🎨 Console Artist, 📜 Bio Card |
 | 2 | Variables & Data Types | 4 | ⚖️ BMI Calculator |
@@ -57,20 +57,20 @@ Node.js content อยู่ใน **VitePress เดียวกัน** กั
 
 ```
 JavaScript/docs/
-├── 00-setup.md              ← 📘 JavaScript Section (Module 0-12) ✅
-├── 01-01-history.md
-├── ...
-└── node/                    ← 📗 Node.js Section (Module 1-12) 🟡
+├── javascript/              ← 📘 JavaScript Section (Newly Moved!) ✅
+│   ├── index.md
+│   ├── 00-setup.md
+│   └── ...
+└── node/                    ← 📗 Node.js Section (Sibling to JS) 🟡
     ├── index.md
     ├── 01-01-what-is-node.md
-    ├── ...
-    └── 12-capstone-ecommerce.md
+    └── ...
 ```
 
 ### 🗺️ Node.js Module Outline
 
 | Module | หัวข้อ | โปรเจกต์ |
-|:------:|:-------|:--------:|
+|:------:|:-------|:--------|
 | 1 | **Node.js Introduction** — V8 Engine, npm, REPL | 🎯 CLI Tool App |
 | 2 | **Modules System** — CommonJS vs ESM, npm packages | 📦 Utility Package |
 | 3 | **File System & Path** — อ่าน/เขียน/ลบไฟล์, Streams | 📁 File Manager CLI |
@@ -149,13 +149,16 @@ JavaScript/
 ├── docs/                           # 📄 เนื้อหาบทเรียนทั้งหมด
 │   ├── .vitepress/
 │   │   └── config.mts              # ⚙️ Config VitePress (Sidebar, Nav)
-│   ├── index.md                    # 🏠 หน้าแรก (Home Page)
-│   ├── roadmap.md                  # 🗺️ สารบัญเนื้อหา
-│   ├── 00-setup.md                 # Module 0
-│   ├── 01-01-history.md            # Module 1-12 (Content Files)
-│   ├── 01-project-artist.md        # Project Files
-│   └── solutions/                  # 📝 เฉลยโจทย์
-│       ├── 01-sol.md
+│   ├── index.md                    # 🏠 Main Portal (ทางเข้าหลัก)
+│   ├── roadmap.md                  # 🗺️ สารบัญเนื้อหารวม
+│   ├── javascript/                 # 📘 เนื้อหา JavaScript
+│   │   ├── index.md                # 🏠 หน้าแรก JS Course
+│   │   ├── 00-setup.md
+│   │   ├── ...
+│   │   └── solutions/              # 📝 เฉลยโจทย์ JS
+│   └── node/                       # 📗 เนื้อหา Node.js
+│       ├── index.md                # 🏠 หน้าแรก Node Course
+│       ├── 01-01-what-is-node.md
 │       └── ...
 ├── package.json
 ├── .gitignore

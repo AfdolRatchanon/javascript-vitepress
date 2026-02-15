@@ -1,5 +1,6 @@
 ---
 layout: home
+pageClass: node-home
 
 hero:
   name: "Node.js Backend"
@@ -11,7 +12,7 @@ hero:
       link: /node/01-01-what-is-node
     - theme: alt
       text: "📘 กลับไป JavaScript Course"
-      link: /00-setup
+      link: /javascript/00-setup
 
 features:
   - icon: "🖥️"
@@ -29,7 +30,7 @@ features:
 ---
 
 <style>
-:root {
+.node-home {
   --vp-home-hero-name-color: transparent;
   --vp-home-hero-name-background: linear-gradient(135deg, #339933 10%, #68A063 100%);
 }

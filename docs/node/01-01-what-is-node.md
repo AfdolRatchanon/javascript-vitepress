@@ -146,6 +146,38 @@ Current directory: C:\Users\dolar\projects
 
 > 💡 **`process`** คือ Global Object พิเศษของ Node.js (เหมือน `window` ใน Browser) — ให้ข้อมูลเกี่ยวกับ Process ปัจจุบัน
 
+### process.argv — รับ Arguments จาก Command Line
+
+เราสามารถส่งข้อมูลเข้าไปตอนรันไฟล์ได้! ผ่าน **`process.argv`** (argument values):
+
+```javascript
+// args.js
+console.log(process.argv);
+```
+
+```bash
+node args.js hello 123
+# Output:
+# [
+#   'C:\\Program Files\\nodejs\\node.exe',  ← argv[0] = path ของ node
+#   'C:\\projects\\args.js',                ← argv[1] = path ของไฟล์
+#   'hello',                                ← argv[2] = argument แรก ✅
+#   '123'                                   ← argv[3] = argument ที่สอง ✅
+# ]
+```
+
+> 💡 **สังเกต:** `argv[0]` และ `argv[1]` เป็น path ของ node และไฟล์ — ข้อมูลจริงเริ่มจาก **`argv[2]`** เป็นต้นไป! และค่าที่ได้จะเป็น **String เสมอ** (ต้อง `Number()` ถ้าอยากได้ตัวเลข)
+
+### process.exit() — หยุดโปรแกรม
+
+```javascript
+// ปิดโปรแกรมด้วย Exit Code:
+process.exit(0); // 0 = สำเร็จ (OK)
+process.exit(1); // 1 = มี Error
+```
+
+> 💡 **Exit Code** ใช้บอกว่าโปรแกรมจบแบบไหน — `0` = ปกติ, `1` = มีปัญหา (ใช้ใน CI/CD, Script อัตโนมัติ)
+
 ---
 
 ## 5. Global Objects ใน Node.js 🌍
@@ -213,64 +245,108 @@ console.log(process.env); // Environment Variables ทั้งหมด
 
 ## 7. Challenges 🏆
 
-### 🎯 Challenge 1: Node.js Info Script
-สร้างไฟล์ `info.js` ที่แสดงข้อมูล: Node version, Platform, Current Time:
+### 🎯 Challenge 1: Browser vs Node.js (หัวข้อ 1)
+ตอบคำถาม: จากตารางเปรียบเทียบที่เรียนมา — สิ่งไหนทำได้ใน Node.js แต่ทำไม่ได้ใน Browser? (เลือก 3 ข้อ)
 
 ::: details ✨ ดูเฉลย
-```javascript
-// info.js
-console.log("=== Node.js Info ===");
-console.log("Version:", process.version);
-console.log("Platform:", process.platform);
-console.log("Architecture:", process.arch);
-console.log("Current Time:", new Date().toLocaleString("th-TH"));
-console.log("Uptime:", process.uptime().toFixed(2), "seconds");
-```
-```bash
-node info.js
-```
+1. **File System** — อ่าน/เขียนไฟล์ได้ (Browser ทำไม่ได้)
+2. **HTTP Server** — สร้าง Server ได้ (Browser ทำไม่ได้)
+3. **Database** — เชื่อมต่อ Database ได้ตรง (Browser ต้องผ่าน API)
+
+สิ่งที่ Node.js **ไม่มี**: `window`, `document`, `alert()`, `confirm()` — เพราะไม่มีหน้าเว็บ!
 :::
 
-### 🎯 Challenge 2: Arguments Reader
-สร้างไฟล์ `greet.js` ที่รับชื่อจาก Command Line: `node greet.js Dolar` → แสดง `สวัสดี Dolar!`:
+### 🎯 Challenge 2: V8 Engine (หัวข้อ 2)
+ตอบคำถาม 3 ข้อจากเนื้อหาที่เรียน:
+1. V8 คืออะไร?
+2. JIT Compilation คืออะไร?
+3. ใครสร้าง Node.js สร้างเมื่อปีไหน?
 
 ::: details ✨ ดูเฉลย
+1. **V8** → JavaScript Engine ที่ Google สร้างสำหรับ Chrome — แปลง JavaScript เป็น Machine Code
+2. **JIT Compilation** → Just-In-Time Compilation — แปลโค้ดขณะทำงานเลย ไม่ต้องแปลทั้งหมดก่อน
+3. **Ryan Dahl** สร้างในปี **2009** โดยนำ V8 ออกจาก Chrome แล้วเพิ่มความสามารถ File I/O, Network
+:::
+
+### 🎯 Challenge 3: ตรวจสอบการติดตั้ง (หัวข้อ 3)
+เปิด Terminal แล้วรันคำสั่งเช็คว่า Node.js กับ npm ติดตั้งสำเร็จหรือยัง:
+
+::: details ✨ ดูเฉลย
+รันคำสั่งนี้ใน Terminal:
+```bash
+node -v
+# ตัวอย่าง output: v20.11.0
+
+npm -v
+# ตัวอย่าง output: 10.2.4
+```
+
+ถ้าเห็นเลข version = ติดตั้งสำเร็จ! ☑️
+ถ้าเห็น `'node' is not recognized...` = ยังไม่ได้ติดตั้ง ให้ไปดาวน์โหลด LTS จาก [nodejs.org](https://nodejs.org/) ก่อน
+:::
+
+### 🎯 Challenge 4: ทดลองรัน JavaScript (หัวข้อ 4)
+สร้างไฟล์ `greet.js` ที่รับ **ชื่อ** จาก `process.argv` แล้วทักทาย — ถ้าไม่ใส่ชื่อ ให้แสดง Error แล้วจบด้วย `process.exit(1)`:
+
+::: details ✨ ดูเฉลย
+สร้างไฟล์ `greet.js`:
 ```javascript
 // greet.js
-const name = process.argv[2]; // argv[0]=node, argv[1]=greet.js, argv[2]=ชื่อ
+const name = process.argv[2];
 
-if (name) {
-    console.log(`สวัสดี ${name}! 🎉`);
-} else {
-    console.log("กรุณาใส่ชื่อ: node greet.js <ชื่อ>");
+if (!name) {
+    console.error("❌ กรุณาใส่ชื่อ: node greet.js <ชื่อ>");
+    process.exit(1);
 }
+
+console.log(`🎉 สวัสดี ${name}!`);
+console.log(`📂 รันจาก: ${process.cwd()}`);
+console.log(`🖥️ Node ${process.version} on ${process.platform}`);
 ```
+
+ทดสอบด้วยคำสั่ง:
 ```bash
-node greet.js Dolar    # → สวัสดี Dolar! 🎉
-node greet.js Somchai  # → สวัสดี Somchai! 🎉
-node greet.js          # → กรุณาใส่ชื่อ: node greet.js <ชื่อ>
+node greet.js Dolar    # → 🎉 สวัสดี Dolar!
+node greet.js          # → ❌ กรุณาใส่ชื่อ...
 ```
 :::
 
-### 🎯 Challenge 3: Environment Detective
-สร้างไฟล์ `detective.js` ที่ตรวจสอบ Environment แล้วแสดงผลเป็นตาราง:
+### 🎯 Challenge 5: Global Objects (หัวข้อ 5)
+สร้างไฟล์ `globals.js` ที่แสดง `__dirname`, `__filename`, และจำนวน Environment Variables:
 
 ::: details ✨ ดูเฉลย
+สร้างไฟล์ `globals.js`:
 ```javascript
-// detective.js
-const info = {
-    "Node Version": process.version,
-    "Platform": process.platform,
-    "Architecture": process.arch,
-    "CPU Cores": require("os").cpus().length,
-    "Total Memory": (require("os").totalmem() / 1024 / 1024 / 1024).toFixed(2) + " GB",
-    "Home Directory": require("os").homedir(),
-    "Current Directory": process.cwd(),
-};
-
-console.log("🔍 Environment Detective Report:");
-console.table(info);
+// globals.js
+console.log("=== Node.js Globals ===");
+console.log("📂 __dirname:", __dirname);
+console.log("📄 __filename:", __filename);
+console.log("🔢 Environment Variables:", Object.keys(process.env).length, "ตัว");
 ```
+
+ทดสอบด้วยคำสั่ง:
+```bash
+node globals.js
+```
+:::
+
+### 🎯 Challenge 6: ทำไมต้อง Node.js? (หัวข้อ 6)
+ตอบคำถามจากเนื้อหาที่เรียน:
+1. บอกข้อดีของ Node.js มา 3 ข้อ
+2. Node.js **ไม่เหมาะ** กับงานประเภทไหน?
+3. บริษัทไหนที่ใช้ Node.js? (บอก 2 บริษัท พร้อมบอกว่าใช้ทำอะไร)
+
+::: details ✨ ดูเฉลย
+**ข้อดี 3 ข้อ** (เลือกจากตาราง):
+1. ภาษาเดียว Full-Stack — ใช้ JavaScript ทั้ง Frontend + Backend
+2. npm — มี Package มากกว่า 2.1 ล้านตัว
+3. Non-blocking I/O — จัดการ Concurrent Requests ได้ดี
+
+**ไม่เหมาะกับ:** งาน CPU-intensive เช่น Video Encoding, Machine Learning, Game Engine (เพราะเป็น Single Thread)
+
+**บริษัทที่ใช้** (เลือก 2):
+- **Netflix** — API Server, Microservices
+- **PayPal** — Payment API
 :::
 
 ---
