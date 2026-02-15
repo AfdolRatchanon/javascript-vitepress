@@ -37,7 +37,14 @@ Timeline (ไทม์ไลน์):
 
 ### 🧠 Challenge: History Quiz
 JavaScript ถูกสร้างขึ้นภายในเวลากี่วัน?
-A) 30 วัน   B) 365 วัน   C) 10 วัน   D) 100 วัน
+
+A) 30 วัน   
+
+B) 365 วัน   
+
+C) 10 วัน   
+
+D) 100 วัน
 
 ::: details ✨ ดูเฉลย
 **ตอบ:** ข้อ **C — 10 วัน!** ครับ สร้างเร็วมากจนเป็นตำนานมาถึงทุกวันนี้
@@ -218,14 +225,14 @@ JavaScript ไม่ได้แค่ "ทำเว็บ" อีกต่อ�
 
 ```
                ┌─────────────────────────────────┐
-               │       JavaScript Ecosystem       │
+               │       JavaScript Ecosystem      │
                └─────────────────┬───────────────┘
                                  │
         ┌────────┬───────┬───────┼───────┬────────┬────────┐
         ▼        ▼       ▼       ▼       ▼        ▼        ▼
     Frontend  Backend  Mobile  Desktop  Game    AI/ML   IoT
-    React    Node.js  React   Electron Three.js TensorFlow.js
-    Vue      Express  Native  Tauri           Brain.js
+    React    Node.js   React   Electron Three.js TensorFlow.js
+    Vue      Express   Native  Tauri           Brain.js
     Angular  Fastify  
     Svelte   Nest.js  
 ```
@@ -247,10 +254,15 @@ JavaScript ไม่ได้แค่ "ทำเว็บ" อีกต่อ�
 
 ### 🎯 Challenge: เรียงลำดับ
 จงเรียงลำดับเหตุการณ์ต่อไปนี้จากเก่าไปใหม่:
+
 A) ES6 ถูกปล่อยออกมา
+
 B) Brendan Eich สร้าง JavaScript
+
 C) Node.js ถูกสร้างขึ้น (2009)
+
 D) jQuery เปลี่ยนวงการ (2006)
+
 E) TypeScript ถูกสร้างโดย Microsoft (2012)
 
 ::: details ✨ ดูเฉลย

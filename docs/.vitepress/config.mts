@@ -15,7 +15,6 @@ export default defineConfig({
         nav: [
             { text: 'หน้าแรก (Home)', link: '/' },
             { text: 'บทเรียน (Lessons)', link: '/00-setup' },
-            { text: 'เฉลย (Solutions)', link: '/solutions/03-sol' }
         ],
 
         sidebar: [
@@ -69,6 +68,64 @@ export default defineConfig({
                     { text: '5.2 - Objects (Key-Value)', link: '/05-02-objects' },
                     { text: '5.3 - Reference vs Value', link: '/05-03-reference-vs-value' },
                     { text: '✅ Project 6: Todo List', link: '/05-project-todo' }
+                ]
+            },
+            {
+                text: 'Module 6: DOM Manipulation',
+                items: [
+                    { text: '6.1 - DOM Basics', link: '/06-01-dom-basics' },
+                    { text: '6.2 - DOM Events', link: '/06-02-dom-events' },
+                    { text: '6.3 - DOM Manipulation', link: '/06-03-dom-manipulation' },
+                    { text: '🎴 Project 7: Interactive Card', link: '/06-project-interactive-card' }
+                ]
+            },
+            {
+                text: 'Module 7: Async JavaScript',
+                items: [
+                    { text: '7.1 - Async Concepts', link: '/07-01-async-concepts' },
+                    { text: '7.2 - Promises', link: '/07-02-promises' },
+                    { text: '7.3 - Async/Await & Fetch', link: '/07-03-async-await' },
+                    { text: '🌤️ Project 8: Weather App', link: '/07-project-weather-app' }
+                ]
+            },
+            {
+                text: 'Module 8: ES6+ Modern Features',
+                items: [
+                    { text: '8.1 - Destructuring', link: '/08-01-destructuring' },
+                    { text: '8.2 - Spread & Rest', link: '/08-02-spread-rest' },
+                    { text: '8.3 - Modules (import/export)', link: '/08-03-modules' },
+                    { text: '👨‍🎓 Project 9: Student Manager', link: '/08-project-student-manager' }
+                ]
+            },
+            {
+                text: 'Module 9: OOP',
+                items: [
+                    { text: '9.1 - Classes', link: '/09-01-classes' },
+                    { text: '9.2 - Inheritance', link: '/09-02-inheritance' },
+                    { text: '9.3 - Prototypes', link: '/09-03-prototypes' },
+                    { text: '⚔️ Project 10: RPG Game', link: '/09-project-rpg-game' }
+                ]
+            },
+            {
+                text: 'Module 10: Error Handling & Debugging',
+                items: [
+                    { text: '10.1 - Error Handling', link: '/10-01-error-handling' },
+                    { text: '10.2 - Debugging', link: '/10-02-debugging' },
+                    { text: '📋 Project 11: Form Validator', link: '/10-project-form-validator' }
+                ]
+            },
+            {
+                text: 'Module 11: Web Storage & Browser APIs',
+                items: [
+                    { text: '11.1 - Web Storage', link: '/11-01-web-storage' },
+                    { text: '11.2 - Browser APIs', link: '/11-02-browser-apis' },
+                    { text: '📝 Project 12: Note App', link: '/11-project-note-app' }
+                ]
+            },
+            {
+                text: 'Module 12: Capstone Project',
+                items: [
+                    { text: '🏆 Capstone: Task Manager', link: '/12-capstone-project' }
                 ]
             }
         ],
