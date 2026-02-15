@@ -47,6 +47,67 @@
 
 ---
 
+## 📗 Node.js Backend Course (เพิ่มเติม — กำลังวางแผน)
+
+> เว็บนี้ยังมี **Section เพิ่มเติม** สำหรับสอน **Node.js Backend Development** แบบ Bilingual ในเว็บเดียวกัน!
+
+### 🏗️ สถาปัตยกรรม (Single Site, Dual Section)
+
+Node.js content อยู่ใน **VitePress เดียวกัน** กับ JS Course โดยแยกเป็น Section ใน Sidebar:
+
+```
+JavaScript/docs/
+├── 00-setup.md              ← 📘 JavaScript Section (Module 0-12) ✅
+├── 01-01-history.md
+├── ...
+└── node/                    ← 📗 Node.js Section (Module 1-12) 🟡
+    ├── index.md
+    ├── 01-01-what-is-node.md
+    ├── ...
+    └── 12-capstone-ecommerce.md
+```
+
+### 🗺️ Node.js Module Outline
+
+| Module | หัวข้อ | โปรเจกต์ |
+|:------:|:-------|:--------:|
+| 1 | **Node.js Introduction** — V8 Engine, npm, REPL | 🎯 CLI Tool App |
+| 2 | **Modules System** — CommonJS vs ESM, npm packages | 📦 Utility Package |
+| 3 | **File System & Path** — อ่าน/เขียน/ลบไฟล์, Streams | 📁 File Manager CLI |
+| 4 | **HTTP & Server Basics** — Request/Response, Status Codes | 🌐 Mini HTTP Server |
+| 5 | **Express.js Basics** — Routing, Middleware, Static Files | 🛣️ Express Routes App |
+| 6 | **REST API Design** — CRUD, JSON API, Postman | 📡 In-Memory Todo API |
+| 7 | **MySQL (SQL)** — SELECT, INSERT, JOIN, `mysql2` | 🗃️ Student Management DB |
+| 8 | **MongoDB (NoSQL)** — Mongoose ODM, Schema Validation | 📘 Blog API with Mongo |
+| 9 | **Authentication** — JWT, bcrypt, Protected Routes | 🔐 Auth System |
+| 10 | **File Upload & Validation** — Multer, express-validator | 📤 Upload API |
+| 11 | **Security & Error Handling** — CORS, Helmet, Rate Limiting | 🛡️ Secure API |
+| 12 | **🏆 Capstone** — รวมทุก Module | 🏆 E-Commerce Product API |
+
+### 🛠️ Tech Stack
+
+| เทคโนโลยี | ใช้ทำอะไร |
+|:----------|:---------|
+| Node.js + Express.js | Server & Web Framework |
+| MySQL (`mysql2`) | SQL Database (Raw SQL → ORM later) |
+| MongoDB + Mongoose | NoSQL Database |
+| JWT + bcrypt | Authentication & Password Hashing |
+| Multer + express-validator | File Upload & Input Validation |
+| Helmet + cors + morgan | Security & Logging |
+
+### 📌 Status: 🟡 PLANNING
+
+- [x] กำหนด Module Outline
+- [x] เลือก Tech Stack & Database Strategy
+- [x] กำหนด Content Standards
+- [x] ตัดสินใจสถาปัตยกรรม (Single VitePress, Dual Section)
+- [ ] สร้าง `node/` subfolder + อัปเดต VitePress config
+- [ ] สร้างเนื้อหา Module 1-12
+
+> 📖 **รายละเอียดเต็ม:** ดู [`NodeJS/README.md`](../NodeJS/README.md) สำหรับแผนการพัฒนาฉบับสมบูรณ์
+
+---
+
 ## 🚀 การเริ่มต้นใช้งาน (Getting Started)
 
 ### ข้อกำหนดเบื้องต้น (Prerequisites)
@@ -123,20 +184,61 @@ JavaScript/
 3. **แก้ Roadmap** ใน `docs/roadmap.md` — เพิ่มลิงก์ในสารบัญ
 4. **ตรวจสอบ** ด้วย `npm run docs:dev` ก่อน Commit
 
-### มาตรฐานเนื้อหา (Gold Standard)
+### มาตรฐานเนื้อหา (Content Quality Standards)
 
-ทุกบทเรียนควรมีองค์ประกอบเหล่านี้:
+ทุกบทเรียนต้องผ่านเกณฑ์คุณภาพเพื่อให้ผู้เรียน **เข้าใจได้จริง** ไม่ใช่แค่ดูโค้ดตัวอย่าง:
 
-| ✅ ต้องมี | รายละเอียด |
-|:---------|:----------|
-| **Quote** | คำคมเปิดบท |
-| **Analogy** | เปรียบเทียบกับสิ่งที่คุ้นเคย |
-| **MDN Reference** | ลิงก์ไปยัง MDN Web Docs |
-| **Code Examples** | ตัวอย่างโค้ดพร้อม Output |
-| **Comparison Table** | ตารางเปรียบเทียบ |
-| **Challenges** | โจทย์ท้าทาย พร้อมเฉลยซ่อน |
-| **Glossary** | คำศัพท์เทคนิค 10-12 คำ |
-| **Navigation** | ลิงก์ไปบทถัดไป |
+#### 📐 เกณฑ์ขั้นต่ำ (Minimum Requirements)
+
+| เกณฑ์ | รายละเอียด | เป้าหมาย |
+|:------|:----------|:---------|
+| **ความยาว** | จำนวนบรรทัดต่อไฟล์ | **≥ 250 บรรทัด** |
+| **สัดส่วน Prose:Code** | คำอธิบาย vs โค้ดตัวอย่าง | **≥ 40% Prose** |
+| **Challenges** | จำนวนโจทย์ท้าทายท้ายบท | **≥ 3 ข้อ** |
+| **Glossary** | จำนวนคำศัพท์เทคนิค | **≥ 8 คำ** |
+
+#### 📝 องค์ประกอบที่ต้องมี (Required Components)
+
+| # | องค์ประกอบ | รายละเอียด |
+|:-:|:----------|:----------|
+| 1 | **Quote** | คำคมเปิดบท (ภาษาอังกฤษ) พร้อมชื่อผู้พูด |
+| 2 | **Analogy** | เปรียบเทียบ Concept กับสิ่งที่คุ้นเคย (Emoji + ภาษาไทย) |
+| 3 | **MDN Reference** | ลิงก์ไป MDN Web Docs ทุก Section หลัก |
+| 4 | **คำอธิบายก่อนโค้ด** | ทุก Code Block ต้องมี **คำอธิบายภาษาไทย** ก่อนเสมอ — บอกว่า "ทำไม" "เมื่อไหร่ใช้" "แก้ปัญหาอะไร" |
+| 5 | **Code Examples** | ตัวอย่างโค้ดพร้อม Comments + Output |
+| 6 | **Comparison Table** | ตารางเปรียบเทียบ ≥ 1 ตาราง (เช่น `==` vs `===`) |
+| 7 | **Real-World Use Case** | ตัวอย่างการใช้งานจริง ≥ 1 กรณี |
+| 8 | **Challenges (3 ระดับ)** | โจทย์ 3 ข้อ พร้อมเฉลยซ่อนใน `::: details` |
+| 9 | **Glossary** | คำศัพท์เทคนิค 8-12 คำ พร้อมคำอธิบายไทยสั้นๆ |
+| 10 | **Navigation** | ลิงก์ `👉 ไปต่อ: ...` ท้ายบท |
+
+#### ❌ สิ่งที่ต้องหลีกเลี่ยง
+
+- ❌ **Code Dump** — โค้ดยาวๆ ติดกันไม่มีคำอธิบาย
+- ❌ **ภาษาอังกฤษล้วน** — คำอธิบายหลักต้องเป็นภาษาไทย
+- ❌ **ขาด Context** — โค้ดที่ไม่บอกว่า "ใช้เมื่อไหร่" "ทำไมต้องทำ"
+- ❌ **Challenge น้อยกว่า 3 ข้อ** — ต้องมีอย่างน้อย 3 ข้อเสมอ
+
+#### ✅ ตัวอย่างรูปแบบที่ดี
+
+```markdown
+## Section Title
+
+คำอธิบายภาษาไทยว่า Concept นี้คืออะไร ทำไมสำคัญ ใช้เมื่อไหร่...
+
+[MDN Reference Link]
+
+\`\`\`javascript
+// ตัวอย่างโค้ดพร้อม Comments
+\`\`\`
+
+> 💡 **เกร็ดเพิ่มเติม / ข้อควรระวัง**
+
+### 📊 Comparison Table
+| ... | ... |
+
+### ตัวอย่าง Real-World: ...
+```
 
 ### เพิ่ม Module ใหม่
 

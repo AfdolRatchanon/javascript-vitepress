@@ -3,27 +3,36 @@
 > **"JavaScript is fundamentally a prototype-based language, not a class-based one."**
 > — *Kyle Simpson*
 
-Class ใน JavaScript เป็น **Syntax Sugar** ของ Prototype ครับ! ทุก Object มี **Prototype Chain** ที่ JavaScript ใช้หา Method/Property
+ในบทที่แล้วเราเรียน **Class** — แต่รู้หรือไม่ว่า Class ใน JavaScript เป็นแค่ **Syntax Sugar!** เบื้องหลังจริงๆ คือ **Prototype** ซึ่งเป็นแก่นแท้ของ OOP ใน JavaScript ทุก Object ล้วนมี **Prototype Chain** ที่ JavaScript ใช้ค้นหา Method และ Property
 
 > **💡 Analogy (เปรียบเทียบ):**
 > Prototype เหมือน **"สายเลือด / พันธุกรรม"** 🧬:
-> - ถ้า Object ไม่มี Method ที่เรียก → ไปหาใน "พ่อ" (Prototype)
-> - ถ้าพ่อก็ไม่มี → ไปหาใน "ปู่" → ไปเรื่อยๆ → จน `null`
+> - ถ้าลูก (Object) ไม่มีความสามารถบางอย่าง → ไปดูที่ **พ่อ** (Prototype)
+> - ถ้าพ่อก็ไม่มี → ไปดูที่ **ปู่** → **ทวด** → ไล่ไปเรื่อยๆ จน **null** (ต้นตระกูล)
+> - เหมือนถ่ายทอดพันธุกรรม — ลูกสืบทอดคุณสมบัติจากบรรพบุรุษ!
 
 ---
 
-## 1. Prototype Chain ⛓️
+## 1. Prototype Chain คืออะไร? ⛓️
+
+ตาม [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain): ทุก Object ใน JavaScript มี **Internal Link** ชี้ไปยัง Object อื่น (เรียกว่า Prototype) เมื่อเรียก Property/Method ที่ Object ไม่มี → JavaScript จะ **ไล่หาตาม Chain** ไปเรื่อยๆ
+
+### ทดลองดู Chain จริง:
 
 ```javascript
 const obj = { name: "Dolar" };
 
 // obj → Object.prototype → null
 console.log(obj.toString());  // "[object Object]"
-// ⭐ obj ไม่มี toString() แต่ Object.prototype มี!
+// ⭐ obj ไม่มี toString() เลย! แต่ Object.prototype มี!
+// JavaScript ไล่หาตาม Chain → เจอใน Object.prototype → เรียกใช้!
 
+// ✅ ดู Prototype:
 console.log(obj.__proto__ === Object.prototype); // true
-console.log(Object.prototype.__proto__);          // null (จุดสิ้นสุด!)
+console.log(Object.prototype.__proto__);          // null (จุดสิ้นสุดของ Chain!)
 ```
+
+> ⚠️ `__proto__` ใช้ดูได้ แต่**ไม่ควรใช้ตรงๆ** ในโค้ดจริง → ใช้ `Object.getPrototypeOf()` แทน
 
 ### ภาพ Prototype Chain:
 
@@ -31,20 +40,29 @@ console.log(Object.prototype.__proto__);          // null (จุดสิ้น
 myDog → Dog.prototype → Animal.prototype → Object.prototype → null
   ↑         ↑                 ↑                  ↑
   name    speak()           eat()           toString()
-  
-เมื่อเรียก myDog.toString():
-1. หาใน myDog → ❌ ไม่มี
-2. หาใน Dog.prototype → ❌ ไม่มี
-3. หาใน Animal.prototype → ❌ ไม่มี
-4. หาใน Object.prototype → ✅ เจอ!
 ```
+
+เมื่อเรียก `myDog.toString()` ← JavaScript ทำงานอย่างไร?
+
+| ขั้นตอน | ค้นหาที่ | ผลลัพธ์ |
+|:--------|:---------|:--------|
+| 1 | `myDog` | ❌ ไม่มี `toString` |
+| 2 | `Dog.prototype` | ❌ ไม่มี |
+| 3 | `Animal.prototype` | ❌ ไม่มี |
+| 4 | `Object.prototype` | ✅ **เจอ!** → เรียกใช้! |
+
+> 💡 **ถ้าไล่จนถึง `null` แล้วยังไม่เจอ** → return `undefined` (ถ้าเป็น Property) หรือ `TypeError` (ถ้าพยายามเรียกเป็นฟังก์ชัน)
 
 ---
 
 ## 2. Class = Prototype Sugar 🍬
 
+คำว่า **"Syntax Sugar"** หมายถึง ไวยากรณ์ที่ทำให้เขียนง่ายขึ้น แต่เบื้องหลังทำงานเหมือนเดิม — เหมือน "น้ำตาลเคลือบ" ที่ทำให้กินง่ายขึ้น!
+
 ```javascript
-// ✅ Class Syntax (ES6)
+// ============================================
+// ✅ แบบ Class (ES6) — ที่เราเรียนใน 09-1
+// ============================================
 class User {
     constructor(name) {
         this.name = name;
@@ -54,32 +72,53 @@ class User {
     }
 }
 
-// ✅ เบื้องหลัง — เทียบเท่ากับ:
-function User(name) {
+// ============================================
+// ✅ แบบ Prototype (ก่อน ES6) — เบื้องหลัง Class!
+// ============================================
+function UserOld(name) {
     this.name = name;
 }
-User.prototype.greet = function() {
+UserOld.prototype.greet = function() {
     return `Hi, ${this.name}`;
 };
 
-// ทั้งสองแบบ ทำงานเหมือนกันทุกประการ!
-const u = new User("Dolar");
-console.log(u.greet()); // "Hi, Dolar"
+// ⭐ ทั้งสองแบบ ทำงานเหมือนกันทุกประการ!
+const u1 = new User("Dolar");
+const u2 = new UserOld("Dolar");
+console.log(u1.greet()); // "Hi, Dolar"
+console.log(u2.greet()); // "Hi, Dolar"
+```
+
+### ทำไม Method อยู่ใน Prototype ไม่ใช่ใน Instance?
+
+**เพื่อประหยัดหน่วยความจำ!** ถ้า Method อยู่ใน Instance → สร้าง 1,000 Users = สำเนา `greet()` 1,000 ชุด! แต่ถ้าอยู่ใน Prototype → มีแค่ **ชุดเดียว** ทุก Instance **แชร์กัน** ผ่าน Prototype Chain
+
+```javascript
+const a = new User("A");
+const b = new User("B");
+
+// ⭐ ทั้งคู่ใช้ greet() ชุดเดียวกัน!
+console.log(a.greet === b.greet); // true (reference เดียวกัน!)
 ```
 
 ### ตรวจสอบ Prototype:
 
 ```javascript
-console.log(typeof User);               // "function" (Class = Function!)
-console.log(u.__proto__ === User.prototype); // true
-console.log(Object.getPrototypeOf(u) === User.prototype); // true ✅
+console.log(typeof User);               // "function" (Class = Function เบื้องหลัง!)
+console.log(u1.__proto__ === User.prototype); // true
+
+// ✅ วิธีที่ถูกต้อง (ไม่ใช้ __proto__):
+console.log(Object.getPrototypeOf(u1) === User.prototype); // true ✅
 ```
 
 ---
 
 ## 3. Object.create() — สร้าง Object จาก Prototype ตรงๆ
 
+ตาม [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create): `Object.create(proto)` สร้าง Object ใหม่ที่มี `proto` เป็น Prototype — ไม่ต้องใช้ `class` หรือ `new`!
+
 ```javascript
+// สร้าง Prototype Object
 const animalProto = {
     speak() {
         return `${this.name} says "${this.sound}"`;
@@ -94,61 +133,133 @@ const dog = Object.create(animalProto);
 dog.name = "Buddy";
 dog.sound = "Woof!";
 
-console.log(dog.speak());      // "Buddy says 'Woof!'"
+console.log(dog.speak());      // "Buddy says "Woof!""
 console.log(dog.eat("bone"));  // "Buddy eats bone"
 
-// ตรวจสอบ:
-console.log(Object.getPrototypeOf(dog) === animalProto); // true
-console.log(dog.hasOwnProperty("name"));   // true (ของตัวเอง)
+// ⭐ speak() และ eat() มาจาก animalProto!
+console.log(dog.hasOwnProperty("name"));   // true  (ของ dog เอง)
 console.log(dog.hasOwnProperty("speak"));  // false (มาจาก Prototype!)
+```
+
+### เมื่อไหร่ใช้ Object.create()?
+
+- เมื่อต้องการ **Prototype แบบง่ายๆ** ไม่ซับซ้อนขนาด Class
+- เมื่อต้องการ **สร้าง Object ที่ไม่มี Prototype เลย** (Clean Object):
+
+```javascript
+// Object ที่ไม่มี Prototype → ไม่มี toString(), hasOwnProperty() ฯลฯ!
+const cleanObj = Object.create(null);
+cleanObj.key = "value";
+console.log(cleanObj.toString); // undefined! ❌ ไม่มี!
+// ⭐ ใช้เป็น "Pure Dictionary" — ปลอดภัยเป็น Key-Value Store
 ```
 
 ---
 
 ## 4. hasOwnProperty vs in 🔍
 
+การเช็คว่า Object มี Property อะไรบ้าง มี 2 วิธีที่ทำงาน**ต่างกัน**:
+
 ```javascript
 const user = { name: "Dolar", age: 25 };
 
-// hasOwnProperty — เช็คเฉพาะของตัวเอง
-console.log(user.hasOwnProperty("name"));     // true
-console.log(user.hasOwnProperty("toString")); // false (มาจาก Prototype)
+// hasOwnProperty — เช็คเฉพาะ Property ของตัวเอง (ไม่ดู Prototype)
+console.log(user.hasOwnProperty("name"));     // true ✅ (ของตัวเอง)
+console.log(user.hasOwnProperty("toString")); // false ❌ (มาจาก Object.prototype)
 
-// in — เช็ครวม Prototype Chain
-console.log("name" in user);      // true
-console.log("toString" in user);  // true (มาจาก Prototype!)
+// in — เช็ครวม Prototype Chain ทั้งหมด
+console.log("name" in user);      // true ✅
+console.log("toString" in user);  // true ✅ (มาจาก Prototype → แต่ in บอกว่ามี!)
 ```
 
 ### 📊 Comparison
 
-| Method | เช็คอะไร | ตัวอย่าง |
+| Method | เช็คอะไร | ตัวอย่าง (กับ `{ name: "A", age: 25 }`) |
 |:-------|:--------|:--------|
-| `hasOwnProperty()` | เฉพาะของตัวเอง | `"name"` → true, `"toString"` → false |
-| `in` | รวม Prototype Chain | `"name"` → true, `"toString"` → true |
-| `Object.keys()` | key ของตัวเองที่ enumerable | `["name", "age"]` |
+| `hasOwnProperty()` | เฉพาะ Property ของ Object เอง | `"name"` → true, `"toString"` → **false** |
+| `in` | รวม Prototype Chain ทั้งหมด | `"name"` → true, `"toString"` → **true** |
+| `Object.keys()` | Key ของตัวเองที่ enumerable | return `["name", "age"]` |
+| `Object.getOwnPropertyNames()` | Key ของตัวเองทั้งหมด | return `["name", "age"]` |
+
+> 💡 **Use Case:** ในโค้ดจริง `hasOwnProperty()` ใช้บ่อยเวลา Loop ด้วย `for...in` เพราะ `for...in` ดู Prototype ด้วย → อาจได้ Property ที่ไม่ต้องการ!
+
+```javascript
+for (const key in user) {
+    if (user.hasOwnProperty(key)) {
+        console.log(key, "→", user[key]); // เฉพาะของตัวเอง!
+    }
+}
+// ✅ หรือใช้ Object.keys() แทน (สะดวกกว่า):
+Object.keys(user).forEach(key => console.log(key, "→", user[key]));
+```
 
 ---
 
 ## 5. Prototype Pitfalls ⚠️
 
+### ❌ อย่าแก้ Built-in Prototype!
+
 ```javascript
-// ❌ อย่าแก้ Built-in Prototype!
+// ❌ อันตราย! อย่าทำ!
 Array.prototype.last = function() {
     return this[this.length - 1];
 };
-// ใช้ได้ แต่อันตราย! อาจชนกับ Library อื่น!
 
-// ✅ ใช้ Utility Function แทน
+// ใช้ได้ก็จริง:
+console.log([1, 2, 3].last()); // 3
+
+// แต่อันตราย! เพราะ:
+// 1. อาจชนกับ Library อื่นที่เพิ่ม .last() เหมือนกัน!
+// 2. อาจชนกับ JavaScript version ใหม่ที่เพิ่ม .last() อย่างเป็นทางการ!
+// 3. ทำให้ for...in loop ได้ค่าที่ไม่ต้องการ!
+```
+
+### ✅ ทำแบบนี้แทน:
+
+```javascript
+// ✅ ใช้ Utility Function
 function last(arr) {
     return arr[arr.length - 1];
 }
+console.log(last([1, 2, 3])); // 3
+
+// ✅ หรือใช้ .at() ที่มี built-in แล้ว (ES2022)
+console.log([1, 2, 3].at(-1)); // 3 ✅
+```
+
+### ⚠️ Shallow Copy ของ Prototype Properties:
+
+```javascript
+const proto = { settings: { theme: "dark" } };
+const a = Object.create(proto);
+const b = Object.create(proto);
+
+// ⚠️ ทั้งคู่แชร์ settings ตัวเดียวกัน!
+a.settings.theme = "light";
+console.log(b.settings.theme); // "light" — b โดนเปลี่ยนด้วย! 😱
+
+// ✅ แก้: ให้แต่ละ Instance มี settings ของตัวเอง
+// a.settings = { ...proto.settings }; // Shallow Copy
 ```
 
 ---
 
-## 6. Challenges 🏆
+## 6. 📊 Prototype Summary
 
-### 🎯 Challenge 1: Prototype Chain
+| Concept | อธิบาย | ตัวอย่าง |
+|:--------|:-------|:--------|
+| **Prototype Chain** | โซ่ลำดับที่ JS ค้นหา Property | `obj → Proto → Object.prototype → null` |
+| **`__proto__`** | ดู Prototype (ไม่ควรใช้ตรง) | `obj.__proto__` |
+| **`Object.getPrototypeOf()`** | ดู Prototype (วิธีที่ถูกต้อง) | `Object.getPrototypeOf(obj)` |
+| **`Object.create(proto)`** | สร้าง Object จาก Prototype | `Object.create(animalProto)` |
+| **`hasOwnProperty()`** | เช็ค Property ของตัวเอง | `obj.hasOwnProperty("name")` |
+| **Class = Sugar** | Class เป็นแค่ Syntax Sugar | `class X {}` ≡ `function X() {}` |
+
+---
+
+## 7. Challenges 🏆
+
+### 🎯 Challenge 1: Prototype Chain Tracing
 ```javascript
 class A { foo() { return "A"; } }
 class B extends A { foo() { return "B"; } }
@@ -156,13 +267,18 @@ class C extends B { }
 
 const c = new C();
 ```
-`c.foo()` return อะไร? อธิบาย Chain:
+`c.foo()` return อะไร? อธิบาย Chain ที่ JavaScript ไล่ค้นหา:
 
 ::: details ✨ ดูเฉลย
-`c.foo()` return `"B"`
+`c.foo()` return **`"B"`**
 
-Chain: `c` → `C.prototype` (ไม่มี foo) → `B.prototype` (มี foo → return "B"!)
-ไม่ไปถึง `A.prototype.foo` เพราะเจอใน `B` ก่อน
+Chain ที่ JavaScript ค้นหา:
+1. `c` (Instance) → ❌ ไม่มี `foo`
+2. `C.prototype` → ❌ ไม่มี `foo` (C ไม่ได้ override)
+3. `B.prototype` → ✅ **เจอ `foo`!** → return `"B"`
+4. ไม่ไปถึง `A.prototype.foo` เพราะเจอใน `B` ก่อน
+
+> **หลักการ:** JavaScript หาจาก Instance ขึ้นไป → เจอที่ไหนก่อน ใช้ตัวนั้น!
 :::
 
 ### 🎯 Challenge 2: Own vs Inherited
@@ -173,26 +289,66 @@ class Person {
 }
 const p = new Person("Dolar");
 ```
-`p.hasOwnProperty("name")` = ? `p.hasOwnProperty("greet")` = ?
+`p.hasOwnProperty("name")` = ? `p.hasOwnProperty("greet")` = ? อธิบายเหตุผล:
 
 ::: details ✨ ดูเฉลย
 ```javascript
-p.hasOwnProperty("name");  // true  (ตั้งใน constructor → ของ Instance)
-p.hasOwnProperty("greet"); // false (อยู่ใน Person.prototype → ไม่ใช่ own!)
+p.hasOwnProperty("name");  // true  ✅
+// เพราะ name ถูกตั้งใน constructor → เป็นของ Instance โดยตรง
+
+p.hasOwnProperty("greet"); // false ❌
+// เพราะ greet() อยู่ใน Person.prototype → ไม่ใช่ของ Instance!
+// p.greet() ใช้ได้ก็จริง แต่มาจาก Prototype ไม่ใช่ own property
+```
+:::
+
+### 🎯 Challenge 3: Object.create Pattern
+สร้าง `vehicleProto` ที่มี method `describe()` แล้วสร้าง car และ bike จาก prototype นั้น:
+
+::: details ✨ ดูเฉลย
+```javascript
+const vehicleProto = {
+    describe() {
+        return `${this.type}: ${this.brand} - ${this.speed} km/h`;
+    },
+    isFast() {
+        return this.speed > 100;
+    }
+};
+
+const car = Object.create(vehicleProto);
+car.type = "Car";
+car.brand = "Toyota";
+car.speed = 180;
+
+const bike = Object.create(vehicleProto);
+bike.type = "Bicycle";
+bike.brand = "Giant";
+bike.speed = 30;
+
+console.log(car.describe());  // "Car: Toyota - 180 km/h"
+console.log(car.isFast());    // true
+console.log(bike.describe()); // "Bicycle: Giant - 30 km/h"
+console.log(bike.isFast());   // false
+
+// ⭐ ทั้งคู่แชร์ Method จาก vehicleProto!
+console.log(car.describe === bike.describe); // true
 ```
 :::
 
 ---
 
 > **📖 คำศัพท์เทคนิค (Glossary):**
-> *   **Prototype:** Object ต้นแบบที่ Object อื่นสืบทอดมา
-> *   **Prototype Chain:** โซ่ลำดับที่ JavaScript ค้นหา Method/Property
-> *   **`__proto__`:** Property ที่ชี้ไปยัง Prototype (ไม่ควรใช้ตรง)
-> *   **`Object.getPrototypeOf()`:** วิธีที่ถูกต้องในการดู Prototype
-> *   **`Object.create()`:** สร้าง Object ที่มี Prototype ที่กำหนด
+> *   **Prototype:** Object ต้นแบบที่ Object อื่นสืบทอด Method/Property มา
+> *   **Prototype Chain:** โซ่ลำดับที่ JavaScript ไล่ค้นหา Method/Property ขึ้นไปเรื่อยๆ
+> *   **`__proto__`:** Property ที่ชี้ไปยัง Prototype ของ Object (ไม่ควรใช้ตรงๆ)
+> *   **`Object.getPrototypeOf()`:** วิธีที่ถูกต้องในการดู Prototype ของ Object
+> *   **`Object.create(proto)`:** สร้าง Object ใหม่ที่มี `proto` เป็น Prototype
 > *   **`hasOwnProperty()`:** เช็คว่า Property เป็นของ Object เองหรือมาจาก Prototype
-> *   **Syntax Sugar:** ไวยากรณ์ที่ทำให้เขียนง่ายขึ้น แต่เบื้องหลังทำงานเหมือนเดิม
+> *   **Syntax Sugar:** ไวยากรณ์ที่ทำให้เขียนง่ายขึ้น เบื้องหลังทำงานเหมือนเดิม
 > *   **Constructor Function:** ฟังก์ชันที่ใช้กับ `new` เพื่อสร้าง Object (ก่อนมี Class)
+> *   **Property Shadowing:** เมื่อ Instance มี Property ชื่อเดียวกับ Prototype → ใช้ของ Instance (บัง Prototype)
+> *   **Clean Object:** Object ที่ไม่มี Prototype (`Object.create(null)`) — ใช้เป็น Pure Dictionary
 
 ---
 👉 **[ไปทำโปรเจกต์: Project — RPG Game](/09-project-rpg-game)**
