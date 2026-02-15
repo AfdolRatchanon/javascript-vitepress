@@ -1,0 +1,553 @@
+# 04-2: Data Flow in Functions (การไหลของข้อมูล) 🌊
+
+> **"Programs must be written for people to read, and only incidentally for machines to execute."**
+> — *Harold Abelson (Structure and Interpretation of Computer Programs)*
+
+ฟังก์ชันที่ไม่รับข้อมูลเข้าและไม่ส่งข้อมูลออก ก็เหมือนร้านอาหารที่ไม่รับออเดอร์และไม่เสิร์ฟอาหาร — มันไร้ประโยชน์ครับ! ในบทนี้เราจะเจาะลึกว่า **ข้อมูลเข้าและออกจากฟังก์ชัน** อย่างไร
+
+> **💡 Analogy (เปรียบเทียบ):**
+> ฟังก์ชันเหมือน **"โรงงานอาหาร"** ครับ:
+> - **Parameters** = สายพานขาเข้า (ประตูรับวัตถุดิบ) — บอกว่าจะรับอะไรบ้าง
+> - **Arguments** = วัตถุดิบจริงๆ ที่ป้อนเข้าไป — ข้อมูลจริงๆ ที่ส่งเข้ามา
+> - **Return** = สายพานขาออก (ประตูส่งสินค้า) — ส่งผลลัพธ์ออกไปให้คนภายนอก
+> - ถ้าไม่มี `return` = โรงงานกินวัตถุดิบหมดแต่ไม่เสิร์ฟผลผลิตออกมา
+
+## 1. Parameters vs Arguments (แม้จะคล้ายกัน แต่ต่างกัน!) 🏷️
+
+ตาม [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#function_parameters) สองคำนี้มักใช้สลับกัน แต่จริงๆ แล้วมันต่างกัน:
+
+```javascript
+// "name" และ "age" คือ Parameters (ตอนประกาศ)
+function introduce(name, age) {
+    console.log(`สวัสดี! ผมชื่อ ${name} อายุ ${age} ปี`);
+}
+
+// "Dolar" และ 25 คือ Arguments (ตอนเรียกใช้)
+introduce("Dolar", 25);
+// Output: "สวัสดี! ผมชื่อ Dolar อายุ 25 ปี"
+```
+
+### 📊 เปรียบเทียบ Parameters vs Arguments
+
+| | **Parameters** (พารามิเตอร์) | **Arguments** (อาร์กิวเมนต์) |
+|:--|:---------------------------|:---------------------------|
+| **เมื่อไหร่** | ตอน **ประกาศ** ฟังก์ชัน | ตอน **เรียกใช้** ฟังก์ชัน |
+| **ทำหน้าที่เป็น** | ตัวแปร **Placeholder** (ช่องว่าง) | ค่า **จริง** ที่ส่งเข้ามา |
+| **เปรียบเทียบ** | ช่องว่างในฟอร์ม: "ชื่อ: ____" | ข้อมูลที่กรอก: "ชื่อ: Dolar" |
+| **ตัวอย่าง** | `function greet(name)` ← `name` | `greet("Dolar")` ← `"Dolar"` |
+
+### 🚨 จำนวน Arguments ไม่ตรง Parameters จะเกิดอะไร?
+
+```javascript
+function add(a, b) {
+    console.log(`a = ${a}, b = ${b}`);
+    return a + b;
+}
+
+// ✅ ตรงพอดี
+add(10, 20);    // a = 10, b = 20 → 30
+
+// ⚠️ Arguments น้อยกว่า Parameters — ค่าที่ไม่ได้ส่งมาจะเป็น undefined
+add(10);        // a = 10, b = undefined → NaN (10 + undefined)
+
+// ⚠️ Arguments มากกว่า Parameters — ค่าส่วนเกินจะถูกเพิกเฉย
+add(10, 20, 30); // a = 10, b = 20 → 30 (30 ถูกทิ้ง)
+```
+
+> ⚠️ **JavaScript ไม่ Error** เมื่อจำนวนไม่ตรงกัน! ซึ่งอาจก่อให้เกิด Bug ที่หาได้ยากมาก
+
+### 🧠 Challenge: Missing Arguments
+```javascript
+function greet(name, greeting) {
+    console.log(`${greeting}, ${name}!`);
+}
+
+greet("Dolar"); // Output จะเป็นอะไร?
+```
+
+::: details ✨ ดูเฉลย
+**Output:** `"undefined, Dolar!"` ← เพราะ `greeting` ไม่ได้ส่งค่ามา จึงเป็น `undefined`
+นี่คือเหตุผลที่เราต้องใช้ **Default Parameters** ครับ! (หัวข้อถัดไป)
+:::
+
+---
+
+## 2. Default Parameters (ค่าเริ่มต้น — ES6) 🎁
+
+ตาม [MDN - Default Parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters) เราสามารถตั้ง **ค่าเริ่มต้น** ให้ Parameter ได้ เพื่อป้องกันกรณี Argument ไม่ถูกส่งมา:
+
+### ก่อนยุค ES6 (แบบเก่า):
+
+```javascript
+// ❌ แบบเก่า — ต้องเช็คเอง (ยุ่งยาก)
+function greet(name, greeting) {
+    // ถ้า greeting ไม่ถูกส่งมา (undefined) → ใช้ค่าเริ่มต้น
+    greeting = greeting || "Hello"; // ⚠️ มีปัญหาถ้า greeting = "" (empty string)
+    console.log(`${greeting}, ${name}!`);
+}
+```
+
+### หลังยุค ES6 (แบบใหม่):
+
+```javascript
+// ✅ ES6 Default Parameters — สะอาดกว่ามาก!
+function greet(name, greeting = "Hello") {
+    console.log(`${greeting}, ${name}!`);
+}
+
+greet("Dolar", "สวัสดี"); // "สวัสดี, Dolar!" (ใช้ค่าที่ส่งมา)
+greet("Dolar");            // "Hello, Dolar!"   (ใช้ค่า Default)
+```
+
+### กฎของ Default Parameters:
+
+```javascript
+// 1. Default ขึ้นอยู่กับ undefined เท่านั้น (ไม่ใช่ null หรือ "")
+function test(a = 10) { console.log(a); }
+
+test(undefined); // 10  ← ใช้ Default
+test(null);      // null ← ไม่ใช้ Default! (null ≠ undefined)
+test(0);         // 0    ← ไม่ใช้ Default! (0 เป็นค่าที่ถูกส่งมาจริง)
+test("");        // ""   ← ไม่ใช้ Default!
+
+// 2. Default Parameter สามารถอ้างอิง Parameter ก่อนหน้าได้!
+function createUser(name, role = "member", greeting = `Welcome, ${name}!`) {
+    console.log({ name, role, greeting });
+}
+
+createUser("Dolar");
+// { name: "Dolar", role: "member", greeting: "Welcome, Dolar!" }
+
+// 3. Default Parameter ยังเป็น Expression ที่ถูกประเมินทุกครั้งที่เรียก
+function addTimestamp(msg, date = new Date()) {
+    console.log(`[${date.toISOString()}] ${msg}`);
+}
+
+addTimestamp("Start"); // [2024-01-01T00:00:00.000Z] Start
+// (date จะเปลี่ยนทุกครั้งที่เรียก)
+```
+
+### 📊 Default Parameters Quick Reference
+
+| เรียกแบบนี้ | `a` ได้ค่า | ใช้ Default? |
+|:-----------|:----------|:------------|
+| `test(5)` | `5` | ❌ ใช้ค่าที่ส่งมา |
+| `test()` | `10` | ✅ ใช้ Default |
+| `test(undefined)` | `10` | ✅ ใช้ Default |
+| `test(null)` | `null` | ❌ `null` ≠ `undefined` |
+| `test(0)` | `0` | ❌ `0` เป็นค่าจริง |
+| `test("")` | `""` | ❌ `""` เป็นค่าจริง |
+| `test(false)` | `false` | ❌ `false` เป็นค่าจริง |
+
+### 🧠 Challenge: Default Design
+ออกแบบฟังก์ชัน `createProduct(name, price, currency)` ที่:
+- `name` ต้องระบุเสมอ (ไม่มี Default)
+- `price` มี Default เป็น `0`
+- `currency` มี Default เป็น `"THB"`
+
+```javascript
+createProduct("iPhone");           // { name: "iPhone", price: 0, currency: "THB" }
+createProduct("MacBook", 49990);   // { name: "MacBook", price: 49990, currency: "THB" }
+createProduct("iPad", 999, "USD"); // { name: "iPad", price: 999, currency: "USD" }
+```
+
+::: details ✨ ดูเฉลย
+```javascript
+function createProduct(name, price = 0, currency = "THB") {
+    return { name, price, currency };
+}
+
+console.log(createProduct("iPhone"));           // { name: "iPhone", price: 0, currency: "THB" }
+console.log(createProduct("MacBook", 49990));   // { name: "MacBook", price: 49990, currency: "THB" }
+console.log(createProduct("iPad", 999, "USD")); // { name: "iPad", price: 999, currency: "USD" }
+```
+**หลักการ:** Parameter ที่ใช้บ่อย/สำคัญ → ไว้ข้างหน้า, Parameter ที่มี Default → ไว้ข้างหลัง
+:::
+
+---
+
+## 3. Rest Parameters (รวมร่าง ...args — ES6) 📦
+
+ตาม [MDN - Rest Parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters) Rest Parameter ใช้ `...` (3 จุด) เพื่อ **รวม Arguments ที่เหลือทั้งหมด** เข้าเป็น **Array**:
+
+```javascript
+// "...numbers" รวม Arguments ทุกตัวเข้าเป็น Array
+function sum(...numbers) {
+    console.log(numbers);        // [1, 2, 3, 4, 5] ← เป็น Array!
+    console.log(typeof numbers); // "object" (Array)
+    console.log(Array.isArray(numbers)); // true
+
+    let total = 0;
+    for (const num of numbers) {
+        total += num;
+    }
+    return total;
+}
+
+console.log(sum(1, 2, 3));       // 6
+console.log(sum(10, 20, 30, 40, 50)); // 150
+console.log(sum());              // 0 (numbers = [])
+```
+
+### ใช้ Rest Parameter ร่วมกับ Regular Parameters:
+
+```javascript
+// Rest Parameter ต้องอยู่ตัวสุดท้ายเสมอ!
+function introduce(greeting, ...names) {
+    console.log(`${greeting}: ${names.join(", ")}`);
+}
+
+introduce("สวัสดี", "Dolar", "Somchai", "Somsak");
+// Output: "สวัสดี: Dolar, Somchai, Somsak"
+
+// ❌ Error: Rest Parameter ต้องอยู่สุดท้าย!
+// function bad(...first, last) {} // SyntaxError!
+```
+
+### 📊 Rest Parameters vs `arguments` Object
+
+ตาม MDN, ก่อน ES6 เราใช้ `arguments` object แต่มันมีปัญหาหลายอย่าง:
+
+| คุณสมบัติ | `...rest` (ES6) | `arguments` (เก่า) |
+|:----------|:---------------|:-------------------|
+| **ชนิดข้อมูล** | ✅ Array จริงๆ | ❌ Array-like Object |
+| **ใช้ .map(), .filter() ได้ไหม** | ✅ ได้ทันที | ❌ ต้อง Convert ก่อน |
+| **ตั้งชื่อได้ไหม** | ✅ ตั้งชื่ออะไรก็ได้ | ❌ ชื่อ `arguments` เท่านั้น |
+| **ใช้กับ Arrow Function ได้ไหม** | ✅ ได้ | ❌ ไม่ได้ |
+| **เลือกได้ไหมว่าจะ Collect ตัวไหน** | ✅ ใส่ร่วมกับ Regular Params ได้ | ❌ ได้ทุกตัวเท่านั้น |
+
+```javascript
+// ❌ แบบเก่า: arguments (ยุ่งยาก)
+function oldSum() {
+    // arguments ไม่ใช่ Array จริง! ต้อง Convert ก่อน
+    const args = Array.from(arguments);
+    return args.reduce((total, n) => total + n, 0);
+}
+
+// ✅ แบบใหม่: Rest Parameter (สะอาด)
+const newSum = (...numbers) => numbers.reduce((total, n) => total + n, 0);
+
+console.log(oldSum(1, 2, 3)); // 6
+console.log(newSum(1, 2, 3)); // 6 (โค้ดสั้นกว่ามาก!)
+```
+
+### 🧠 Challenge: Flexible Logger
+สร้างฟังก์ชัน `log(level, ...messages)` ที่:
+- `level` คือระดับ Log เช่น "INFO", "WARN", "ERROR"
+- `...messages` คือข้อความหลายตัวที่จะถูกรวมเป็นประโยคเดียว
+
+```javascript
+log("INFO", "Server", "started", "on port", 3000);
+// Output: "[INFO] Server started on port 3000"
+
+log("ERROR", "File", "not found!");
+// Output: "[ERROR] File not found!"
+```
+
+::: details ✨ ดูเฉลย
+```javascript
+function log(level, ...messages) {
+    console.log(`[${level}] ${messages.join(" ")}`);
+}
+
+log("INFO", "Server", "started", "on port", 3000);
+// "[INFO] Server started on port 3000"
+
+log("ERROR", "File", "not found!");
+// "[ERROR] File not found!"
+
+log("WARN", "Memory usage:", "85%");
+// "[WARN] Memory usage: 85%"
+```
+**จุดสำคัญ:**
+- `level` จับ Argument ตัวแรก
+- `...messages` จับ **ส่วนที่เหลือทั้งหมด** เป็น Array
+- `.join(" ")` เอามารวมกันด้วย Space
+:::
+
+---
+
+## 4. The `return` Statement (ประตูทางออก) 🚪
+
+ตาม [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/return) `return` ทำ 2 อย่าง:
+1. **ส่งค่ากลับ** ออกจากฟังก์ชัน
+2. **หยุดการทำงาน** ของฟังก์ชันทันที (โค้ดหลัง `return` จะไม่ถูกรัน)
+
+```javascript
+function divide(a, b) {
+    // Guard Clause: ดักกรณีหาร 0 แล้ว Return ออกทันที
+    if (b === 0) {
+        return "Error: Cannot divide by zero!"; // ← ออกจากฟังก์ชันเลย!
+    }
+
+    // ถ้า b ≠ 0 จึงค่อยคำนวณ
+    const result = a / b;
+    return result;
+
+    // ⚠️ Dead Code: โค้ดข้างล่างนี้จะ "ไม่มีวัน" ถูกรัน!
+    console.log("This will never run!");
+}
+
+console.log(divide(10, 2)); // 5
+console.log(divide(10, 0)); // "Error: Cannot divide by zero!"
+```
+
+### ถ้าไม่มี `return` จะได้อะไร?
+
+```javascript
+function greet(name) {
+    console.log(`Hello, ${name}!`); // แค่พิมพ์ออกจอ
+    // ไม่มี return → JS จะ return undefined แทน
+}
+
+const result = greet("Dolar"); // "Hello, Dolar!" (พิมพ์ออกจอ)
+console.log(result);           // undefined ← ผลลัพธ์คือ undefined!
+```
+
+### 📊 `console.log()` vs `return` — ต่างกัน!
+
+นี่คือ **ข้อผิดพลาดที่พบบ่อยที่สุด** ของผู้เริ่มต้น:
+
+| | `console.log()` | `return` |
+|:--|:-----------------|:---------|
+| **ทำอะไร** | **แสดงผล** ข้อมูลบนจอ | **ส่งค่า** กลับจากฟังก์ชัน |
+| **ใครเห็น** | มนุษย์ (ดูบน Console) | โค้ด (เก็บใส่ตัวแปร, ใช้ต่อ) |
+| **เปรียบเทียบ** | เสียง "สั่งอาหารแล้วครับ!" | จานอาหารจริงๆ ที่เสิร์ฟมา |
+| **Return ค่า?** | `undefined` | ค่าที่ระบุ |
+
+```javascript
+// ❌ ใช้ console.log แทน return (Bug ที่พบบ่อย!)
+function addBad(a, b) {
+    console.log(a + b); // แค่พิมพ์ออกจอ ไม่ได้ส่งค่ากลับ
+}
+
+// ✅ ใช้ return ส่งค่ากลับ
+function addGood(a, b) {
+    return a + b;
+}
+
+const x = addBad(2, 3);  // 5 (พิมพ์ออกจอ) แต่ x = undefined!
+const y = addGood(2, 3); // y = 5 ← เอาไปใช้ต่อได้!
+
+console.log(y * 10); // 50 ✅
+console.log(x * 10); // NaN ❌ (undefined * 10 = NaN)
+```
+
+### Multiple Returns (Guard Clauses Pattern):
+
+```javascript
+// ✅ Best Practice: Guard Clause — ดักกรณีพิเศษไว้ข้างบน
+function calculateGrade(score) {
+    if (score < 0 || score > 100) return "Invalid score";
+    if (score >= 80) return "A";
+    if (score >= 70) return "B";
+    if (score >= 60) return "C";
+    if (score >= 50) return "D";
+    return "F"; // Default case อยู่ล่างสุด
+}
+
+console.log(calculateGrade(85));  // "A"
+console.log(calculateGrade(42));  // "F"
+console.log(calculateGrade(-5));  // "Invalid score"
+console.log(calculateGrade(150)); // "Invalid score"
+```
+
+### Return Multiple Values ด้วย Object หรือ Array:
+
+```javascript
+// Return Object (นิยมมาก — อ่านง่าย)
+function getMinMax(numbers) {
+    return {
+        min: Math.min(...numbers),
+        max: Math.max(...numbers),
+    };
+}
+
+const { min, max } = getMinMax([5, 1, 9, 3, 7]);
+console.log(min, max); // 1, 9
+
+// Return Array (ใช้กับ Destructuring)
+function divide(a, b) {
+    const quotient = Math.floor(a / b);
+    const remainder = a % b;
+    return [quotient, remainder];
+}
+
+const [q, r] = divide(17, 5);
+console.log(`17 ÷ 5 = ${q} เศษ ${r}`); // "17 ÷ 5 = 3 เศษ 2"
+```
+
+### 🧠 Challenge: Return vs Console
+โค้ดนี้มี Bug อยู่ จงหาและแก้ไข:
+```javascript
+function getArea(width, height) {
+    console.log(width * height);
+}
+
+const area = getArea(5, 10);
+const volume = area * 3;
+console.log(`Volume: ${volume}`);
+```
+
+::: details ✨ ดูเฉลย
+**Bug:** `getArea` ใช้ `console.log` แทน `return` ทำให้ `area = undefined` → `volume = NaN`
+
+**แก้ไข:**
+```javascript
+function getArea(width, height) {
+    return width * height; // ← เปลี่ยนจาก console.log เป็น return
+}
+
+const area = getArea(5, 10); // 50
+const volume = area * 3;     // 150
+console.log(`Volume: ${volume}`); // "Volume: 150" ✅
+```
+:::
+
+---
+
+## 5. Pass-by-Value vs Pass-by-Reference (Primitive vs Object) 🔀
+
+ตาม [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#function_declarations) เมื่อส่ง Argument เข้าไปในฟังก์ชัน:
+- **Primitive** (String, Number, Boolean) → ส่ง **"สำเนา" (Copy)** เข้าไป — แก้ในฟังก์ชันไม่กระทบตัวเดิม
+- **Object/Array** → ส่ง **"ที่อยู่" (Reference)** เข้าไป — แก้ในฟังก์ชัน **กระทบตัวเดิม!**
+
+```javascript
+// ============ Primitive: Pass-by-Value ============
+function doubleValue(num) {
+    num = num * 2;
+    console.log("Inside:", num); // Inside: 20
+}
+
+let myNum = 10;
+doubleValue(myNum);
+console.log("Outside:", myNum); // Outside: 10  ← ไม่เปลี่ยน!
+
+// ============ Object: Pass-by-Reference ============
+function changeName(obj) {
+    obj.name = "New Name";
+    console.log("Inside:", obj.name); // Inside: New Name
+}
+
+const myCar = { name: "Honda" };
+changeName(myCar);
+console.log("Outside:", myCar.name); // Outside: New Name ← เปลี่ยนด้วย!
+```
+
+> **⚠️ คำเตือน:** การส่ง Object เข้าฟังก์ชันแล้วแก้ไขข้างใน ถือเป็น **Side Effect** ที่ทำให้โค้ด Debug ยาก ถ้าเป็นไปได้ควร **Copy ก่อนแก้** (เรื่องนี้เจาะลึกในบท [05-3: Reference vs Value](/05-03-reference-vs-value))
+
+### 🧠 Challenge: Predict the Output
+```javascript
+function process(num, arr) {
+    num = num + 100;
+    arr.push(num);
+}
+
+let x = 5;
+const myArr = [1, 2, 3];
+
+process(x, myArr);
+
+console.log(x);     // (1)?
+console.log(myArr); // (2)?
+```
+
+::: details ✨ ดูเฉลย
+1. **`5`** — `x` เป็น Primitive (Number) → ส่ง Copy เข้าไป → แก้ไขข้างในไม่กระทบข้างนอก
+2. **`[1, 2, 3, 105]`** — `myArr` เป็น Array (Object) → ส่ง Reference → `.push(105)` กระทบตัวเดิม!
+
+**`num` ข้างในฟังก์ชันเป็น 105** (5 + 100) แล้ว `arr.push(105)` จึงเพิ่ม 105 เข้าไป
+:::
+
+---
+
+## 6. Final Challenge: The Data Pipe 🔧
+
+จงสร้างชุดฟังก์ชันต่อไปนี้เพื่อ "ประมวลผลข้อมูลนักเรียน":
+
+```javascript
+// 1. สร้าง createStudent(name, score) ที่ return Object { name, score, grade }
+//    - ใช้ calculateGrade(score) จากฟังก์ชันที่ 2
+
+// 2. สร้าง calculateGrade(score) ที่:
+//    - score >= 80 → "A"
+//    - score >= 60 → "B"
+//    - ที่เหลือ → "F"
+
+// 3. สร้าง summarize(...students) ที่:
+//    - รับ Student Objects หลายตัว {name, score, grade}
+//    - return Object: { count, average, highest }
+
+// ตัวอย่าง:
+const s1 = createStudent("Dolar", 90);
+const s2 = createStudent("Somchai", 65);
+const s3 = createStudent("Somsak", 45);
+
+console.log(summarize(s1, s2, s3));
+// { count: 3, average: "66.67", highest: "Dolar" }
+```
+
+::: details ✨ ดูเฉลย
+```javascript
+function calculateGrade(score) {
+    if (score >= 80) return "A";
+    if (score >= 60) return "B";
+    return "F";
+}
+
+function createStudent(name, score) {
+    return {
+        name,
+        score,
+        grade: calculateGrade(score),
+    };
+}
+
+function summarize(...students) {
+    const count = students.length;
+
+    // คำนวณค่าเฉลี่ย
+    const totalScore = students.reduce((sum, s) => sum + s.score, 0);
+    const average = (totalScore / count).toFixed(2);
+
+    // หาคนที่ได้คะแนนสูงสุด
+    const highest = students.reduce((best, s) =>
+        s.score > best.score ? s : best
+    ).name;
+
+    return { count, average, highest };
+}
+
+const s1 = createStudent("Dolar", 90);   // { name: "Dolar", score: 90, grade: "A" }
+const s2 = createStudent("Somchai", 65); // { name: "Somchai", score: 65, grade: "B" }
+const s3 = createStudent("Somsak", 45);  // { name: "Somsak", score: 45, grade: "F" }
+
+console.log(summarize(s1, s2, s3));
+// { count: 3, average: "66.67", highest: "Dolar" }
+```
+
+**สิ่งที่ได้ฝึก:**
+- **Default Parameters** ไม่จำเป็นในข้อนี้ แต่จะเพิ่มได้ (เช่น Default grade)
+- **Rest Parameters** (...students) ช่วยรับจำนวนนักเรียนไม่จำกัด
+- **Return Object** ส่งผลลัพธ์หลายค่ากลับมาในคราวเดียว
+- **Pure Function** ทุกฟังก์ชันไม่มี Side Effect
+:::
+
+---
+
+> **📖 คำศัพท์เทคนิค (Glossary):**
+> *   **Parameter:** ตัวแปร Placeholder ที่ประกาศในวงเล็บตอนสร้างฟังก์ชัน
+> *   **Argument:** ค่าจริงที่ถูกส่งเข้ามาตอนเรียกใช้ฟังก์ชัน
+> *   **Default Parameter:** ค่าเริ่มต้นที่กำหนดให้ Parameter เพื่อป้องกัน `undefined`
+> *   **Rest Parameter (`...`):** Syntax ที่รวม Arguments ที่เหลือเข้าเป็น Array
+> *   **`arguments` object:** Object คล้าย Array ที่เก็บ Arguments ทั้งหมด (แบบเก่า ไม่แนะนำ)
+> *   **`return` statement:** คำสั่งส่งค่ากลับจากฟังก์ชัน และหยุดการทำงานทันที
+> *   **Guard Clause:** Pattern การดักกรณีพิเศษ (`return` ออกเร็ว) เพื่อลด Nesting ของ `if-else`
+> *   **Dead Code:** โค้ดที่ไม่มีวันถูกรัน (อยู่หลัง `return` ที่ไม่มีเงื่อนไข)
+> *   **Pass-by-Value:** การส่ง "สำเนา" ของค่าเข้าฟังก์ชัน (Primitive ทำแบบนี้)
+> *   **Pass-by-Reference:** การส่ง "ที่อยู่" ของข้อมูลเข้าฟังก์ชัน (Object/Array ทำแบบนี้)
+> *   **Side Effect:** ผลกระทบที่เกิดขึ้นนอกฟังก์ชัน เช่น แก้ไขตัวแปร Global
+> *   **Destructuring:** การแยกค่าจาก Array/Object ออกมาเป็นตัวแปร เช่น `const { min, max } = ...`
+
+---
+👉 **[ไปต่อ: 04-3 - Scope & Closures](/04-03-scope-closures)**
