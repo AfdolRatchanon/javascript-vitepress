@@ -52,7 +52,7 @@ features:
 |:------:|:---------|:--------:|
 | 1 | **Node.js Introduction** — V8, npm, REPL | 🎯 CLI Tool App |
 | 2 | **Modules System** — CommonJS vs ESM | 📦 Utility Package |
-| 3 | **File System & Path** — อ่าน/เขียนไฟล์ | 📁 File Manager CLI |
+| 3 | **[File System & Path](/node/03-01-filesystem)** — อ่าน/เขียนไฟล์ | [📁 File Manager CLI](/node/03-project-file-manager) |
 | 4 | **HTTP & Server** — Request/Response | 🌐 Mini HTTP Server |
 | 5 | **Express.js** — Routing, Middleware | 🛣️ Express Routes App |
 | 6 | **REST API Design** — CRUD, JSON API | 📡 Todo API |

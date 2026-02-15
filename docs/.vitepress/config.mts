@@ -6,6 +6,8 @@ export default defineConfig({
     description: "A comprehensive, bilingual JavaScript course from zero to hero.",
     lang: 'th-TH',
     cleanUrls: true,
+    ignoreDeadLinks: true,
+    base: '/javascript-vitepress/',
     markdown: {
         config: (md) => {
             md.use(mathjax3)
@@ -152,6 +154,14 @@ export default defineConfig({
                         { text: '2.1 - CommonJS vs ESM', link: '/node/02-01-commonjs-esm' },
                         { text: '2.2 - npm Packages', link: '/node/02-02-npm-packages' },
                         { text: '📦 Project: Utility Package', link: '/node/02-project-utility-package' }
+                    ]
+                },
+                {
+                    text: 'Module 3: File System & Path',
+                    items: [
+                        { text: '3.1 - File System (fs)', link: '/node/03-01-filesystem' },
+                        { text: '3.2 - Path & Streams', link: '/node/03-02-path-streams' },
+                        { text: '📁 Project: File Manager', link: '/node/03-project-file-manager' }
                     ]
                 },
             ]
