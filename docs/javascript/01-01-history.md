@@ -35,20 +35,6 @@ Timeline (ไทม์ไลน์):
 1996:  📄 Netscape ส่ง JavaScript ให้ ECMA International เพื่อทำ "มาตรฐาน"
 ```
 
-### 🧠 Challenge: History Quiz
-JavaScript ถูกสร้างขึ้นภายในเวลากี่วัน?
-
-A) 30 วัน   
-
-B) 365 วัน   
-
-C) 10 วัน   
-
-D) 100 วัน
-
-::: details ✨ ดูเฉลย
-**ตอบ:** ข้อ **C — 10 วัน!** ครับ สร้างเร็วมากจนเป็นตำนานมาถึงทุกวันนี้
-:::
 
 ---
 
@@ -76,13 +62,6 @@ D) 100 วัน
 
 > **เปรียบเทียบ:** เหมือนสมัยที่ชาร์จมือถือ แต่ละยี่ห้อใช้ **สายชาร์จคนละแบบ** — Apple ใช้ Lightning, Samsung ใช้ Micro-USB, Nokia ใช้แบบอื่นอีก จนมาถึงยุค **USB-C** (= ECMAScript) ที่ทำให้ทุกอย่างใช้สายเดียวกันได้!
 
-### 🧠 Challenge: Why Standards Matter?
-ถ้าไม่มี "มาตรฐาน" จะเกิดปัญหาอะไรบ้าง? ลองยก **3 ปัญหา** ที่คุณคิดออก:
-::: details ✨ ตัวอย่างคำตอบ
-1. **ต้องเขียนโค้ดหลายชุด** — ชุดสำหรับ Browser A ชุดสำหรับ Browser B
-2. **เว็บอาจพังบน Browser บางตัว** — ผู้ใช้เห็นไม่เหมือนกัน
-3. **ไม่มีการพัฒนาร่วมกัน** — ต่างคนต่างคิด Feature ขึ้นมาเอง
-:::
 
 ---
 
@@ -134,16 +113,6 @@ Stage 4: Finished ✅    → "เสร็จสมบูรณ์!" (บรร�
 
 > **⭐ ES6 (ES2015) คือจุดเปลี่ยนที่สำคัญที่สุด** — มันเปลี่ยน JavaScript จาก "ภาษาของเล่น" เป็น "ภาษาระดับ Enterprise" ครับ!
 
-### 🧠 Challenge: ECMA vs JS
-ข้อใดเปรียบเทียบความสัมพันธ์ได้ **ถูกต้อง** ที่สุด?
-A) JavaScript คือแม่ของ ECMAScript
-B) ECMAScript คือ "สเปค" ส่วน JavaScript คือภาษาที่ "ทำตามสเปค"
-C) ECMAScript กับ JavaScript คือภาษาคนละภาษา
-D) ECMAScript เป็นแค่ชื่อเก่าของ JavaScript
-
-::: details ✨ ดูเฉลย
-**ตอบ: B** ครับ! ECMAScript คือ "กฎเหล็ก" ส่วน JavaScript คือภาษาที่ "ทำตามกฎ" นั้น
-:::
 
 ---
 
@@ -205,17 +174,6 @@ Source Code ("let x = 5;")
 
 > **เปรียบเทียบ:** JIT เหมือน **"ล่ามแปลภาษา"** ที่แรกๆ แปลทีละคำ (ช้า) แต่พอเจอประโยคที่พูดบ่อยๆ ก็ **จดจำไว้เลย** (เร็ว!) เช่น "Where is the bathroom?" ไม่ต้องแปลทีละคำอีกต่อไป
 
-### 🧠 Challenge: Engine Matching
-จับคู่ Engine กับ Browser:
-1. V8 — ?
-2. SpiderMonkey — ?
-3. JavaScriptCore — ?
-
-::: details ✨ ดูเฉลย
-1. V8 — **Chrome** (และ Node.js, Edge ใหม่)
-2. SpiderMonkey — **Firefox**
-3. JavaScriptCore — **Safari**
-:::
 
 ---
 
@@ -228,13 +186,13 @@ JavaScript ไม่ได้แค่ "ทำเว็บ" อีกต่อ�
                │       JavaScript Ecosystem      │
                └─────────────────┬───────────────┘
                                  │
-        ┌────────┬───────┬───────┼───────┬────────┬────────┐
-        ▼        ▼       ▼       ▼       ▼        ▼        ▼
-    Frontend  Backend  Mobile  Desktop  Game    AI/ML   IoT
-    React    Node.js   React   Electron Three.js TensorFlow.js
-    Vue      Express   Native  Tauri           Brain.js
-    Angular  Fastify  
-    Svelte   Nest.js  
+        ┌────────┬───────┬───────┼────────┬──────────┬──────────────┐
+        ▼        ▼       ▼       ▼        ▼          ▼              ▼
+    Frontend  Backend   Mobile  Desktop   Game      AI/ML           IoT
+    React     Node.js   React   Electron  Three.js  TensorFlow.js
+    Vue       Express   Native  Tauri               Brain.js
+    Angular   Fastify  
+    Svelte    Nest.js  
 ```
 
 | ด้าน | เทคโนโลยี | ตัวอย่าง |
@@ -250,28 +208,69 @@ JavaScript ไม่ได้แค่ "ทำเว็บ" อีกต่อ�
 
 ---
 
-## 7. Final Challenge: The Timeline Builder ⏳
+## 7. Challenges 🏆
 
-### 🎯 Challenge: เรียงลำดับ
-จงเรียงลำดับเหตุการณ์ต่อไปนี้จากเก่าไปใหม่:
+ตรวจสอบความเข้าใจกันหน่อยครับ กับโจทย์ 6 ข้อที่ตรงกับ 6 หัวข้อที่เราเรียนไป:
 
-A) ES6 ถูกปล่อยออกมา
+### 🎯 Challenge 1: The 10-Day Legend
+**หัวข้อ:** 1. The Birth of JavaScript
 
-B) Brendan Eich สร้าง JavaScript
-
-C) Node.js ถูกสร้างขึ้น (2009)
-
-D) jQuery เปลี่ยนวงการ (2006)
-
-E) TypeScript ถูกสร้างโดย Microsoft (2012)
-
+**โจทย์:** JavaScript ถูกสร้างขึ้นครั้งแรกในระยะเวลากี่วัน? และชื่อแรกสุดของมันคืออะไร? (ก่อนจะชื่อ JavaScript)
 ::: details ✨ ดูเฉลย
-**B → D → C → E → A**
-1. **B — 1995:** Brendan Eich สร้าง JavaScript (10 วัน!)
-2. **D — 2006:** jQuery ทำให้เขียน JS ข้าม Browser ง่ายขึ้น
-3. **C — 2009:** Ryan Dahl สร้าง Node.js (JS บน Server!)
-4. **E — 2012:** Microsoft สร้าง TypeScript (JS + Type Safety)
-5. **A — 2015:** ES6 (ES2015) — จุดเปลี่ยนครั้งใหญ่!
+**10 วัน** ครับ! และชื่อแรกคือ **Mocha** (ก่อนเปลี่ยนเป็น LiveScript และ JavaScript)
+:::
+
+### 🎯 Challenge 2: Why Standards?
+**หัวข้อ:** 2. The Browser Wars
+
+**โจทย์:** ปัญหาหลักที่เกิดขึ้นในยุค "Browser Wars" คืออะไร? และทำไมเราถึงต้องการมาตรฐาน (Standardization)?
+::: details ✨ ดูเฉลย
+ปัญหาคือ **"Code เดียวกันรันได้ไม่เหมือนกันในแต่ละ Browser"** ทำให้ Developer ทำงานยากมาก มาตรฐานจึงช่วยให้ทุก Browser ทำงานตรงกันครับ
+:::
+
+### 🎯 Challenge 3: Recipe vs Dish
+**หัวข้อ:** 3. ECMA International
+
+**โจทย์:** จงเติมคำในช่องว่าง: "ECMAScript เปรียบเสมือน _____ ส่วน JavaScript เปรียบเสมือน _____"
+::: details ✨ ดูเฉลย
+ECMAScript เปรียบเสมือน **สูตรอาหาร (Recipe/Specification)**
+JavaScript เปรียบเสมือน **อาหารที่ปรุงจริง (Dish/Implementation)**
+:::
+
+### 🎯 Challenge 4: Not The Same
+**หัวข้อ:** 4. Java vs JavaScript
+
+**โจทย์:** บอกความแตกต่างระหว่าง Java และ JavaScript มาอย่างน้อย 2 ข้อ
+::: details ✨ ดูเฉลย
+1. **Typing:** Java เป็น Statically Typed (ต้องประกาศ Type), JS เป็น Dynamically Typed
+2. **การรัน:** Java ต้อง Compile ก่อน, JS แปลงโค้ดขณะรัน (Interpreted/JIT)
+3. **Platform:** Java รันบน JVM, JS รันบน Browser/Node.js
+:::
+
+### 🎯 Challenge 5: Engine Matching
+**หัวข้อ:** 5. The JavaScript Engine
+
+**โจทย์:** จับคู่ Browser กับ Engine ให้ถูกต้อง:
+- Chrome ใช้ _____
+- Firefox ใช้ _____
+- Safari ใช้ _____
+::: details ✨ ดูเฉลย
+- Chrome ใช้ **V8**
+- Firefox ใช้ **SpiderMonkey**
+- Safari ใช้ **JavaScriptCore**
+:::
+
+### 🎯 Challenge 6: The Swiss Army Knife
+**หัวข้อ:** 6. JavaScript Today
+
+**โจทย์:** ยกตัวอย่างการนำ JavaScript ไปใช้ในงานที่ **ไม่ใช่** Web Frontend มา 2 ประเภท
+::: details ✨ ดูเฉลย
+เลือกตอบได้เลยครับ:
+- **Backend:** Node.js
+- **Mobile App:** React Native
+- **Desktop App:** Electron
+- **AI/ML:** TensorFlow.js
+- **IoT:** Johnny-Five
 :::
 
 ---

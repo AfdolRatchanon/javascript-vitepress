@@ -231,54 +231,58 @@ console.log(names); // ["Dolar", "Somchai"]
 
 ## 6. Challenges 🏆
 
-### 🎯 Challenge 1: Basic Destructure
-```javascript
-const book = { title: "JS Guide", author: "MDN", pages: 500, year: 2024 };
-```
-ดึง `title` กับ `author` ออกมาด้วย Destructuring:
+## 6. Challenges 🏆
 
+ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: Unbox the Object
+**หัวข้อ:** 1. Object Destructuring
+
+**โจทย์:** มี Object `const hero = { name: "Batman", power: "Rich" }` จงแกะ `name` และ `power` ออกมาเป็นตัวแปร
 ::: details ✨ ดูเฉลย
 ```javascript
-const { title, author } = book;
-console.log(title);  // "JS Guide"
-console.log(author); // "MDN"
+const { name, power } = hero;
+console.log(name, power);
 ```
 :::
 
-### 🎯 Challenge 2: Nested
-```javascript
-const config = {
-    server: { host: "localhost", port: 3000 },
-    database: { name: "mydb", credentials: { user: "admin", pass: "1234" } }
-};
-```
-ดึง `host`, `port`, `user`, `pass` ออกมา:
+### 🎯 Challenge 2: Color Picker
+**หัวข้อ:** 2. Array Destructuring
 
+**โจทย์:** จาก `const colors = ["Red", "Green", "Blue"]` จงแกะเอาเฉพาะ "Red" และ "Blue" ออกมา (ข้าม Green)
 ::: details ✨ ดูเฉลย
 ```javascript
-const {
-    server: { host, port },
-    database: { credentials: { user, pass } }
-} = config;
-
-console.log(host); // "localhost"
-console.log(port); // 3000
-console.log(user); // "admin"
-console.log(pass); // "1234"
+const [red, , blue] = colors;
 ```
 :::
 
-### 🎯 Challenge 3: Function Parameter
-สร้าง Function `formatAddress({ street, city, zip })` ที่ return string:
+### 🎯 Challenge 3: configFunc
+**หัวข้อ:** 3. Function Destructuring
 
+**โจทย์:** สร้าง Function `connect({ host, port })` ที่รับ Object แล้วพิมพ์ "Connecting to host:port" ถ้าไม่ส่ง port มาให้ใช้ default คือ 80
 ::: details ✨ ดูเฉลย
 ```javascript
-function formatAddress({ street, city, zip = "10000" }) {
-    return `${street}, ${city} ${zip}`;
+function connect({ host, port = 80 }) {
+    console.log(`Connecting to ${host}:${port}`);
 }
+```
+:::
 
-console.log(formatAddress({ street: "123 ถนนสุขุมวิท", city: "กรุงเทพ" }));
-// "123 ถนนสุขุมวิท, กรุงเทพ 10000"
+### 🎯 Challenge 4: Syntax Check
+**หัวข้อ:** 4. Object vs Array
+
+**โจทย์:** ถ้าข้อมูลเป็น `{ x: 10, y: 20 }` เราสามารถใช้ Array Destructuring `const [x, y] = point` ได้หรือไม่? เพราะอะไร?
+::: details ✨ ดูเฉลย
+**ไม่ได้ครับ** เพราะ Object ไม่มีการเรียงลำดับ (Not Iterable) ต้องใช้ `{ }` ในการแกะเท่านั้น
+:::
+
+### 🎯 Challenge 5: API Extractor
+**หัวข้อ:** 5. Real-World Use Case
+
+**โจทย์:** สมมติ `fetch` ได้ข้อมูล `{ data: { user: { id: 1, name: "A" } } }` จงแกะเอา `name` ออกมาในบรรทัดเดียว
+::: details ✨ ดูเฉลย
+```javascript
+const { data: { user: { name } } } = response;
 ```
 :::
 

@@ -300,67 +300,64 @@ window.addEventListener("storage", (event) => {
 
 ## 8. Challenges 🏆
 
-### 🎯 Challenge 1: Visit Counter
-สร้างระบบนับจำนวนครั้งที่เข้าเว็บ พร้อมแสดงทั้งครั้งปัจจุบันและครั้งล่าสุด:
+## 8. Challenges 🏆
 
+ทดสอบความเข้าใจกับโจทย์ 7 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: Permanent Record
+**หัวข้อ:** 1. localStorage
+
+**โจทย์:** คำสั่งใดใช้ลบข้อมูล *ทั้งหมด* ใน localStorage?
 ::: details ✨ ดูเฉลย
-```javascript
-let visits = parseInt(localStorage.getItem("visits") || "0");
-visits++;
-localStorage.setItem("visits", visits.toString());
-localStorage.setItem("lastVisit", new Date().toISOString());
-
-const lastVisit = localStorage.getItem("lastVisit");
-console.log(`🎉 คุณเข้าเว็บครั้งที่ ${visits}`);
-console.log(`📅 เข้าล่าสุด: ${lastVisit ? new Date(lastVisit).toLocaleString("th-TH") : "ครั้งแรก!"}`);
-```
+`localStorage.clear()`
 :::
 
-### 🎯 Challenge 2: Theme Persistence
-สร้างปุ่มสลับ Dark/Light mode ที่จำ Theme ได้:
+### 🎯 Challenge 2: Object Puzzle
+**หัวข้อ:** 2. String Only
 
+**โจทย์:** ถ้า `localStorage.setItem("user", {name:"A"})` แล้วอ่านค่ากลับมาจะได้อะไร?
 ::: details ✨ ดูเฉลย
-```javascript
-// ตอนโหลดหน้า
-const savedTheme = localStorage.getItem("theme") || "light";
-document.body.classList.add(savedTheme);
-
-function toggleTheme() {
-    const current = document.body.classList.contains("dark") ? "dark" : "light";
-    const next = current === "dark" ? "light" : "dark";
-
-    document.body.classList.remove(current);
-    document.body.classList.add(next);
-    localStorage.setItem("theme", next);
-
-    console.log(`🎨 Theme: ${next}`);
-}
-```
+ได้ string `"[object Object]"` ครับ (ต้องใช้ `JSON.stringify` ก่อนเก็บเสมอ!)
 :::
 
-### 🎯 Challenge 3: High Score Tracker
-สร้างระบบเก็บ Top 5 คะแนน:
+### 🎯 Challenge 3: Session Secret
+**หัวข้อ:** 3. sessionStorage
 
+**โจทย์:** ข้อมูลใน `sessionStorage` จะหายไปเมื่อไหร่?
 ::: details ✨ ดูเฉลย
-```javascript
-function addScore(name, score) {
-    const scores = JSON.parse(localStorage.getItem("highScores") || "[]");
-    scores.push({ name, score, date: new Date().toISOString() });
-    scores.sort((a, b) => b.score - a.score); // เรียงจากมากไปน้อย
-    const top5 = scores.slice(0, 5); // เก็บแค่ Top 5
-    localStorage.setItem("highScores", JSON.stringify(top5));
-    return top5;
-}
+เมื่อ **ปิด Tab** หรือ Browser ครับ
+:::
 
-function getHighScores() {
-    return JSON.parse(localStorage.getItem("highScores") || "[]");
-}
+### 🎯 Challenge 4: Storage Wars
+**หัวข้อ:** 4. Comparison
 
-addScore("Dolar", 950);
-addScore("Somchai", 870);
-addScore("Malee", 1020);
-console.table(getHighScores());
-```
+**โจทย์:** ถ้าเปิด Tab ใหม่ใน Domain เดิม `sessionStorage` จะตามไปด้วยหรือไม่?
+::: details ✨ ดูเฉลย
+**ไม่ตามไป** ครับ (`sessionStorage` แยกตาม Tab, แต่ `localStorage` แชร์กัน)
+:::
+
+### 🎯 Challenge 5: Safe Load
+**หัวข้อ:** 5. Helpers
+
+**โจทย์:** ทำไมเราควรใช้ `try/catch` เวลา `JSON.parse` ข้อมูลจาก Storage?
+::: details ✨ ดูเฉลย
+เพราะข้อมูลอาจจะ **ไม่ถูกต้อง** (Corrupted) หรือไม่ใช่ JSON ซึ่งจะทำให้ App พังได้ครับ
+:::
+
+### 🎯 Challenge 6: Dark Mode
+**หัวข้อ:** 6. Use Cases
+
+**โจทย์:** ทำไมเราควรเก็บ Theme ไว้ใน `localStorage` แทน `sessionStorage`?
+::: details ✨ ดูเฉลย
+เพื่อให้ User ปิด Browser แล้วเปิดใหม่ **Theme ก็ยังคงเดิม** ไม่ต้องตั้งค่าใหม่ครับ
+:::
+
+### 🎯 Challenge 7: Cross-Tab Talk
+**หัวข้อ:** 7. Storage Event
+
+**โจทย์:** `window.addEventListener("storage", ...)` จะทำงานเมื่อไหร่?
+::: details ✨ ดูเฉลย
+เมื่อมีการเปลี่ยนแปลง localStorage จาก **Tab อื่น** (ใน Domain เดียวกัน) ครับ
 :::
 
 ---

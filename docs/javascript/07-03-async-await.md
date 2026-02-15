@@ -348,75 +348,93 @@ async function safe() {
 
 ## 8. Challenges 🏆
 
-### 🎯 Challenge 1: Fetch & Display
-ดึงข้อมูลจาก `https://jsonplaceholder.typicode.com/users` แล้วพิมพ์ ชื่อ + Email ของทุก user:
+## 8. Challenges 🏆
 
+ทดสอบความเข้าใจกับโจทย์ 7 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: Async Conversion
+**หัวข้อ:** 1. async/await Basics
+
+**โจทย์:** เปลี่ยน function นี้เป็น `async/await`:
+```javascript
+function getNum() {
+	return Promise.resolve(10);
+}
+getNum().then(n => console.log(n));
+```
 ::: details ✨ ดูเฉลย
 ```javascript
-async function displayUsers() {
-    try {
-        const res = await fetch("https://jsonplaceholder.typicode.com/users");
-        const users = await res.json();
-
-        users.forEach(user => {
-            console.log(`${user.name} — ${user.email}`);
-        });
-    } catch (error) {
-        console.error("Error:", error.message);
-    }
+async function getNum() {
+	return 10;
 }
-
-displayUsers();
+const n = await getNum();
+console.log(n);
 ```
 :::
 
-### 🎯 Challenge 2: Parallel Fetch
-ดึงข้อมูล users และ posts **พร้อมกัน** แล้วพิมพ์จำนวนของแต่ละอัน:
+### 🎯 Challenge 2: Safe Fetch
+**หัวข้อ:** 2. Error Handling
 
+**โจทย์:** เขียนโครงสร้าง `async function` ที่มีการดักจับ Error ด้วย `try/catch` และมีการทำงานเสมอด้วย `finally`
 ::: details ✨ ดูเฉลย
 ```javascript
-async function fetchBoth() {
+async function task() {
     try {
-        const [users, posts] = await Promise.all([
-            fetch("https://jsonplaceholder.typicode.com/users").then(r => r.json()),
-            fetch("https://jsonplaceholder.typicode.com/posts").then(r => r.json()),
-        ]);
-
-        console.log(`Users: ${users.length}`);   // 10
-        console.log(`Posts: ${posts.length}`);    // 100
-    } catch (error) {
-        console.error("Error:", error.message);
+        // await ...
+    } catch (err) {
+        // handle error
+    } finally {
+        // cleanup (run always)
     }
 }
-
-fetchBoth();
 ```
 :::
 
-### 🎯 Challenge 3: Sequential Steps
-สร้าง Chain:
-1. Fetch user ID 1
-2. ใช้ user.id เพื่อ fetch posts ของ user คนนั้น
-3. พิมพ์ title ของ post แรก
+### 🎯 Challenge 3: API Call
+**หัวข้อ:** 3. Fetch API
 
+**โจทย์:** ใช้ `fetch` ดึงข้อมูลจาก `"https://api.example.com/data"` แล้วแปลงเป็น JSON (เขียนแค่บรรทัดที่ดึงและแปลง)
 ::: details ✨ ดูเฉลย
 ```javascript
-async function getUserFirstPost() {
-    try {
-        const userRes = await fetch("https://jsonplaceholder.typicode.com/users/1");
-        const user = await userRes.json();
-
-        const postsRes = await fetch(`https://jsonplaceholder.typicode.com/posts?userId=${user.id}`);
-        const posts = await postsRes.json();
-
-        console.log(`${user.name}'s first post: "${posts[0].title}"`);
-    } catch (error) {
-        console.error("Error:", error.message);
-    }
-}
-
-getUserFirstPost();
+const res = await fetch("https://api.example.com/data");
+const data = await res.json();
 ```
+:::
+
+### 🎯 Challenge 4: Race for Speed
+**หัวข้อ:** 4. Parallel Await
+
+**โจทย์:** ถ้ามีฟังก์ชัน `taskA()` และ `taskB()` ที่ใช้เวลา 1 วินาทีเท่ากัน ทำอย่างไรให้ทั้งคู่เสร็จพร้อมกันใน 1 วินาที?
+::: details ✨ ดูเฉลย
+ใช้ `Promise.all([taskA(), taskB()])` ครับ
+:::
+
+### 🎯 Challenge 5: Pattern Recognition
+**หัวข้อ:** 5. Practical Patterns
+
+**โจทย์:** Pattern ไหนที่ใช้ลองเรียก API ซ้ำเมื่อเกิด Error? (Retry หรือ Loading State)
+::: details ✨ ดูเฉลย
+**Retry Pattern** ครับ
+:::
+
+### 🎯 Challenge 6: IIFE Magic
+**หัวข้อ:** 6. Async Arrow & IIFE
+
+**โจทย์:** เขียน Async IIFE ที่พิมพ์ "Start" ทันที
+::: details ✨ ดูเฉลย
+```javascript
+(async () => {
+    console.log("Start");
+})();
+```
+:::
+
+### 🎯 Challenge 7: Bug Spotter
+**หัวข้อ:** 7. Common Mistakes
+
+**โจทย์:** โค้ดนี้ผิดตรงไหน? `const data = fetch("/api"); console.log(data);`
+::: details ✨ ดูเฉลย
+ผิดที่ **ลืม `await`** ครับ! `data` จะเป็น Promise Object ที่ติดสถานะ Pending ไม่ใช่ข้อมูลจริง
 :::
 
 ---

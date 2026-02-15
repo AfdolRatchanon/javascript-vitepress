@@ -205,66 +205,41 @@ const copy2 = [...original]; // ✅ Spread = Copy จริง!
 
 ## 5. Challenges 🏆
 
-### 🎯 Challenge 1: Find the Bug
-```javascript
-function getAverage(numbers) {
-    let sum = 0;
-    for (let i = 1; i <= numbers.length; i++) {
-        sum += numbers[i];
-    }
-    return sum / numbers.length;
-}
-console.log(getAverage([10, 20, 30])); // NaN — ทำไม?
-```
+## 5. Challenges 🏆
 
+ทดสอบความเข้าใจกับโจทย์ 4 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: Log Master
+**หัวข้อ:** 1. console Methods
+
+**โจทย์:** ถ้าต้องการพิมพ์ Object `users` (ที่เป็น Array of Objects) ให้อ่านง่ายเป็นตาราง ควรใช้คำสั่งอะไร?
 ::: details ✨ ดูเฉลย
-```javascript
-// Bug 1: i เริ่มจาก 1 → ข้ามตัวแรก
-// Bug 2: i <= length → เกินอีก 1 (undefined)
-function getAverage(numbers) {
-    let sum = 0;
-    for (let i = 0; i < numbers.length; i++) { // ✅ แก้: 0 และ <
-        sum += numbers[i];
-    }
-    return sum / numbers.length;
-}
-```
+`console.table(users)`
 :::
 
-### 🎯 Challenge 2: Debug Async
-```javascript
-async function loadUser() {
-    const res = fetch("/api/user/1");
-    const user = res.json();
-    return user;
-}
-```
-ทำไมได้ Promise แทน Object จริง?
+### 🎯 Challenge 2: Stop! in the Name of Code
+**หัวข้อ:** 2. Chrome DevTools
 
+**โจทย์:** คำสั่งอะไรที่เขียนในโค้ดแล้วทำให้ DevTools **หยุด** การทำงานในบรรทัดนั้นทันที?
 ::: details ✨ ดูเฉลย
-```javascript
-async function loadUser() {
-    const res = await fetch("/api/user/1");  // ✅ เพิ่ม await
-    const user = await res.json();            // ✅ เพิ่ม await
-    return user;
-}
-```
+`debugger;`
 :::
 
-### 🎯 Challenge 3: Console Methods
-ปรับปรุงโค้ดต่อไปนี้ — ใช้ console methods ที่เหมาะสมกว่า `.log()`:
-```javascript
-console.log("Error: user not found");
-console.log("Warning: deprecated function");
-console.log([{name:"A"},{name:"B"},{name:"C"}]);
-```
+### 🎯 Challenge 3: Half-Split Search
+**หัวข้อ:** 3. Debugging Strategies
 
+**โจทย์:** เทคนิค "Binary Search Debugging" คือการทำอะไร?
 ::: details ✨ ดูเฉลย
-```javascript
-console.error("❌ Error: user not found");   // สีแดง!
-console.warn("⚠️ Warning: deprecated function"); // สีเหลือง!
-console.table([{name:"A"},{name:"B"},{name:"C"}]); // ตาราง!
-```
+คือการตัดโค้ด หรือ ใส่ log ตรง **กึ่งกลาง** การทำงาน เพื่อดูว่าบัคอยู่ครึ่งบนหรือครึ่งล่าง
+:::
+
+### 🎯 Challenge 4: Bug Hunter
+**หัวข้อ:** 4. Common Bugs
+
+**โจทย์:** โค้ด `if (input == 0)` มีโอกาสเกิดบัคอะไร? และควรแก้อย่างไร?
+::: details ✨ ดูเฉลย
+บัคคือ `"" == 0` เป็น true (Type Coercion)
+แก้โดยใช้ `===` (Strict Equality)
 :::
 
 ---

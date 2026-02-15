@@ -179,49 +179,48 @@ console.log(user);
 
 ## 5. Challenges 🏆
 
-### 🎯 Challenge 1: Merge & Override
-```javascript
-const base = { color: "red", size: "M", brand: "Nike" };
-const custom = { color: "blue", price: 599 };
-```
-สร้าง `merged` ที่รวม 2 objects (custom ทับ base):
+## 5. Challenges 🏆
 
+ทดสอบความเข้าใจกับโจทย์ 4 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: Copy Cat
+**หัวข้อ:** 1. Spread Operator
+
+**โจทย์:** มี Array `const a = [1, 2]` จงสร้าง Array `b` ที่มีค่าเหมือน `a` ทุกประการ แต่ถ้าแก้ `b` แล้ว `a` ต้องไม่เปลี่ยน
 ::: details ✨ ดูเฉลย
 ```javascript
-const merged = { ...base, ...custom };
-console.log(merged);
-// { color: "blue", size: "M", brand: "Nike", price: 599 }
-```
-:::
-
-### 🎯 Challenge 2: First & Rest
-สร้าง Function `head(arr)` ที่ return ตัวแรก + ตัวที่เหลือ:
-
-::: details ✨ ดูเฉลย
-```javascript
-function head(arr) {
-    const [first, ...rest] = arr;
-    return { first, rest };
-}
-
-console.log(head([1, 2, 3, 4]));
-// { first: 1, rest: [2, 3, 4] }
+const b = [...a];
 ```
 :::
 
-### 🎯 Challenge 3: Clean User
-สร้าง Function ที่ลบ `password` และ `__v` ออกจาก User object:
+### 🎯 Challenge 2: Unlimited Sum
+**หัวข้อ:** 2. Rest Operator
 
+**โจทย์:** สร้าง Function `sum(...nums)` ที่รับตัวเลขกี่ตัวก็ได้ แล้ว Return ผลรวม (ใช้ `reduce`)
 ::: details ✨ ดูเฉลย
 ```javascript
-function cleanUser(user) {
-    const { password, __v, ...clean } = user;
-    return clean;
+function sum(...nums) {
+    return nums.reduce((total, n) => total + n, 0);
 }
+```
+:::
 
-const user = { name: "A", email: "a@b.c", password: "xxx", __v: 0 };
-console.log(cleanUser(user));
-// { name: "A", email: "a@b.c" }
+### 🎯 Challenge 3: Position Check
+**หัวข้อ:** 3. Spread vs Rest
+
+**โจทย์:** ในโค้ด `function test(...args) {}` และ `const arr = [...args]` อันไหนคือ Spread อันไหนคือ Rest?
+::: details ✨ ดูเฉลย
+- `test(...args)` คือ **Rest** (รวบค่าเข้า)
+- `[...args]` คือ **Spread** (กระจายค่าออก)
+:::
+
+### 🎯 Challenge 4: Secure User
+**หัวข้อ:** 4. Practical Patterns
+
+**โจทย์:** มี `user = { id: 1, name: "A", password: "123" }` จงสร้างตัวแปร `publicUser` ที่ไม่มี `password` (ใช้ Rest Destructuring)
+::: details ✨ ดูเฉลย
+```javascript
+const { password, ...publicUser } = user;
 ```
 :::
 

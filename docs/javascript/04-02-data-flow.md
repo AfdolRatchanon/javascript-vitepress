@@ -56,19 +56,7 @@ add(10, 20, 30); // a = 10, b = 20 → 30 (30 ถูกทิ้ง)
 
 > ⚠️ **JavaScript ไม่ Error** เมื่อจำนวนไม่ตรงกัน! ซึ่งอาจก่อให้เกิด Bug ที่หาได้ยากมาก
 
-### 🧠 Challenge: Missing Arguments
-```javascript
-function greet(name, greeting) {
-    console.log(`${greeting}, ${name}!`);
-}
 
-greet("Dolar"); // Output จะเป็นอะไร?
-```
-
-::: details ✨ ดูเฉลย
-**Output:** `"undefined, Dolar!"` ← เพราะ `greeting` ไม่ได้ส่งค่ามา จึงเป็น `undefined`
-นี่คือเหตุผลที่เราต้องใช้ **Default Parameters** ครับ! (หัวข้อถัดไป)
-:::
 
 ---
 
@@ -139,30 +127,7 @@ addTimestamp("Start"); // [2024-01-01T00:00:00.000Z] Start
 | `test("")` | `""` | ❌ `""` เป็นค่าจริง |
 | `test(false)` | `false` | ❌ `false` เป็นค่าจริง |
 
-### 🧠 Challenge: Default Design
-ออกแบบฟังก์ชัน `createProduct(name, price, currency)` ที่:
-- `name` ต้องระบุเสมอ (ไม่มี Default)
-- `price` มี Default เป็น `0`
-- `currency` มี Default เป็น `"THB"`
 
-```javascript
-createProduct("iPhone");           // { name: "iPhone", price: 0, currency: "THB" }
-createProduct("MacBook", 49990);   // { name: "MacBook", price: 49990, currency: "THB" }
-createProduct("iPad", 999, "USD"); // { name: "iPad", price: 999, currency: "USD" }
-```
-
-::: details ✨ ดูเฉลย
-```javascript
-function createProduct(name, price = 0, currency = "THB") {
-    return { name, price, currency };
-}
-
-console.log(createProduct("iPhone"));           // { name: "iPhone", price: 0, currency: "THB" }
-console.log(createProduct("MacBook", 49990));   // { name: "MacBook", price: 49990, currency: "THB" }
-console.log(createProduct("iPad", 999, "USD")); // { name: "iPad", price: 999, currency: "USD" }
-```
-**หลักการ:** Parameter ที่ใช้บ่อย/สำคัญ → ไว้ข้างหน้า, Parameter ที่มี Default → ไว้ข้างหลัง
-:::
 
 ---
 
@@ -231,39 +196,7 @@ console.log(oldSum(1, 2, 3)); // 6
 console.log(newSum(1, 2, 3)); // 6 (โค้ดสั้นกว่ามาก!)
 ```
 
-### 🧠 Challenge: Flexible Logger
-สร้างฟังก์ชัน `log(level, ...messages)` ที่:
-- `level` คือระดับ Log เช่น "INFO", "WARN", "ERROR"
-- `...messages` คือข้อความหลายตัวที่จะถูกรวมเป็นประโยคเดียว
 
-```javascript
-log("INFO", "Server", "started", "on port", 3000);
-// Output: "[INFO] Server started on port 3000"
-
-log("ERROR", "File", "not found!");
-// Output: "[ERROR] File not found!"
-```
-
-::: details ✨ ดูเฉลย
-```javascript
-function log(level, ...messages) {
-    console.log(`[${level}] ${messages.join(" ")}`);
-}
-
-log("INFO", "Server", "started", "on port", 3000);
-// "[INFO] Server started on port 3000"
-
-log("ERROR", "File", "not found!");
-// "[ERROR] File not found!"
-
-log("WARN", "Memory usage:", "85%");
-// "[WARN] Memory usage: 85%"
-```
-**จุดสำคัญ:**
-- `level` จับ Argument ตัวแรก
-- `...messages` จับ **ส่วนที่เหลือทั้งหมด** เป็น Array
-- `.join(" ")` เอามารวมกันด้วย Space
-:::
 
 ---
 
@@ -377,32 +310,7 @@ const [q, r] = divide(17, 5);
 console.log(`17 ÷ 5 = ${q} เศษ ${r}`); // "17 ÷ 5 = 3 เศษ 2"
 ```
 
-### 🧠 Challenge: Return vs Console
-โค้ดนี้มี Bug อยู่ จงหาและแก้ไข:
-```javascript
-function getArea(width, height) {
-    console.log(width * height);
-}
 
-const area = getArea(5, 10);
-const volume = area * 3;
-console.log(`Volume: ${volume}`);
-```
-
-::: details ✨ ดูเฉลย
-**Bug:** `getArea` ใช้ `console.log` แทน `return` ทำให้ `area = undefined` → `volume = NaN`
-
-**แก้ไข:**
-```javascript
-function getArea(width, height) {
-    return width * height; // ← เปลี่ยนจาก console.log เป็น return
-}
-
-const area = getArea(5, 10); // 50
-const volume = area * 3;     // 150
-console.log(`Volume: ${volume}`); // "Volume: 150" ✅
-```
-:::
 
 ---
 
@@ -436,101 +344,78 @@ console.log("Outside:", myCar.name); // Outside: New Name ← เปลี่ย
 
 > **⚠️ คำเตือน:** การส่ง Object เข้าฟังก์ชันแล้วแก้ไขข้างใน ถือเป็น **Side Effect** ที่ทำให้โค้ด Debug ยาก ถ้าเป็นไปได้ควร **Copy ก่อนแก้** (เรื่องนี้เจาะลึกในบท [05-3: Reference vs Value](/05-03-reference-vs-value))
 
-### 🧠 Challenge: Predict the Output
-```javascript
-function process(num, arr) {
-    num = num + 100;
-    arr.push(num);
-}
 
-let x = 5;
-const myArr = [1, 2, 3];
-
-process(x, myArr);
-
-console.log(x);     // (1)?
-console.log(myArr); // (2)?
-```
-
-::: details ✨ ดูเฉลย
-1. **`5`** — `x` เป็น Primitive (Number) → ส่ง Copy เข้าไป → แก้ไขข้างในไม่กระทบข้างนอก
-2. **`[1, 2, 3, 105]`** — `myArr` เป็น Array (Object) → ส่ง Reference → `.push(105)` กระทบตัวเดิม!
-
-**`num` ข้างในฟังก์ชันเป็น 105** (5 + 100) แล้ว `arr.push(105)` จึงเพิ่ม 105 เข้าไป
-:::
 
 ---
 
-## 6. Final Challenge: The Data Pipe 🔧
+## 6. Challenges 🏆
 
-จงสร้างชุดฟังก์ชันต่อไปนี้เพื่อ "ประมวลผลข้อมูลนักเรียน":
+ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 
-```javascript
-// 1. สร้าง createStudent(name, score) ที่ return Object { name, score, grade }
-//    - ใช้ calculateGrade(score) จากฟังก์ชันที่ 2
+### 🎯 Challenge 1: Argument Check
+**หัวข้อ:** 1. Parameters vs Arguments
 
-// 2. สร้าง calculateGrade(score) ที่:
-//    - score >= 80 → "A"
-//    - score >= 60 → "B"
-//    - ที่เหลือ → "F"
-
-// 3. สร้าง summarize(...students) ที่:
-//    - รับ Student Objects หลายตัว {name, score, grade}
-//    - return Object: { count, average, highest }
-
-// ตัวอย่าง:
-const s1 = createStudent("Dolar", 90);
-const s2 = createStudent("Somchai", 65);
-const s3 = createStudent("Somsak", 45);
-
-console.log(summarize(s1, s2, s3));
-// { count: 3, average: "66.67", highest: "Dolar" }
-```
-
+**โจทย์:** สร้างฟังก์ชัน `check(a, b)` ที่ `console.log` ว่า "a คือ [ค่า], b คือ [ค่า]" แล้วลองเรียกแบบ `check(1)` สังเกตผลลัพธ์
 ::: details ✨ ดูเฉลย
 ```javascript
-function calculateGrade(score) {
-    if (score >= 80) return "A";
-    if (score >= 60) return "B";
-    return "F";
+function check(a, b) {
+    console.log(`a คือ ${a}, b คือ ${b}`);
 }
-
-function createStudent(name, score) {
-    return {
-        name,
-        score,
-        grade: calculateGrade(score),
-    };
-}
-
-function summarize(...students) {
-    const count = students.length;
-
-    // คำนวณค่าเฉลี่ย
-    const totalScore = students.reduce((sum, s) => sum + s.score, 0);
-    const average = (totalScore / count).toFixed(2);
-
-    // หาคนที่ได้คะแนนสูงสุด
-    const highest = students.reduce((best, s) =>
-        s.score > best.score ? s : best
-    ).name;
-
-    return { count, average, highest };
-}
-
-const s1 = createStudent("Dolar", 90);   // { name: "Dolar", score: 90, grade: "A" }
-const s2 = createStudent("Somchai", 65); // { name: "Somchai", score: 65, grade: "B" }
-const s3 = createStudent("Somsak", 45);  // { name: "Somsak", score: 45, grade: "F" }
-
-console.log(summarize(s1, s2, s3));
-// { count: 3, average: "66.67", highest: "Dolar" }
+check(1); 
+// Output: "a คือ 1, b คือ undefined"
 ```
+:::
 
-**สิ่งที่ได้ฝึก:**
-- **Default Parameters** ไม่จำเป็นในข้อนี้ แต่จะเพิ่มได้ (เช่น Default grade)
-- **Rest Parameters** (...students) ช่วยรับจำนวนนักเรียนไม่จำกัด
-- **Return Object** ส่งผลลัพธ์หลายค่ากลับมาในคราวเดียว
-- **Pure Function** ทุกฟังก์ชันไม่มี Side Effect
+### 🎯 Challenge 2: User Creator
+**หัวข้อ:** 2. Default Parameters
+
+**โจทย์:** สร้างฟังก์ชัน `createUser(username, role)` โดยให้ `role` มีค่าเริ่มต้นเป็น "Member" และ `username` ต้องใส่เสมอ
+::: details ✨ ดูเฉลย
+```javascript
+function createUser(username, role = "Member") {
+    return { username, role };
+}
+```
+:::
+
+### 🎯 Challenge 3: Sum All
+**หัวข้อ:** 3. Rest Parameters
+
+**โจทย์:** เขียนฟังก์ชัน `sum(...numbers)` ที่รับตัวเลขกี่ตัวก็ได้ แล้วหาผลรวม (ใช้ loop หรือ reduce)
+::: details ✨ ดูเฉลย
+```javascript
+function sum(...numbers) {
+    return numbers.reduce((total, n) => total + n, 0);
+}
+console.log(sum(1, 2, 3, 4)); // 10
+```
+:::
+
+### 🎯 Challenge 4: The Void
+**หัวข้อ:** 4. Return Statement
+
+**โจทย์:** ฟังก์ชันนี้ผิดตรงไหน? แก้ให้ถูกต้อง:
+```javascript
+function double(n) {
+    n * 2;
+}
+const result = double(5); // result เป็น undefined!
+```
+::: details ✨ ดูเฉลย
+**ขาด `return` ครับ!**
+```javascript
+function double(n) {
+    return n * 2;
+}
+```
+:::
+
+### 🎯 Challenge 5: Mutation Awareness
+**หัวข้อ:** 5. Pass-by-Reference
+
+**โจทย์:** ถ้าเราส่ง Object เข้าฟังก์ชัน แล้วแก้ Property ข้างใน. Object ต้นฉบับจะเปลี่ยนหรือไม่?
+::: details ✨ ดูเฉลย
+**เปลี่ยนครับ!** เพราะ Object ถูกส่งแบบ Pass-by-Reference (ส่งที่อยู่) การแก้ไขข้างในจึงกระทบตัวจริงข้างนอกด้วย
 :::
 
 ---

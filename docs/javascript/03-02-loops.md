@@ -287,34 +287,7 @@ for (let i = 1; i <= 3; i++) {
 // ...
 ```
 
-### 🧠 Challenge: The Pyramid Builder 🏔️
-ใช้ Nested Loop สร้างรูปพีระมิด:
-```
-*
-**
-***
-****
-*****
-```
 
-::: details ✨ ดูเฉลย
-```javascript
-const height = 5;
-
-for (let row = 1; row <= height; row++) {
-    let stars = "";
-    for (let col = 1; col <= row; col++) {
-        stars += "*";
-    }
-    console.log(stars);
-}
-
-// หรือใช้ .repeat() (ไม่ต้อง Nested Loop)
-for (let row = 1; row <= height; row++) {
-    console.log("*".repeat(row));
-}
-```
-:::
 
 ---
 
@@ -367,51 +340,122 @@ const doubled2 = numbers.map(n => n * 2);
 
 ---
 
-## 9. Final Challenge: The Loop Lab 🧪
+## 9. Challenges 🏆
 
-### 🎯 Challenge 1: FizzBuzz Preview
-ใช้ Loop พิมพ์เลข 1-20 แต่:
-- ถ้าหาร 3 ลงตัว → พิมพ์ "Fizz"
-- ถ้าหาร 5 ลงตัว → พิมพ์ "Buzz"
-- ถ้าหาร 15 ลงตัว → พิมพ์ "FizzBuzz"
+ทดสอบความเข้าใจกับโจทย์ 8 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 
+### 🎯 Challenge 1: Counting Machine
+**หัวข้อ:** 1. The for Loop
+
+**โจทย์:** ใช้ `for` loop พิมพ์เลขคู่ (Even Numbers) ตั้งแต่ 2 ถึง 10 (2, 4, 6, 8, 10)
 ::: details ✨ ดูเฉลย
 ```javascript
-for (let i = 1; i <= 20; i++) {
-    if (i % 15 === 0) {
-        console.log("FizzBuzz");
-    } else if (i % 3 === 0) {
-        console.log("Fizz");
-    } else if (i % 5 === 0) {
-        console.log("Buzz");
-    } else {
-        console.log(i);
-    }
+for (let i = 2; i <= 10; i += 2) {
+    console.log(i);
 }
-
-// สำคัญ: เช็ค % 15 ก่อน % 3 และ % 5!
-// เพราะ 15 หาร 3 ลงตัว AND หาร 5 ลงตัว
 ```
 :::
 
-### 🎯 Challenge 2: Number Guesser
-เขียน `while` Loop ที่:
-- สุ่มเลข 1-10 (ใช้ `Math.ceil(Math.random() * 10)`)
-- วน Loop จนกว่าจะสุ่มได้เลข 7
-- พิมพ์จำนวนครั้งที่สุ่ม
+### 🎯 Challenge 2: Growth Hacking
+**หัวข้อ:** 2. The while Loop
 
+**โจทย์:** มีเงิน 1 บาท คูณ 2 ไปเรื่อยๆ (1, 2, 4, 8, ...) **หยุดเมื่อเกิน 100** จงใช้ `while` loop
 ::: details ✨ ดูเฉลย
 ```javascript
-let guess;
-let attempts = 0;
+let money = 1;
+while (money <= 100) {
+    console.log(money);
+    money *= 2;
+}
+```
+:::
 
+### 🎯 Challenge 3: Just Once
+**หัวข้อ:** 3. The do...while Loop
+
+**โจทย์:** พิสูจน์ว่า `do...while` ทำงาน 1 ครั้งแม้เงื่อนไขเป็นเท็จ โดยตั้งเงื่อนไข `while(false)`
+::: details ✨ ดูเฉลย
+```javascript
 do {
-    guess = Math.ceil(Math.random() * 10);
-    attempts++;
-    console.log(`ครั้งที่ ${attempts}: สุ่มได้ ${guess}`);
-} while (guess !== 7);
+    console.log("I run at least once!");
+} while (false);
+```
+:::
 
-console.log(`🎯 เจอเลข 7 ใช้ ${attempts} ครั้ง!`);
+### 🎯 Challenge 4: Iterator
+**หัวข้อ:** 4. for...of vs for...in
+
+**โจทย์:** มี Array `users = ["A", "B", "C"]` จงใช้ `for...of` เพื่อพิมพ์ชื่อทุกคน
+::: details ✨ ดูเฉลย
+```javascript
+const users = ["A", "B", "C"];
+for (const user of users) {
+    console.log(user);
+}
+```
+:::
+
+### 🎯 Challenge 5: Find & Stop
+**หัวข้อ:** 5. break & continue
+
+**โจทย์:** วนลูป 1-10 ถ้าเจอเลข 5 ให้ **หยุดทันที (`break`)**
+::: details ✨ ดูเฉลย
+```javascript
+for (let i = 1; i <= 10; i++) {
+    if (i === 5) break;
+    console.log(i);
+}
+```
+:::
+
+### 🎯 Challenge 6: The Fixer
+**หัวข้อ:** 6. Infinite Loops
+
+**โจทย์:** แก้โค้ดนี้ไม่ให้ Loop ค้าง:
+```javascript
+let i = 0;
+while (i < 5) {
+    console.log(i);
+    // ... ลืมอะไรไป?
+}
+```
+::: details ✨ ดูเฉลย
+```javascript
+let i = 0;
+while (i < 5) {
+    console.log(i);
+    i++; // ✅ ต้องเพิ่มค่า i ด้วย!
+}
+```
+:::
+
+### 🎯 Challenge 7: Coordinate System
+**หัวข้อ:** 7. Nested Loops
+
+**โจทย์:** ใช้ Nested Loop พิมพ์คู่ลำดับ (Row, Col) ขนาด 2x2:
+`(0,0) (0,1) (1,0) (1,1)`
+::: details ✨ ดูเฉลย
+```javascript
+for (let row = 0; row < 2; row++) {
+    for (let col = 0; col < 2; col++) {
+        console.log(`(${row},${col})`);
+    }
+}
+```
+:::
+
+### 🎯 Challenge 8: The Sum
+**หัวข้อ:** 8. Patterns
+
+**โจทย์:** หาผลรวมของ Array `[10, 20, 30]` โดยใช้ `for...of`
+::: details ✨ ดูเฉลย
+```javascript
+const nums = [10, 20, 30];
+let sum = 0;
+for (const n of nums) {
+    sum += n;
+}
+console.log(sum); // 60
 ```
 :::
 

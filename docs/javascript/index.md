@@ -12,7 +12,7 @@ hero:
       link: /javascript/00-setup
     - theme: alt
       text: "🗺️ ดูโครงสร้างบทเรียน"
-      link: /roadmap
+      link: /javascript/roadmap
 
 features:
   - icon: "🌱"

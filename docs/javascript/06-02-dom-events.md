@@ -329,46 +329,86 @@ btn.addEventListener("click", handleClick, { once: true });
 
 ## 8. Challenges 🏆
 
-### 🎯 Challenge 1: Click Counter
-สร้าง Counter ที่:
-- กดปุ่ม "+" แล้วตัวเลขเพิ่ม 1
-- กดปุ่ม "-" แล้วตัวเลขลด 1
-- แสดงค่าบนหน้าเว็บ
+ทดสอบความเข้าใจกับโจทย์ 7 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 
+### 🎯 Challenge 1: The Listener
+**หัวข้อ:** 1. Event Listener
+
+**โจทย์:** เขียนโค้ดเมื่อคลิกปุ่ม `<button id="save">` ให้พิมพ์คำว่า "Saved!" (ใช้ `addEventListener`)
 ::: details ✨ ดูเฉลย
-```html
-<div>
-    <button id="decrease">-</button>
-    <span id="count">0</span>
-    <button id="increase">+</button>
-</div>
-```
 ```javascript
-let count = 0;
-const countDisplay = document.querySelector("#count");
-
-document.querySelector("#increase").addEventListener("click", () => {
-    count++;
-    countDisplay.textContent = count;
-});
-
-document.querySelector("#decrease").addEventListener("click", () => {
-    count--;
-    countDisplay.textContent = count;
+const btn = document.querySelector("#save");
+btn.addEventListener("click", () => {
+    console.log("Saved!");
 });
 ```
 :::
 
-### 🎯 Challenge 2: Key Logger
-เขียน JS ที่แสดงชื่อปุ่มที่กด (เช่น กด A → แสดง "a") บน `<p id="output">`:
+### 🎯 Challenge 2: Double Trouble
+**หัวข้อ:** 2. Event Types
 
+**โจทย์:** เปลี่ยนจาก "Click" เป็นรับเหตุการณ์ "Double Click" (`dblclick`) แทน
 ::: details ✨ ดูเฉลย
 ```javascript
-const output = document.querySelector("#output");
-
-document.addEventListener("keydown", (e) => {
-    output.textContent = `Key pressed: ${e.key}`;
+btn.addEventListener("dblclick", () => {
+    console.log("Saved (Double Clicked)!");
 });
+```
+:::
+
+### 🎯 Challenge 3: Target Practice
+**หัวข้อ:** 3. Event Object
+
+**โจทย์:** เมื่อคลิกปุ่ม ให้พิมพ์ ID ของปุ่มที่ถูกคลิกออกมา (ใช้ `e.target.id`)
+::: details ✨ ดูเฉลย
+```javascript
+btn.addEventListener("click", (e) => {
+    console.log(e.target.id);
+});
+```
+:::
+
+### 🎯 Challenge 4: Secret Key
+**หัวข้อ:** 4. Keyboard Events
+
+**โจทย์:** ตรวจจับการกดปุ่มบนคีย์บอร์ด ถ้ากดปุ่ม "Enter" ให้พิมพ์ว่า "Submitted!"
+::: details ✨ ดูเฉลย
+```javascript
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        console.log("Submitted!");
+    }
+});
+```
+:::
+
+### 🎯 Challenge 5: No Reload
+**หัวข้อ:** 5. Form Events
+
+**โจทย์:** ป้องกันไม่ให้ Form ID `#myForm` รีโหลดหน้าเมื่อกด Submit (ใช้คำสั่งอะไร?)
+::: details ✨ ดูเฉลย
+```javascript
+form.addEventListener("submit", (e) => {
+    e.preventDefault(); // คำสั่งนี้ครับ!
+});
+```
+:::
+
+### 🎯 Challenge 6: Parent Power
+**หัวข้อ:** 6. Bubbling & Delegation
+
+**โจทย์:** ถ้ามีปุ่มอยู่ใน `<div>` และเราติด Listener ที่ทั้งคู่ เมื่อคลิกปุ่ม Event จะเกิดที่ใครก่อน? (Child หรือ Parent)
+::: details ✨ ดูเฉลย
+เกิดที่ **Child (ปุ่ม)** ก่อนครับ แล้วค่อย Bubble ลอยขึ้นไปหา Parent (`<div>`)
+:::
+
+### 🎯 Challenge 7: Clean Up
+**หัวข้อ:** 7. Removing Listeners
+
+**โจทย์:** ถ้าต้องการให้ปุ่มคลิกได้ **แค่ครั้งเดียว** (แล้วเลิกทำงานเลย) ต้องเพิ่ม Option อะไรใน `addEventListener`?
+::: details ✨ ดูเฉลย
+```javascript
+btn.addEventListener("click", handler, { once: true });
 ```
 :::
 

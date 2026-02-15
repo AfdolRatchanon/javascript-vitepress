@@ -259,81 +259,50 @@ console.log(b.settings.theme); // "light" — b โดนเปลี่ยน�
 
 ## 7. Challenges 🏆
 
-### 🎯 Challenge 1: Prototype Chain Tracing
-```javascript
-class A { foo() { return "A"; } }
-class B extends A { foo() { return "B"; } }
-class C extends B { }
+## 7. Challenges 🏆
 
-const c = new C();
-```
-`c.foo()` return อะไร? อธิบาย Chain ที่ JavaScript ไล่ค้นหา:
+ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 
+### 🎯 Challenge 1: The Chain
+**หัวข้อ:** 1. Prototype Chain
+
+**โจทย์:** ถ้า `dog` ไม่มี method `toString()` JS จะไปหาที่ไหนต่อเป็นที่แรก?
 ::: details ✨ ดูเฉลย
-`c.foo()` return **`"B"`**
-
-Chain ที่ JavaScript ค้นหา:
-1. `c` (Instance) → ❌ ไม่มี `foo`
-2. `C.prototype` → ❌ ไม่มี `foo` (C ไม่ได้ override)
-3. `B.prototype` → ✅ **เจอ `foo`!** → return `"B"`
-4. ไม่ไปถึง `A.prototype.foo` เพราะเจอใน `B` ก่อน
-
-> **หลักการ:** JavaScript หาจาก Instance ขึ้นไป → เจอที่ไหนก่อน ใช้ตัวนั้น!
+ที่ **`Dog.prototype`** ครับ (ถ้าไม่มีค่อยไป Animal.prototype → Object.prototype)
 :::
 
-### 🎯 Challenge 2: Own vs Inherited
-```javascript
-class Person {
-    constructor(name) { this.name = name; }
-    greet() { return "Hi!"; }
-}
-const p = new Person("Dolar");
-```
-`p.hasOwnProperty("name")` = ? `p.hasOwnProperty("greet")` = ? อธิบายเหตุผล:
+### 🎯 Challenge 2: Sugar Free
+**หัวข้อ:** 2. Class Sugar
 
+**โจทย์:** `class A {}` เบื้องหลังคืออะไรใน ES5? (Function หรือ Object)
+::: details ✨ ดูเฉลย
+**Function** ครับ (`function A() {}`)
+:::
+
+### 🎯 Challenge 3: Pure Object
+**หัวข้อ:** 3. Object.create
+
+**โจทย์:** สร้าง Object ที่ "ไม่มี Prototype" เลย (Clean Object) ต้องเขียนอย่างไร?
 ::: details ✨ ดูเฉลย
 ```javascript
-p.hasOwnProperty("name");  // true  ✅
-// เพราะ name ถูกตั้งใน constructor → เป็นของ Instance โดยตรง
-
-p.hasOwnProperty("greet"); // false ❌
-// เพราะ greet() อยู่ใน Person.prototype → ไม่ใช่ของ Instance!
-// p.greet() ใช้ได้ก็จริง แต่มาจาก Prototype ไม่ใช่ own property
+const obj = Object.create(null);
 ```
 :::
 
-### 🎯 Challenge 3: Object.create Pattern
-สร้าง `vehicleProto` ที่มี method `describe()` แล้วสร้าง car และ bike จาก prototype นั้น:
+### 🎯 Challenge 4: Property Check
+**หัวข้อ:** 4. hasOwnProperty
 
+**โจทย์:** `key in obj` ต่างกับ `obj.hasOwnProperty(key)` อย่างไร?
 ::: details ✨ ดูเฉลย
-```javascript
-const vehicleProto = {
-    describe() {
-        return `${this.type}: ${this.brand} - ${this.speed} km/h`;
-    },
-    isFast() {
-        return this.speed > 100;
-    }
-};
+`in` เช็คทั้ง Chain (รวม Prototype) แต่ `hasOwnProperty` เช็คแค่ในตัว Object เอง
+:::
 
-const car = Object.create(vehicleProto);
-car.type = "Car";
-car.brand = "Toyota";
-car.speed = 180;
+### 🎯 Challenge 5: Safety First
+**หัวข้อ:** 5. Pitfalls
 
-const bike = Object.create(vehicleProto);
-bike.type = "Bicycle";
-bike.brand = "Giant";
-bike.speed = 30;
-
-console.log(car.describe());  // "Car: Toyota - 180 km/h"
-console.log(car.isFast());    // true
-console.log(bike.describe()); // "Bicycle: Giant - 30 km/h"
-console.log(bike.isFast());   // false
-
-// ⭐ ทั้งคู่แชร์ Method จาก vehicleProto!
-console.log(car.describe === bike.describe); // true
-```
+**โจทย์:** ทำไมเราไม่ควรไปแก้ `Array.prototype` โดยตรง?
+::: details ✨ ดูเฉลย
+เพราะอาจจะ **ชนกับ Library อื่น** หรือ **มาตรฐานใหม่ของ JS** ในอนาคต ทำให้โค้ดพังได้ครับ
 :::
 
 ---

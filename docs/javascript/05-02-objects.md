@@ -357,56 +357,103 @@ console.log(company.address?.country?.code); // undefined (ไม่ Error!)
 
 ## 9. Challenges 🏆
 
-### 🎯 Challenge 1: Build a Profile
-สร้าง Object ชื่อ `myProfile` ที่มี:
-1. `name` — ชื่อของคุณ
-2. `hobbies` — Array ของงานอดิเรก (อย่างน้อย 3 อัน)
-3. `introduce()` — Method ที่ return `"Hi, I'm [name] and I love [hobby แรก]!"`
+ทดสอบความเข้าใจกับโจทย์ 8 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 
+### 🎯 Challenge 1: Object Creator
+**หัวข้อ:** 1. Creation
+
+**โจทย์:** สร้าง Object `pet` ที่มี `name`, `type` (เช่น "Dog"), และ `age`
 ::: details ✨ ดูเฉลย
 ```javascript
-const myProfile = {
-    name: "Dolar",
-    hobbies: ["Coding", "Gaming", "Reading"],
-
-    introduce() {
-        return `Hi, I'm ${this.name} and I love ${this.hobbies[0]}!`;
-    },
+const pet = {
+    name: "Buddy",
+    type: "Dog",
+    age: 3
 };
-
-console.log(myProfile.introduce());
-// "Hi, I'm Dolar and I love Coding!"
 ```
 :::
 
-### 🎯 Challenge 2: Merge Power
-รวม 2 Object นี้เข้าด้วยกัน โดยให้ `userSettings` overwrite `defaults`:
-```javascript
-const defaults = { theme: "light", fontSize: 14, lang: "en" };
-const userSettings = { theme: "dark", fontSize: 18 };
-```
+### 🎯 Challenge 2: Accessor
+**หัวข้อ:** 2. Access
 
+**โจทย์:** จาก `pet` ในข้อ 1 ให้ `console.log` ชื่อสัตว์เลี้ยงโดยใช้ Dot Notation และ อายุโดยใช้ Bracket Notation
 ::: details ✨ ดูเฉลย
 ```javascript
-const merged = { ...defaults, ...userSettings };
-console.log(merged);
-// { theme: "dark", fontSize: 18, lang: "en" }
-// ⭐ theme และ fontSize ถูก overwrite ด้วยค่าจาก userSettings
+console.log(pet.name);
+console.log(pet["age"]);
 ```
 :::
 
-### 🎯 Challenge 3: Predict the Output
-```javascript
-const a = { x: 1 };
-const b = a;
-b.x = 99;
-console.log(a.x);  // ?
-```
+### 🎯 Challenge 3: Update & Delete
+**หัวข้อ:** 3. CRUD
 
+**โจทย์:** เปลี่ยน `age` ของ `pet` เป็น 4 และเพิ่ม Property `isVaccinated = true` จากนั้นลบ `type` ออก
 ::: details ✨ ดูเฉลย
-**`99`** ครับ! เพราะ `const b = a` ไม่ได้ Copy Object — แค่ให้ `b` **ชี้ไปที่เดียวกัน** กับ `a` (Reference!) ดังนั้นแก้ `b.x` ก็เท่ากับแก้ `a.x`
+```javascript
+pet.age = 4;
+pet.isVaccinated = true;
+delete pet.type;
+```
+:::
 
-ถ้าต้องการ Copy จริง ใช้: `const b = { ...a };`
+### 🎯 Challenge 4: Bark Method
+**หัวข้อ:** 4. Methods
+
+**โจทย์:** เพิ่ม Method `bark()` ให้ `pet` โดยเมื่อเรียก `pet.bark()` ให้พิมพ์ว่า "[Name] says Woof!" (ใช้ `this`)
+::: details ✨ ดูเฉลย
+```javascript
+pet.bark = function() { // หรือเขียนใน Object ตั้งแต่ต้น
+    console.log(`${this.name} says Woof!`);
+};
+// หรือแบบ ES6 shortcut ถ้าประกาศใหม่
+// bark() { console.log(`${this.name} says Woof!`); }
+```
+:::
+
+### 🎯 Challenge 5: Key Checker
+**หัวข้อ:** 5. Checking Properties
+
+**โจทย์:** เขียนโค้ดตรวจสอบว่า `pet` มี Property ชื่อ `"weight"` หรือไม่? (ถ้าไม่มีให้พิมพ์ "No weight data")
+::: details ✨ ดูเฉลย
+```javascript
+if (!("weight" in pet)) {
+    console.log("No weight data");
+}
+// หรือใช้ pet.hasOwnProperty("weight")
+```
+:::
+
+### 🎯 Challenge 6: Key Hunter
+**หัวข้อ:** 6. Object Iteration
+
+**โจทย์:** ใช้ `Object.keys()` เพื่อหาจำนวน Property ทั้งหมดใน Object `pet`
+::: details ✨ ดูเฉลย
+```javascript
+console.log(Object.keys(pet).length);
+```
+:::
+
+### 🎯 Challenge 7: Profile Unpacker
+**หัวข้อ:** 7. Destructuring
+
+**โจทย์:** มี `const user = { id: 101, email: "test@test.com" }` จงใช้ Destructuring ดึง `email` ออกมาเก็บในตัวแปรชื่อ `userEmail`
+::: details ✨ ดูเฉลย
+```javascript
+const { email: userEmail } = user;
+```
+:::
+
+### 🎯 Challenge 8: Nested Explorer
+**หัวข้อ:** 8. Nested Objects
+
+**โจทย์:** เข้าถึงค่า `lat` จาก Object นี้:
+```javascript
+const map = { location: { coords: { lat: 13.5, lng: 100.2 } } };
+```
+::: details ✨ ดูเฉลย
+```javascript
+console.log(map.location.coords.lat);
+```
 :::
 
 ---

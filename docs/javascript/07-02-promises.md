@@ -234,59 +234,60 @@ const myPromise = new Promise((resolve, reject) => {
 
 ## 6. Challenges 🏆
 
-### 🎯 Challenge 1: Build Your Own Promise
-สร้าง Function `wait(ms)` ที่ return Promise ที่ resolve หลังจาก ms มิลลิวินาที:
+## 6. Challenges 🏆
 
-```javascript
-wait(2000).then(() => console.log("2 วินาทีผ่านไปแล้ว!"));
-```
+ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 
+### 🎯 Challenge 1: The Promise
+**หัวข้อ:** 1. Promise Basics
+
+**โจทย์:** สร้าง Promise ที่จะ `resolve` ด้วยข้อความ "Success!" เสมอ
 ::: details ✨ ดูเฉลย
 ```javascript
-function wait(ms) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, ms);
-    });
-}
-
-wait(2000).then(() => console.log("2 วินาทีผ่านไปแล้ว!"));
+const p = new Promise((resolve) => {
+    resolve("Success!");
+});
 ```
 :::
 
-### 🎯 Challenge 2: Promise Chain
-สร้าง Chain ที่:
-1. `wait(1000)` → พิมพ์ "Step 1"
-2. `wait(1000)` → พิมพ์ "Step 2"
-3. `wait(1000)` → พิมพ์ "Done!"
+### 🎯 Challenge 2: Chain Reaction
+**หัวข้อ:** 2. .then() usage
 
+**โจทย์:** จาก Promise ในข้อ 1 ให้ใช้ `.then()` เพื่อรับค่ามาพิมพ์ และ `.catch()` เพื่อดัก Error
 ::: details ✨ ดูเฉลย
 ```javascript
-wait(1000)
-    .then(() => { console.log("Step 1"); return wait(1000); })
-    .then(() => { console.log("Step 2"); return wait(1000); })
-    .then(() => console.log("Done! 🎉"));
+p.then(res => console.log(res))
+ .catch(err => console.error(err));
 ```
 :::
 
-### 🎯 Challenge 3: Race Condition
-ใช้ `Promise.race()` เพื่อสร้าง Timeout สำหรับ Fetch:
+### 🎯 Challenge 3: Number Chain
+**หัวข้อ:** 3. Promise Chaining
 
+**โจทย์:** สร้าง Chain เริ่มจากเลข `5` → `.then` แรกคูณ 2 (เป็น 10) → `.then` สองบวก 5 (เป็น 15) → พิมพ์ค่าสุดท้าย
 ::: details ✨ ดูเฉลย
 ```javascript
-function fetchWithTimeout(url, timeout = 5000) {
-    const fetchPromise = fetch(url);
-    const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("⏰ Timeout!")), timeout);
-    });
-
-    return Promise.race([fetchPromise, timeoutPromise]);
-}
-
-fetchWithTimeout("https://api.example.com/data", 3000)
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(err => console.error(err.message));
+Promise.resolve(5)
+    .then(n => n * 2)
+    .then(n => n + 5)
+    .then(n => console.log(n)); // 15
 ```
+:::
+
+### 🎯 Challenge 4: All or Nothing
+**หัวข้อ:** 4. Static Methods
+
+**โจทย์:** ถ้ามี Promise 3 ตัว และเราอยากรอให้ **เสร็จทั้งหมด** ถึงจะไปต่อ ต้องใช้คำสั่งอะไร?
+::: details ✨ ดูเฉลย
+ใช้ **`Promise.all([p1, p2, p3])`** ครับ
+:::
+
+### 🎯 Challenge 5: Error Trap
+**หัวข้อ:** 5. Error Handling
+
+**โจทย์:** ถ้า Error เกิดขึ้นใน `.then()` ตัวแรกสุด แต่มันจะถูกจับได้โดย `.catch()` ที่อยู่ท้ายสุดหรือไม่?
+::: details ✨ ดูเฉลย
+**จับได้ครับ!** Error จะไหลลงมา (Bubble down) จนกว่าจะเจอ `.catch()` ตัวแรก
 :::
 
 ---

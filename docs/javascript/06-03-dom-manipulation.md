@@ -354,67 +354,68 @@ document.body.appendChild(createTable(users));
 
 ## 8. Challenges 🏆
 
-### 🎯 Challenge 1: List Builder
-สร้าง Function `buildList(items)` ที่รับ Array ของ String แล้ว return `<ul>` พร้อม `<li>` ทุกตัว:
-```javascript
-buildList(["Apple", "Banana", "Cherry"]);
-// → <ul><li>Apple</li><li>Banana</li><li>Cherry</li></ul>
-```
+## 8. Challenges 🏆
 
+ทดสอบความเข้าใจกับโจทย์ 6 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: The Builder
+**หัวข้อ:** 1. Creating Elements
+
+**โจทย์:** สร้าง Element `<h4>` ใหม่ที่มีข้อความ "Hello DOM" และเพิ่ม Class "title" (ยังไม่ต้องใส่ในหน้าเว็บ)
 ::: details ✨ ดูเฉลย
 ```javascript
-function buildList(items) {
-    const ul = document.createElement("ul");
-    items.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = item;
-        ul.appendChild(li);
-    });
-    return ul;
-}
-
-document.body.appendChild(buildList(["Apple", "Banana", "Cherry"]));
+const h4 = document.createElement("h4");
+h4.textContent = "Hello DOM";
+h4.classList.add("title");
 ```
 :::
 
-### 🎯 Challenge 2: Replace All
-แทนที่ทุก `<p>` ในหน้าเว็บด้วย `<div>` ที่มีเนื้อหาเดิม:
+### 🎯 Challenge 2: The Appender
+**หัวข้อ:** 2. Inserting Elements
 
+**โจทย์:** จาก `h4` ในข้อ 1 ให้ใส่เข้าไปใน `<body>` เป็น **ตัวแรกสุด** (บนสุด)
 ::: details ✨ ดูเฉลย
 ```javascript
-document.querySelectorAll("p").forEach(p => {
-    const div = document.createElement("div");
-    div.textContent = p.textContent;
-    div.className = p.className; // คง Class เดิม
-    p.replaceWith(div);
-});
+document.body.prepend(h4);
 ```
 :::
 
-### 🎯 Challenge 3: Notification System
-สร้าง Function `showNotification(message, type)` ที่:
-1. สร้าง `<div class="notification">` พร้อมข้อความ
-2. เพิ่ม Class ตาม type ("success", "error", "warning")
-3. แสดง 3 วินาทีแล้วหายไป
+### 🎯 Challenge 3: The Cleaner
+**หัวข้อ:** 3. Removing Elements
 
+**โจทย์:** ลบ Element ที่มี ID `#ad-banner` ออกจากหน้าเว็บ
 ::: details ✨ ดูเฉลย
 ```javascript
-function showNotification(message, type = "success") {
-    const notification = document.createElement("div");
-    notification.classList.add("notification", type);
-    notification.textContent = message;
-
-    document.body.appendChild(notification);
-
-    // ลบหลัง 3 วินาที
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-}
-
-showNotification("บันทึกสำเร็จ!", "success");
-showNotification("เกิดข้อผิดพลาด!", "error");
+document.querySelector("#ad-banner").remove();
 ```
+:::
+
+### 🎯 Challenge 4: Cloning Lab
+**หัวข้อ:** 4. Cloning
+
+**โจทย์:** Clone ปุ่ม `#submit-btn` และนำไปใส่ไว้ต่อจากปุ่มเดิม (Duplicate ปุ่ม)
+::: details ✨ ดูเฉลย
+```javascript
+const original = document.querySelector("#submit-btn");
+const clone = original.cloneNode(true);
+original.after(clone); // หรือ parent.appendChild(clone)
+```
+:::
+
+### 🎯 Challenge 5: Performance Boost
+**หัวข้อ:** 5. DocumentFragment
+
+**โจทย์:** ถ้าจะสร้าง `<li>` 100 ตัวใส่ใน `<ul>` ควรทำอย่างไรให้เร็วที่สุด? (บอกชื่อเทคนิค)
+::: details ✨ ดูเฉลย
+ใช้ **`DocumentFragment`** ครับ ใส่ `<li>` ทั้งหมดลงใน Fragment ก่อน แล้วค่อยเอา Fragment ไป append ใส่ `<ul>` ทีเดียว
+:::
+
+### 🎯 Challenge 6: The Architect
+**หัวข้อ:** 6. createElement vs innerHTML
+
+**โจทย์:** ถ้ามีข้อมูลชื่อ user จาก Input (ที่ user พิมพ์เอง) เราควรใช้ `innerHTML` หรือ `createElement` หรือ `textContent` ในการแสดงผล? เพราะอะไร?
+::: details ✨ ดูเฉลย
+ควรใช้ **`textContent`** หรือ **`createElement`** ครับ เพื่อป้องกัน **XSS Attack** (ถ้าใช้ `innerHTML` อาจโดนฝัง Script ได้)
 :::
 
 ---

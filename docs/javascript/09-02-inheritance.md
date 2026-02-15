@@ -212,48 +212,54 @@ console.log(cat instanceof Animal); // true
 
 ## 6. Challenges 🏆
 
-### 🎯 Challenge 1: Vehicle Hierarchy
-สร้าง Class Hierarchy:
-- `Vehicle` (name, speed) → `move()`
-- `Car extends Vehicle` (+ seats) → `honk()`
-- `Truck extends Vehicle` (+ cargo) → `loadCargo()`
+## 6. Challenges 🏆
 
+ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: Family Tree
+**หัวข้อ:** 1. extends
+
+**โจทย์:** สร้าง Class `Bird` ที่ extends `Animal` และมี Method `fly()` ที่ return "Flying!"
 ::: details ✨ ดูเฉลย
 ```javascript
-class Vehicle {
-    constructor(name, speed) {
-        this.name = name;
-        this.speed = speed;
-    }
-    move() { return `${this.name} moves at ${this.speed} km/h`; }
+class Bird extends Animal {
+    fly() { return "Flying! 🐦"; }
 }
-
-class Car extends Vehicle {
-    constructor(name, speed, seats) {
-        super(name, speed);
-        this.seats = seats;
-    }
-    honk() { return `${this.name}: Beep beep! 🚗`; }
-}
-
-class Truck extends Vehicle {
-    constructor(name, speed, cargo) {
-        super(name, speed);
-        this.cargo = cargo;
-    }
-    loadCargo(item) {
-        this.cargo.push(item);
-        return `Loaded ${item} onto ${this.name} 🚛`;
-    }
-}
-
-const car = new Car("Toyota", 120, 5);
-const truck = new Truck("Hino", 80, []);
-
-console.log(car.move());         // "Toyota moves at 120 km/h"
-console.log(car.honk());         // "Toyota: Beep beep! 🚗"
-console.log(truck.loadCargo("Box")); // "Loaded Box onto Hino 🚛"
 ```
+:::
+
+### 🎯 Challenge 2: Super Caller
+**หัวข้อ:** 2. super()
+
+**โจทย์:** ถ้า `Parent` มี Constructor รับ `name` แล้ว `Child` ต้องการรับ `name` และ `age` บรรทัดแรกของ `Child Constructor` ต้องเขียนว่าอะไร?
+::: details ✨ ดูเฉลย
+```javascript
+super(name);
+```
+:::
+
+### 🎯 Challenge 3: Overrider
+**หัวข้อ:** 3. Method Overriding
+
+**โจทย์:** มี Class `Duck` ที่มี method `speak()` อยู่แล้ว ถ้าเราอยากเปลี่ยนเสียงเป็น "Quack!" เราต้องทำอย่างไรใน Class `Duck`?
+::: details ✨ ดูเฉลย
+เขียน Method `speak()` ซ้ำใน Class `Duck` ให้ return "Quack!"
+:::
+
+### 🎯 Challenge 4: Type Checker
+**หัวข้อ:** 4. instanceof
+
+**โจทย์:** `const d = new Dog();` ผลลัพธ์ของ `d instanceof Object` คืออะไร? เพราะอะไร?
+::: details ✨ ดูเฉลย
+**true** ครับ เพราะทุก Class ใน JS สืบทอดมาจาก Object (Root Class)
+:::
+
+### 🎯 Challenge 5: Relationship
+**หัวข้อ:** 5. Inheritance Vocabulary
+
+**โจทย์:** ความสัมพันธ์แบบ Inheritance เรียกว่า "IS-A" หรือ "HAS-A"?
+::: details ✨ ดูเฉลย
+**IS-A** (เป็น) เช่น Dog **IS-A** Animal
 :::
 
 ---

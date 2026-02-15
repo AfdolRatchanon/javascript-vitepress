@@ -214,95 +214,83 @@ console.log(account.balance);  // 1300
 
 ## 6. Challenges 🏆
 
-### 🎯 Challenge 1: Counter Class
-สร้าง Class `Counter` ที่มี:
-- `increment()`, `decrement()`, `reset()`
-- Getter `value` ที่ return ค่าปัจจุบัน
+## 6. Challenges 🏆
 
+ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: The Blueprint
+**หัวข้อ:** 1. Class Basics
+
+**โจทย์:** สร้าง Class `Robot` ที่มี Constructor รับ `name` และมี Method `sayHi()` ที่ return "Hello, I am [name]"
 ::: details ✨ ดูเฉลย
 ```javascript
-class Counter {
-    #count = 0;
-
-    increment() { this.#count++; return this; }
-    decrement() { this.#count--; return this; }
-    reset() { this.#count = 0; return this; }
-
-    get value() { return this.#count; }
+class Robot {
+    constructor(name) {
+        this.name = name;
+    }
+    sayHi() {
+        return `Hello, I am ${this.name}`;
+    }
 }
-
-const c = new Counter();
-c.increment().increment().increment().decrement();
-console.log(c.value); // 2
 ```
 :::
 
-### 🎯 Challenge 2: Static Factory
-สร้าง Class `Color` ที่มี Static Methods:
-- `Color.red()`, `Color.green()`, `Color.blue()` ที่สร้าง Color instance
+### 🎯 Challenge 2: Smart Bank
+**หัวข้อ:** 2. Getters & Setters
 
+**โจทย์:** สร้าง Class `Bank` ที่มี Setter `balance` ซึ่งห้ามตั้งค่าติดลบ (ถ้าติดลบให้ throw Error)
 ::: details ✨ ดูเฉลย
 ```javascript
-class Color {
-    constructor(r, g, b) {
-        this.r = r; this.g = g; this.b = b;
+class Bank {
+    constructor() { this._balance = 0; }
+    
+    set balance(val) {
+        if (val < 0) throw new Error("Balance cannot be negative");
+        this._balance = val;
     }
-
-    static red()   { return new Color(255, 0, 0); }
-    static green() { return new Color(0, 255, 0); }
-    static blue()  { return new Color(0, 0, 255); }
-
-    toString() { return `rgb(${this.r}, ${this.g}, ${this.b})`; }
+    
+    get balance() { return this._balance; }
 }
-
-console.log(Color.red().toString());  // "rgb(255, 0, 0)"
 ```
 :::
 
-### 🎯 Challenge 3: Todo List Class
-สร้าง Class `TodoList` ที่มี:
-- `add(task)` — เพิ่ม Task ใหม่
-- `complete(index)` — ทำเครื่องหมายว่าเสร็จ
-- `get pending` — Getter ที่ return จำนวน Task ที่ยังไม่เสร็จ
-- `toString()` — แสดงรายการ Task (✅ / ❌)
+### 🎯 Challenge 3: Math Utility
+**หัวข้อ:** 3. Static Methods
 
+**โจทย์:** สร้าง Class `Calculator` ที่มี Static Method `add(a, b)` เพื่อบวกเลข โดยไม่ต้องสร้าง Instance
 ::: details ✨ ดูเฉลย
 ```javascript
-class TodoList {
-    #todos = [];
-
-    add(task) {
-        this.#todos.push({ task, done: false });
-        return this;
-    }
-
-    complete(index) {
-        if (index >= 0 && index < this.#todos.length) {
-            this.#todos[index].done = true;
-        }
-        return this;
-    }
-
-    get pending() {
-        return this.#todos.filter(t => !t.done).length;
-    }
-
-    toString() {
-        return this.#todos
-            .map((t, i) => `${i + 1}. ${t.done ? "✅" : "❌"} ${t.task}`)
-            .join("\n");
+class Calculator {
+    static add(a, b) {
+        return a + b;
     }
 }
-
-const list = new TodoList();
-list.add("Learn Classes").add("Build Project").add("Review Code");
-list.complete(0);
-console.log(list.toString());
-// 1. ✅ Learn Classes
-// 2. ❌ Build Project
-// 3. ❌ Review Code
-console.log("Pending:", list.pending); // 2
+console.log(Calculator.add(5, 3)); // 8
 ```
+:::
+
+### 🎯 Challenge 4: Secret Code
+**หัวข้อ:** 4. Private Fields
+
+**โจทย์:** สร้าง Class `Secret` ที่มี Private Field `#code` และมี Method `checkCode(input)` เพื่อตรวจสอบว่ารหัสถูกต้องไหม (return true/false)
+::: details ✨ ดูเฉลย
+```javascript
+class Secret {
+    #code = "1234";
+    
+    checkCode(input) {
+        return input === this.#code;
+    }
+}
+```
+:::
+
+### 🎯 Challenge 5: Choice
+**หัวข้อ:** 5. Class vs Object
+
+**โจทย์:** ถ้าต้องการสร้าง Config ของเกมที่มีแค่ชุดเดียว ควรใช้ Class หรือ Object Literal?
+::: details ✨ ดูเฉลย
+**Object Literal** ครับ (เพราะมีแค่ชุดเดียว ไม่ต้องสร้างซ้ำ)
 :::
 
 ---

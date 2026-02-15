@@ -376,74 +376,68 @@ function toggleFullScreen() {
 
 ## 8. Challenges 🏆
 
-### 🎯 Challenge 1: Copy Button with Toast
-สร้างปุ่มที่ Copy ข้อความ แล้วแสดง Toast "Copied!" 2 วินาที:
+## 8. Challenges 🏆
 
+ทดสอบความเข้าใจกับโจทย์ 6 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: Where Am I?
+**หัวข้อ:** 1. Geolocation API
+
+**โจทย์:** คำสั่งอะไรใช้ขอพิกัดปัจจุบัน? (และต้องทำอะไรก่อนใช้?)
+::: details ✨ ดูเฉลย
+`navigator.geolocation.getCurrentPosition(...)` (ต้องขอ Permission ก่อน)
+:::
+
+### 🎯 Challenge 2: Copy Cat
+**หัวข้อ:** 2. Clipboard API
+
+**โจทย์:** เขียน Function `copy(text)` สั้นๆ เพื่อ Copy ข้อความลง Clipboard
 ::: details ✨ ดูเฉลย
 ```javascript
-const btn = document.querySelector("#copyBtn");
-btn.addEventListener("click", async () => {
+async function copy(text) {
     try {
-        await navigator.clipboard.writeText("Hello, World!");
-
-        // แสดง Toast
-        btn.textContent = "✅ Copied!";
-        btn.style.background = "#27ae60";
-        setTimeout(() => {
-            btn.textContent = "📋 Copy";
-            btn.style.background = "";
-        }, 2000);
-    } catch {
-        btn.textContent = "❌ Failed";
-    }
-});
-```
-:::
-
-### 🎯 Challenge 2: Scroll Animation
-ใช้ IntersectionObserver ทำให้ Element fade in จากล่างเมื่อ scroll ลงมา:
-
-::: details ✨ ดูเฉลย
-```javascript
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
-        }
-    });
-}, { threshold: 0.2 });
-
-document.querySelectorAll(".fade-section").forEach(el => {
-    el.style.transition = "opacity 0.6s ease, transform 0.6s ease";
-    el.style.opacity = "0";
-    el.style.transform = "translateY(30px)";
-    observer.observe(el);
-});
-```
-:::
-
-### 🎯 Challenge 3: Online Status Indicator
-สร้าง "🟢 Online" / "🔴 Offline" indicator ที่อัปเดตอัตโนมัติ:
-
-::: details ✨ ดูเฉลย
-```javascript
-const indicator = document.querySelector("#statusIndicator");
-
-function updateStatus() {
-    if (navigator.onLine) {
-        indicator.textContent = "🟢 Online";
-        indicator.style.color = "#27ae60";
-    } else {
-        indicator.textContent = "🔴 Offline";
-        indicator.style.color = "#e74c3c";
+        await navigator.clipboard.writeText(text);
+        console.log("Copied!");
+    } catch (e) {
+        console.error("Failed:", e);
     }
 }
-
-updateStatus(); // ตอนโหลดหน้า
-window.addEventListener("online", updateStatus);
-window.addEventListener("offline", updateStatus);
 ```
+:::
+
+### 🎯 Challenge 3: Ding!
+**หัวข้อ:** 3. Notification API
+
+**โจทย์:** ถ้า `Notification.permission` เป็น `"default"` เราต้องเรียกคำสั่งอะไรก่อนแสดงแจ้งเตือน?
+::: details ✨ ดูเฉลย
+`Notification.requestPermission()`
+:::
+
+### 🎯 Challenge 4: I See You
+**หัวข้อ:** 4. IntersectionObserver
+
+**โจทย์:** `IntersectionObserver` จะทำงานเมื่อไหร่? (ต่างจาก `scroll` event อย่างไร?)
+::: details ✨ ดูเฉลย
+เมื่อ **Element เข้า/ออก จากจอ** (มีประสิทธิภาพกว่า `scroll` event มาก เพราะไม่ fire ตลอดเวลา)
+:::
+
+### 🎯 Challenge 5: Query Master
+**หัวข้อ:** 5. URL & Location
+
+**โจทย์:** ถ้า URL คือ `Example.com?page=5&sort=desc` จะดึงค่า `page` ออกมาอย่างไร?
+::: details ✨ ดูเฉลย
+```javascript
+const params = new URLSearchParams(location.search);
+console.log(params.get("page")); // "5"
+```
+:::
+
+### 🎯 Challenge 6: Are you there?
+**หัวข้อ:** 6. Visibility API
+
+**โจทย์:** เหตุการณ์ (Event) ใดที่ใข้ตรวจจับว่า User สลับ Tab หรือย่อหน้าต่างลง?
+::: details ✨ ดูเฉลย
+`visibilitychange` (เช็คคู่กับ `document.hidden`)
 :::
 
 ---

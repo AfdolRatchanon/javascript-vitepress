@@ -48,11 +48,7 @@ console.log(`สินค้า 3: ${calculateTotal(500)} บาท`);  // 535
 | **Organize** (จัดระเบียบ) | แบ่งโค้ดเป็นส่วนๆ อ่านง่าย | `calculateTax()`, `formatPrice()`, `showResult()` |
 | **Modular** (แยกส่วน) | แต่ละฟังก์ชันทำงานเฉพาะทาง | สามารถทดสอบ (Test) และแก้ไขแยกส่วนได้ |
 
-### 🧠 Challenge: Functional Thinking
-ถ้าคุณต้องเขียนโค้ดเพื่อ "คำนวณภาษี" ให้กับสินค้า 100 ชิ้น การมีฟังก์ชันจะช่วยคุณได้อย่างไรเมื่อรัฐบาลประกาศ "เปลี่ยนอัตราภาษี" จาก 7% เป็น 10%?
-::: details ✨ ดูเฉลย
-คุณแค่แก้สูตรคำนวณ **ในฟังก์ชันที่เดียว** ครับ! `const tax = price * 0.07` → `const tax = price * 0.10` แค่นี้สินค้าทั้ง 100 ชิ้นจะอัปเดตตามทันที ไม่ต้องตามไปแก้ 100 จุดให้เหนื่อย
-:::
+
 
 ---
 
@@ -91,17 +87,7 @@ console.log(result); // "สวัสดี, Dolar!"
 > - ✅ `getUser()`, `calculateTotal()`, `showMessage()`, `isValid()`
 > - ❌ `data()`, `user()`, `total()` ← เหมือนชื่อ "ตัวแปร" มากกว่า
 
-### 🧠 Challenge: Name the Function
-จงตั้งชื่อฟังก์ชันที่ดีสำหรับงานเหล่านี้:
-1. ฟังก์ชันที่ตรวจสอบรหัสผ่านว่าถูกต้องไหม
-2. ฟังก์ชันที่แปลงอุณหภูมิจากเซลเซียสเป็นฟาเรนไฮต์
-3. ฟังก์ชันที่ส่งอีเมล
 
-::: details ✨ ดูเฉลย
-1. `validatePassword()` หรือ `isPasswordValid()`
-2. `convertToFahrenheit()` หรือ `celsiusToFahrenheit()`
-3. `sendEmail()`
-:::
 
 ---
 
@@ -177,28 +163,7 @@ const subtract = function(a, b) { return a - b; };
 // (Temporal Dead Zone) จนกว่าจะถึงบรรทัดที่ประกาศ
 ```
 
-### 🧠 Challenge: Hoisting Detective
-โค้ดนี้จะทำงานได้หรือไม่? ทำไม?
-```javascript
-sayHello(); // (1)?
 
-function sayHello() {
-    console.log("Hello!");
-}
-
-sayBye(); // (2)?
-
-const sayBye = function() {
-    console.log("Bye!");
-};
-```
-
-::: details ✨ ดูเฉลย
-1. ✅ **ได้!** — `sayHello` เป็น Function Declaration → ถูก Hoist ทั้งตัว
-2. ❌ **ReferenceError!** — `sayBye` เป็น Function Expression (const) → อยู่ใน TDZ
-
-**กฎง่ายๆ:** Declaration = เรียกก่อนได้, Expression = ต้องประกาศก่อนใช้
-:::
 
 ---
 
@@ -286,35 +251,7 @@ player.greetRegular(); // "Hi, I'm Dolar" ✅
 > - ✅ ใช้ Arrow Function กับ: **Callbacks**, **Array Methods** (`.map`, `.filter`), **Short expressions**
 > - ❌ ห้ามใช้ Arrow Function กับ: **Object Methods**, **Event Handlers ที่ต้องใช้ `this`**
 
-### 🧠 Challenge: The Transformer 🤖
-จงแปลงฟังก์ชันเหล่านี้ให้เป็น **Arrow Function** ที่สั้นที่สุด:
 
-```javascript
-// 1.
-function double(n) { return n * 2; }
-
-// 2.
-function greet(name) { return "Hello, " + name; }
-
-// 3.
-function isEven(n) { return n % 2 === 0; }
-
-// 4.
-function getPI() { return 3.14159; }
-```
-
-::: details ✨ ดูเฉลย
-```javascript
-const double = n => n * 2;
-const greet = name => "Hello, " + name;
-const isEven = n => n % 2 === 0;
-const getPI = () => 3.14159;
-```
-**เคล็ดลับ:**
-- Parameter ตัวเดียว → ตัดวงเล็บ `()` ออกได้
-- Body บรรทัดเดียว → ตัดปีกกา `{}` และ `return` ออกได้
-- ไม่มี Parameter → ต้องใส่ `()` ว่างๆ
-:::
 
 ---
 
@@ -364,33 +301,7 @@ console.log(operations[0](10, 5)); // 15
 console.log(operations[2](10, 5)); // 50
 ```
 
-### 🧠 Challenge: Higher-Order Function
-จงสร้างฟังก์ชัน `createGreeter(greeting)` ที่:
-- รับ `greeting` เช่น `"สวัสดี"`
-- Return ฟังก์ชันใหม่ที่รับ `name` แล้ว return `"สวัสดี, Dolar!"`
 
-```javascript
-const hello = createGreeter("Hello");
-const sawaddee = createGreeter("สวัสดี");
-
-console.log(hello("Dolar"));    // "Hello, Dolar!"
-console.log(sawaddee("Somchai")); // "สวัสดี, Somchai!"
-```
-
-::: details ✨ ดูเฉลย
-```javascript
-function createGreeter(greeting) {
-    return (name) => `${greeting}, ${name}!`;
-}
-
-const hello = createGreeter("Hello");
-const sawaddee = createGreeter("สวัสดี");
-
-console.log(hello("Dolar"));      // "Hello, Dolar!"
-console.log(sawaddee("Somchai")); // "สวัสดี, Somchai!"
-```
-**หลักการ:** ฟังก์ชัน `createGreeter` เป็น **Higher-Order Function** เพราะมัน return ฟังก์ชันอีกตัวหนึ่งออกมา
-:::
 
 ---
 
@@ -423,35 +334,7 @@ console.log(factorial(5)); // 120
 
 > **⚠️ คำเตือน:** Recursive Function **ต้องมี Base Case** (เงื่อนไขหยุด) เสมอ! ไม่งั้นจะเกิด **Stack Overflow** (หน่วยความจำล้น) เหมือน Infinite Loop
 
-### 🧠 Challenge: Countdown Recursion
-เขียนฟังก์ชัน `countdown(n)` ที่นับถอยหลังจาก `n` ถึง 0 โดยใช้ Recursion (ห้ามใช้ Loop!)
 
-```javascript
-countdown(5);
-// Output: 5, 4, 3, 2, 1, 0, "🚀 Launch!"
-```
-
-::: details ✨ ดูเฉลย
-```javascript
-function countdown(n) {
-    if (n < 0) {
-        console.log("🚀 Launch!");
-        return; // Base Case
-    }
-    console.log(n);
-    countdown(n - 1); // Recursive Call
-}
-
-countdown(5);
-// 5
-// 4
-// 3
-// 2
-// 1
-// 0
-// 🚀 Launch!
-```
-:::
 
 ---
 
@@ -506,39 +389,115 @@ console.log(addToTotal(10)); // 20 (ผลลัพธ์ต่างกัน!)
 
 ---
 
-## 9. Final Challenge: The Function Lab 🧪
+## 9. Challenges 🏆
 
-### 🎯 Challenge 1: Predict the Output
+ทดสอบความเข้าใจกับโจทย์ 8 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: The Refactor
+**หัวข้อ:** 1. Why Functions?
+
+**โจทย์:** Refactor โค้ดที่ซ้ำซ้อนนี้ให้เป็นฟังก์ชัน `calculateArea(width, height)`:
 ```javascript
-const multiply = function mul(a, b) {
-    return a * b;
-};
-
-console.log(multiply(3, 4));  // (1)?
-console.log(typeof multiply); // (2)?
-// console.log(mul(3, 4));    // (3)?
+const area1 = 5 * 10;
+const area2 = 7 * 3;
+console.log(area1, area2);
 ```
-
 ::: details ✨ ดูเฉลย
-1. **12** — ทำงานปกติ
-2. **"function"** — ใน JS ฟังก์ชันก็เป็น "ชนิดข้อมูล" ชนิดหนึ่ง!
-3. **ReferenceError** — ชื่อ `mul` เข้าถึงได้แค่จากข้างในฟังก์ชันเท่านั้น (Named Expression)
+```javascript
+function calculateArea(width, height) {
+    return width * height;
+}
+console.log(calculateArea(5, 10)); // 50
+console.log(calculateArea(7, 3));  // 21
+```
 :::
 
-### 🎯 Challenge 2: Refactor to Arrow
-แปลงโค้ดนี้ทั้งหมดเป็น Arrow Function ที่สั้นที่สุด:
-```javascript
-function isPositive(n) { return n > 0; }
-function square(n) { return n * n; }
-function getFullName(first, last) { return first + " " + last; }
-```
+### 🎯 Challenge 2: The Architect
+**หัวข้อ:** 2. Anatomy
 
+**โจทย์:** สร้างฟังก์ชัน `sayHi(name)` ที่รับชื่อและพิมพ์ "Hi, [name]!" (ใช้ Template Literal)
 ::: details ✨ ดูเฉลย
 ```javascript
-const isPositive = n => n > 0;
-const square = n => n * n;
-const getFullName = (first, last) => `${first} ${last}`;
+function sayHi(name) {
+    console.log(`Hi, ${name}!`);
+}
 ```
+:::
+
+### 🎯 Challenge 3: Hoisting Quiz
+**หัวข้อ:** 3. Declaration vs Expression
+
+**โจทย์:** เรียก `myFunc()` ก่อนประกาศ จะ Error หรือไม่? ถ้า `myFunc` สร้างด้วย `const myFunc = ...`
+::: details ✨ ดูเฉลย
+**Error ครับ (ReferenceError)** เพราะ Function Expression (ที่ใช้ `let`/`const`) ไม่ถูก Hoist แบบพร้อมใช้ (ติด TDZ)
+:::
+
+### 🎯 Challenge 4: Arrow Converter
+**หัวข้อ:** 4. Arrow Functions
+
+**โจทย์:** ย่อฟังก์ชันนี้ให้สั้นที่สุดด้วย Arrow Function:
+```javascript
+function square(n) {
+    return n * n;
+}
+```
+::: details ✨ ดูเฉลย
+```javascript
+const square = n => n * n;
+```
+:::
+
+### 🎯 Challenge 5: Callback Power
+**หัวข้อ:** 5. First-Class Citizens
+
+**โจทย์:** เขียนฟังก์ชัน `process(num, callback)` ที่เรียก `callback(num)` แล้ว return ผลลัพธ์
+::: details ✨ ดูเฉลย
+```javascript
+function process(num, callback) {
+    return callback(num);
+}
+// ตัวอย่างการใช้: process(5, n => n * 2) // 10
+```
+:::
+
+### 🎯 Challenge 6: Factorial
+**หัวข้อ:** 6. Recursion
+
+**โจทย์:** เขียน Recursive Function `factorial(n)` หาค่า n! (เช่น 5! = 5*4*3*2*1) **อย่าลืม Base Case!**
+::: details ✨ ดูเฉลย
+```javascript
+function factorial(n) {
+    if (n <= 1) return 1; // Base Case
+    return n * factorial(n - 1);
+}
+```
+:::
+
+### 🎯 Challenge 7: Secret Scope
+**หัวข้อ:** 7. IIFE
+
+**โจทย์:** สร้าง IIFE ที่ประกาศตัวแปร `secret = "Top Secret"` และพิมพ์ออกมาทันที (เพื่อไม่ให้ `secret` รั่วไปข้างนอก)
+::: details ✨ ดูเฉลย
+```javascript
+(() => {
+    const secret = "Top Secret";
+    console.log(secret);
+})();
+```
+:::
+
+### 🎯 Challenge 8: Purity Check
+**หัวข้อ:** 8. Pure Functions
+
+**โจทย์:** ฟังก์ชันนี้ Pure หรือ Impure?
+```javascript
+let count = 0;
+function increment() {
+    count++;
+}
+```
+::: details ✨ ดูเฉลย
+**Impure** ครับ เพราะมันเปลี่ยนแปลงตัวแปร `count` ที่อยู่ภายนอก (Side Effect)
 :::
 
 ---

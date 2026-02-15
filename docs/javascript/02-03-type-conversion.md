@@ -148,24 +148,6 @@ Boolean(" ");        // true ← Space = Truthy!
 | `undefined` | `"undefined"` | ยังไม่มีค่า |
 | `NaN` | `"number"` | Not a Number |
 
-### 🧠 Challenge: Truthy or Falsy?
-```javascript
-Boolean("0")      // (1)?
-Boolean([])       // (2)?
-Boolean(null)     // (3)?
-Boolean(" ")      // (4)?
-Boolean(0)        // (5)?
-Boolean("false")  // (6)?
-```
-
-::: details ✨ ดูเฉลย
-1. **`true`** — String `"0"` ไม่ใช่ String ว่าง → Truthy!
-2. **`true`** — Array ว่าง `[]` เป็น Object → Truthy! (กับดักคลาสสิก!)
-3. **`false`** — `null` เป็น Falsy
-4. **`true`** — `" "` (Space) ไม่ใช่ String ว่าง → Truthy!
-5. **`false`** — `0` เป็น Falsy
-6. **`true`** — String `"false"` ไม่ใช่ String ว่าง → Truthy! (ชื่อ "false" แต่ค่าเป็น true!)
-:::
 
 ---
 
@@ -280,59 +262,56 @@ console.log(processAge("-5"));    // "Age out of range!"
 
 ---
 
-## 5. Final Challenge: The Coercion Lab 🧪
+## 7. Challenges 🏆
 
-### 🎯 Challenge 1: Predict Every Output
-```javascript
-console.log(1 + "2" + 3);        // (1)?
-console.log(1 + 2 + "3");        // (2)?
-console.log("5" - 3);            // (3)?
-console.log("5" + 3);            // (4)?
-console.log(true + false + "1"); // (5)?
-console.log("" == false);        // (6)?
-console.log(" " == false);       // (7)?
-```
+ทดสอบความเข้าใจเรื่องการแปลงชนิดข้อมูลครับ:
 
+### 🎯 Challenge 1: The Explicit Way
+**หัวข้อ:** 1. Explicit Conversion
+
+**โจทย์:** จงแปลงค่าเหล่านี้ให้เป็น **Number** อย่างถูกต้อง:
+1. `"042"` (String)
+2. `"3.14"` (String)
+3. `"Hello"` (String)
 ::: details ✨ ดูเฉลย
-1. **`"123"`** — `1 + "2"` → `"12"` → `"12" + 3` → `"123"` (ซ้ายไปขวา !)
-2. **`"33"`** — `1 + 2` → `3` → `3 + "3"` → `"33"`
-3. **`2`** — `-` แปลงเป็น Number: `"5"` → `5` → `5 - 3` → `2`
-4. **`"53"`** — `+` กับ String: ต่อเป็น String → `"53"`
-5. **`"11"`** — `true + false` = `1 + 0` = `1` → `1 + "1"` → `"11"`
-6. **`true`** — `""` → `0`, `false` → `0`, `0 == 0` → `true`
-7. **`true`** — `" "` → `0` (whitespace ถูก trim), `false` → `0`, `0 == 0` → `true`
+```javascript
+Number("042");   // 42
+Number("3.14");  // 3.14
+Number("Hello"); // NaN
+```
 :::
 
-### 🎯 Challenge 2: Safe Input Converter
-เขียนฟังก์ชัน `safeNumber(input)` ที่:
-- แปลง Input เป็น Number
-- ถ้าแปลงไม่ได้ (NaN) → return `0` แทน
-- ถ้าเป็น Infinity → return `0`
+### 🎯 Challenge 2: The 8 Falsy Values
+**หัวข้อ:** 2. Falsy Values
 
-```javascript
-console.log(safeNumber("42"));      // 42
-console.log(safeNumber("hello"));   // 0
-console.log(safeNumber(true));      // 1
-console.log(safeNumber(null));      // 0
-console.log(safeNumber("1/0"));     // 0
-```
-
+**โจทย์:** ใน JavaScript มีค่า **Falsy** อยู่ 8 ค่า จงบอกมาให้ได้อย่างน้อย 5 ค่า!
 ::: details ✨ ดูเฉลย
-```javascript
-function safeNumber(input) {
-    const num = Number(input);
-    if (Number.isNaN(num) || !Number.isFinite(num)) {
-        return 0;
-    }
-    return num;
-}
+1. `false`
+2. `0`
+3. `-0`
+4. `0n` (BigInt zero)
+5. `""` (Empty string)
+6. `null`
+7. `undefined`
+8. `NaN`
+:::
 
-console.log(safeNumber("42"));      // 42 ✅
-console.log(safeNumber("hello"));   // 0 (NaN → 0)
-console.log(safeNumber(true));      // 1
-console.log(safeNumber(null));      // 0
-console.log(safeNumber(Infinity));  // 0 (Infinity → 0)
-```
+### 🎯 Challenge 3: Coercion Detective
+**หัวข้อ:** 3. Implicit Coercion
+
+**โจทย์:** ทำนายผลลัพธ์ของ `1 + "2" + 3` และ `1 + 2 + "3"`
+::: details ✨ ดูเฉลย
+- `1 + "2" + 3` = **`"123"`** (เจอ String ตัวแรก → เป็น String หมด)
+- `1 + 2 + "3"` = **`"33"`** (1+2=3 ก่อน แล้วค่อยต่อกับ "3")
+:::
+
+### 🎯 Challenge 4: Safe Conversion
+**หัวข้อ:** 4. Best Practices
+
+**โจทย์:** โค้ดนี้ปลอดภัยหรือไม่? `const age = userInput + 0;` (สมมติ userInput เป็น String)
+::: details ✨ ดูเฉลย
+**ไม่ปลอดภัยครับ** เพราะ `+ 0` อาจทำให้เกิด String Concatenation ได้ (เช่น "10" + 0 = "100"!)
+วิธีที่ถูกคือใช้ `Number(userInput)` ครับ
 :::
 
 ---

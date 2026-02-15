@@ -332,36 +332,108 @@ const copy = [...arr1];                   // [1, 2, 3] (Shallow Copy)
 
 ---
 
-## 8. Final Challenge: The Array Lab 🧪
+## 8. Challenges 🏆
 
-### 🎯 Challenge: Data Pipeline
-จากข้อมูลสินค้า ให้หา **ราคารวม** ของสินค้าที่ **มีในสต็อก** (inStock = true) และมี **ราคาไม่เกิน 1000 บาท**:
+ทดสอบความเข้าใจกับโจทย์ 7 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 
-```javascript
-const products = [
-    { name: "Mouse", price: 590, inStock: true },
-    { name: "Keyboard", price: 1290, inStock: true },
-    { name: "Monitor", price: 8900, inStock: false },
-    { name: "Webcam", price: 890, inStock: true },
-    { name: "USB Hub", price: 350, inStock: true },
-    { name: "Headset", price: 1500, inStock: false },
-];
-// คำตอบควรเป็น: 1830 (590 + 890 + 350)
-```
+### 🎯 Challenge 1: The Creator
+**หัวข้อ:** 1. Creating Arrays
 
+**โจทย์:** สร้าง Array `playlist` ที่มีเพลงโปรด 3 เพลง แล้วใช้ `push` เพิ่มเพลงที่ 4 เข้าไป
 ::: details ✨ ดูเฉลย
 ```javascript
-const total = products
-    .filter(p => p.inStock)           // กรองเฉพาะมีในสต็อก
-    .filter(p => p.price <= 1000)     // กรองเฉพาะราคาไม่เกิน 1000
-    .reduce((sum, p) => sum + p.price, 0); // รวมราคา
+const playlist = ["Song A", "Song B", "Song C"];
+playlist.push("Song D");
+```
+:::
 
-console.log(total); // 1830
+### 🎯 Challenge 2: Access & Update
+**หัวข้อ:** 2. Accessing Elements
 
-// หรือ filter ครั้งเดียว:
-const total2 = products
-    .filter(p => p.inStock && p.price <= 1000)
-    .reduce((sum, p) => sum + p.price, 0);
+**โจทย์:** เปลี่ยนสมาชิก "ตัวสุดท้าย" ของ Array นี้ให้เป็น `"Updated"` (โดยไม่ใช้ Index ตัวเลขตรงๆ)
+```javascript
+const data = [10, 20, 30, 40];
+```
+::: details ✨ ดูเฉลย
+```javascript
+data[data.length - 1] = "Updated";
+// หรือ data.at(-1) = "Updated"; (แต่วิธีนี้อาจยังไม่รองรับการ assign ในทุก browser)
+// ใช้ data[data.length - 1] ชัวร์ที่สุดครับสำหรับการ assign
+```
+:::
+
+### 🎯 Challenge 3: Queue Manager
+**หัวข้อ:** 3. Mutating Methods
+
+**โจทย์:** มีคิว `["A", "B"]`
+1. เพิ่ม "C" เข้าท้าย
+2. นำ "A" ออกจากหัว
+3. แทรก "VIP" ไปที่หัวแถว
+::: details ✨ ดูเฉลย
+```javascript
+const queue = ["A", "B"];
+queue.push("C");    // ["A", "B", "C"]
+queue.shift();      // ["B", "C"]
+queue.unshift("VIP"); // ["VIP", "B", "C"]
+```
+:::
+
+### 🎯 Challenge 4: Search Engine
+**หัวข้อ:** 4. Non-Mutating Methods
+
+**โจทย์:** หา "ตำแหน่ง" (Index) ของสินค้า `"Phone"` ใน Array และตรวจสอบว่ามี `"Tablet"` หรือไม่?
+```javascript
+const items = ["Laptop", "Mouse", "Phone", "Keyboard"];
+```
+::: details ✨ ดูเฉลย
+```javascript
+const phoneIdx = items.indexOf("Phone"); // 2
+const hasTablet = items.includes("Tablet"); // false
+```
+:::
+
+### 🎯 Challenge 5: Loop the Loop
+**หัวข้อ:** 5. Iterating Arrays
+
+**โจทย์:** ใช้ `for...of` เพื่อหาผลรวมของคะแนนใน Array `scores`
+```javascript
+const scores = [10, 20, 30];
+```
+::: details ✨ ดูเฉลย
+```javascript
+let total = 0;
+for (const score of scores) {
+    total += score;
+}
+console.log(total); // 60
+```
+:::
+
+### 🎯 Challenge 6: Chain Reaction
+**หัวข้อ:** 6. Method Chaining
+
+**โจทย์:** มี Array ตัวเลข `[1, -2, 3, -4, 5]` จงเขียน Chain เดียวเพื่อ:
+1. กรองเอาเฉพาะเลขบวก (`filter`)
+2. คูณ 2 ทุกตัว (`map`)
+::: details ✨ ดูเฉลย
+```javascript
+const result = [1, -2, 3, -4, 5]
+    .filter(n => n > 0)
+    .map(n => n * 2);
+console.log(result); // [2, 6, 10]
+```
+:::
+
+### 🎯 Challenge 7: Destructuring Swap
+**หัวข้อ:** 7. Destructuring & Spread
+
+**โจทย์:** สลับค่าตัวแปร `a` และ `b` โดยใช้ Array Destructuring (ห้ามใช้ตัวแปรพัก)
+```javascript
+let a = 1, b = 2;
+```
+::: details ✨ ดูเฉลย
+```javascript
+[a, b] = [b, a];
 ```
 :::
 

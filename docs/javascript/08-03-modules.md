@@ -200,61 +200,51 @@ button.addEventListener("click", async () => {
 
 ## 6. Challenges 🏆
 
-### 🎯 Challenge 1: Create a Utils Module
-สร้าง `utils.js` ที่ export:
-- `capitalize(str)` — ทำตัวอักษรแรกเป็นตัวพิมพ์ใหญ่
-- `randomInt(min, max)` — สุ่มเลขจำนวนเต็ม
+## 6. Challenges 🏆
 
+ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: Named vs Default
+**หัวข้อ:** 1. Export Types
+
+**โจทย์:** ถ้าไฟล์ `math.js` มี `export const PI = 3.14` และ `export default function add() {}` เราจะ Import ทั้งคู่ในบรรทัดเดียวอย่างไร?
 ::: details ✨ ดูเฉลย
 ```javascript
-// 📁 utils.js
-export function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-export function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-```
-
-```javascript
-// 📁 app.js
-import { capitalize, randomInt } from "./utils.js";
-
-console.log(capitalize("hello")); // "Hello"
-console.log(randomInt(1, 10));    // e.g. 7
+import add, { PI } from "./math.js";
 ```
 :::
 
-### 🎯 Challenge 2: Default + Named
-สร้าง `logger.js` ที่:
-- Default export: `class Logger`
-- Named export: `LOG_LEVELS = { INFO, WARN, ERROR }`
+### 🎯 Challenge 2: The Default Rule
+**หัวข้อ:** 2. Default Export
 
+**โจทย์:** ใน 1 ไฟล์ มี Default Export ได้กี่ตัว?
+::: details ✨ ดูเฉลย
+**1 ตัวเท่านั้น** ครับ
+:::
+
+### 🎯 Challenge 3: Browser Magic
+**หัวข้อ:** 3. Module in Browser
+
+**โจทย์:** ถ้าจะใช้ `import / export` ใน HTML ต้องเติม Attribute อะไรใน `<script>`?
+::: details ✨ ดูเฉลย
+`type="module"` ครับ (`<script type="module" src="...">`)
+:::
+
+### 🎯 Challenge 4: Alias Mastery
+**หัวข้อ:** 4. Import Alias
+
+**โจทย์:** ถ้า `import { add }` มาแล้วชื่อซ้ำกับตัวแปรที่มีอยู่ จะเปลี่ยนชื่อตอน Import เป็น `sum` ได้อย่างไร?
 ::: details ✨ ดูเฉลย
 ```javascript
-// 📁 logger.js
-export const LOG_LEVELS = {
-    INFO: "INFO",
-    WARN: "WARN",
-    ERROR: "ERROR",
-};
-
-export default class Logger {
-    log(level, message) {
-        console.log(`[${level}] ${message}`);
-    }
-}
+import { add as sum } from "./math.js";
 ```
+:::
 
-```javascript
-// 📁 app.js
-import Logger, { LOG_LEVELS } from "./logger.js";
-
-const logger = new Logger();
-logger.log(LOG_LEVELS.INFO, "App started!");
-// [INFO] App started!
-```
+### 🎯 Challenge 5: Barrel File
+**หัวข้อ:** 5. Module Patterns
+**โจทย์:** "Barrel Export" คืออะไร? และมีประโยชน์อย่างไร?
+::: details ✨ ดูเฉลย
+คือการสร้างไฟล์กลาง (เช่น `index.js`) เพื่อ **รวบรวม Export จากหลายไฟล์ไว้ที่เดียว** ทำให้คนใช้ Import จากจุดเดียวได้สะดวก
 :::
 
 ---

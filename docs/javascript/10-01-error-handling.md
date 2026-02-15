@@ -213,76 +213,60 @@ if (error) {
 
 ## 5. Challenges 🏆
 
-### 🎯 Challenge 1: Safe JSON Parse
-สร้าง `safeJSONParse(str)` ที่ return `{ data, error }`:
+## 5. Challenges 🏆
 
+ทดสอบความเข้าใจกับโจทย์ 4 ข้อ (1 ข้อต่อ 1 หัวข้อ):
+
+### 🎯 Challenge 1: Safe Division
+**หัวข้อ:** 1. try/catch/finally
+
+**โจทย์:** สร้าง Function `safeDivide(a, b)` ที่ `try` หาร `a/b` ถ้า `b` เป็น 0 ให้ `throw Error` และ `catch` เพื่อ return 0 แทน
 ::: details ✨ ดูเฉลย
 ```javascript
-function safeJSONParse(str) {
+function safeDivide(a, b) {
     try {
-        return { data: JSON.parse(str), error: null };
-    } catch (error) {
-        return { data: null, error: error.message };
-    }
-}
-
-console.log(safeJSONParse('{"name":"A"}'));  // { data: {name:"A"}, error: null }
-console.log(safeJSONParse('broken'));        // { data: null, error: "..." }
-```
-:::
-
-### 🎯 Challenge 2: Custom Error
-สร้าง `InsufficientFundsError` สำหรับระบบธนาคาร:
-
-::: details ✨ ดูเฉลย
-```javascript
-class InsufficientFundsError extends Error {
-    constructor(balance, amount) {
-        super(`Cannot withdraw ฿${amount}. Balance: ฿${balance}`);
-        this.name = "InsufficientFundsError";
-        this.balance = balance;
-        this.amount = amount;
-    }
-}
-
-function withdraw(balance, amount) {
-    if (amount > balance) throw new InsufficientFundsError(balance, amount);
-    return balance - amount;
-}
-
-try {
-    withdraw(100, 500);
-} catch (e) {
-    if (e instanceof InsufficientFundsError) {
-        console.log(e.message); // "Cannot withdraw ฿500. Balance: ฿100"
+        if (b === 0) throw new Error("Division by zero");
+        return a / b;
+    } catch (e) {
+        return 0;
     }
 }
 ```
 :::
 
-### 🎯 Challenge 3: Retry Function
-สร้าง `retry(fn, times)` ที่พยายามเรียก Function ใหม่ถ้า Error — เหมาะกับ Fetch API ที่อาจล้มเหลว:
+### 🎯 Challenge 2: Type Detective
+**หัวข้อ:** 2. Error Types
 
+**โจทย์:** ถ้าเราเขียน `const x = 10; x = 20;` จะเกิด Error ประเภทไหน?
+::: details ✨ ดูเฉลย
+**TypeError** ครับ (เพราะ Assignment to constant variable)
+:::
+
+### 🎯 Challenge 3: Password Guard
+**หัวข้อ:** 3. throw
+
+**โจทย์:** สร้าง Function `checkPass(pass)` ที่ `throw "Too Short"` ถ้าความยาว < 8
 ::: details ✨ ดูเฉลย
 ```javascript
-async function retry(fn, times = 3) {
-    for (let i = 1; i <= times; i++) {
-        try {
-            return await fn(); // สำเร็จ → return เลย!
-        } catch (error) {
-            console.warn(`ครั้งที่ ${i} ล้มเหลว: ${error.message}`);
-            if (i === times) throw error; // ครบแล้ว → โยน Error ออก!
-        }
-    }
+function checkPass(pass) {
+    if (pass.length < 8) throw "Too Short";
+    return "OK";
 }
+```
+:::
 
-// ใช้งาน:
+### 🎯 Challenge 4: Default Hero
+**หัวข้อ:** 4. Patterns
+
+**โจทย์:** ใช้ Pattern "Graceful Degradation" ในการอ่านค่า `user.name` ถ้า `user` เป็น `null` ให้ return "Guest"
+::: details ✨ ดูเฉลย
+```javascript
 try {
-    const data = await retry(() => fetch("/api/data").then(r => r.json()), 3);
-    console.log(data);
-} catch (e) {
-    console.error("ล้มเหลว 3 ครั้ง:", e.message);
+    return user.name;
+} catch {
+    return "Guest";
 }
+// หรือใช้ Optional Chaining: return user?.name || "Guest";
 ```
 :::
 

@@ -81,35 +81,7 @@ console.log(leaked);    // ✅ "I escaped!" (var — Function/Global scoped)
 
 > **กฎเหล็ก:** ใช้ `const` เป็นค่าเริ่มต้น ใช้ `let` เมื่อต้องเปลี่ยนค่า **อย่าใช้ `var` เด็ดขาด!**
 
-### 🧠 Challenge: Scope Detective 🔍
-โค้ดนี้จะ Error ที่บรรทัดไหน? ทำไม?
-```javascript
-function outer() {
-    const a = 1;
-    
-    if (true) {
-        const b = 2;
-        var c = 3;
-        console.log(a); // (1)
-        console.log(b); // (2)
-    }
-    
-    console.log(a); // (3)
-    console.log(b); // (4)
-    console.log(c); // (5)
-}
-outer();
-```
 
-::: details ✨ ดูเฉลย
-1. ✅ `1` — `a` อยู่ใน Function Scope เดียวกัน เข้าถึงจาก Block ข้างในได้
-2. ✅ `2` — `b` อยู่ใน Block เดียวกัน
-3. ✅ `1` — `a` ยังอยู่ใน Function Scope
-4. ❌ **ReferenceError!** — `b` เป็น `const` → Block Scope → ออกจาก `if {}` แล้วหมดอายุ
-5. ✅ `3` — `c` เป็น `var` → **ไม่ respect Block Scope** → รั่วออกมาอยู่ใน Function Scope
-
-**บทเรียน:** นี่คือเหตุผลที่ `var` อันตราย — มันรั่วออกจาก Block!
-:::
 
 ---
 
@@ -177,36 +149,7 @@ console.log(multiply());  // 60 (20 * 3)
 console.log(getScore());  // 5  (2 + 3) ← ไม่ใช่ 23!
 ```
 
-### 🧠 Challenge: Scope Chain Trace
-จงทำนาย Output ทุกบรรทัด:
-```javascript
-const x = "global";
 
-function a() {
-    const x = "a";
-    
-    function b() {
-        console.log(x); // (1)
-    }
-    
-    function c() {
-        const x = "c";
-        b();             // (2) b() ถูกเรียกจาก c() แต่ b() ถูก "สร้าง" ใน a()
-    }
-    
-    b(); // (3)
-    c(); // (4)
-}
-a();
-```
-
-::: details ✨ ดูเฉลย
-- (1) `"a"` — `b()` ไม่มี `x` ของตัวเอง → ค้นหาใน Scope ที่ `b` ถูก **สร้าง** (ไม่ใช่ถูกเรียก!) → พบใน `a()` → `"a"`
-- (3) `"a"` — เหมือนข้อ 1
-- (2) & (4) `"a"` — แม้ `b()` จะถูกเรียกจากภายใน `c()` แต่ Scope Chain ของ `b()` ขึ้นอยู่กับ **ตำแหน่งที่มันถูกสร้าง** (Lexical Scope) ไม่ใช่ตำแหน่งที่มันถูกเรียก!
-
-**บทเรียนสำคัญ:** JavaScript ใช้ **Lexical Scope** — Scope Chain ถูกกำหนดโดย **ตำแหน่งในโค้ด** ไม่ใช่ลำดับการเรียก
-:::
 
 ---
 
@@ -405,45 +348,7 @@ console.log(usTax(1000));   // "USA: 1000 + tax(8.25%) = 1082.5"
 console.log(jpTax(1000));   // "Japan: 1000 + tax(10%) = 1100"
 ```
 
-### 🧠 Challenge: The Secret Keeper 🤫
-จงสร้างฟังก์ชัน `createSecret(password)` ที่:
-1. เก็บ `password` เป็น Private (ข้างนอกเข้าถึงไม่ได้)
-2. Return Object ที่มี Method:
-   - `check(attempt)` → return `true` ถ้า `attempt === password`
-   - `hint()` → return ตัวอักษรตัวแรกของ password ตามด้วย `"***"`
 
-```javascript
-const mySecret = createSecret("JavaScript123");
-
-console.log(mySecret.check("wrong"));       // false
-console.log(mySecret.check("JavaScript123")); // true
-console.log(mySecret.hint());               // "J***"
-// console.log(mySecret.password);           // undefined (ซ่อนอยู่)
-```
-
-::: details ✨ ดูเฉลย
-```javascript
-function createSecret(password) {
-    // password ถูก Closure จดจำ แต่ข้างนอกเข้าถึงโดยตรงไม่ได้!
-    return {
-        check(attempt) {
-            return attempt === password;
-        },
-        hint() {
-            return password[0] + "***";
-        },
-    };
-}
-
-const mySecret = createSecret("JavaScript123");
-
-console.log(mySecret.check("wrong"));         // false
-console.log(mySecret.check("JavaScript123")); // true
-console.log(mySecret.hint());                 // "J***"
-console.log(mySecret.password);               // undefined ← ซ่อนอยู่!
-```
-**หลักการ:** `password` ถูก "ขัง" อยู่ใน Closure ของ `createSecret` — เข้าถึงได้เฉพาะผ่าน Methods ที่เราอนุญาตเท่านั้น
-:::
 
 ---
 
@@ -540,67 +445,108 @@ console.log(UserModule.count());  // 2
 
 ---
 
-## 7. Final Challenge: Scope & Closure Lab 🧪
+## 7. Challenges 🏆
 
-### 🎯 Challenge: The Timer Factory
-สร้าง `createTimer(name)` ที่:
-1. มี Private `seconds` เริ่มที่ 0
-2. `tick()` — เพิ่ม seconds ทีละ 1 แล้วแสดงผล
-3. `reset()` — รีเซ็ตเป็น 0
-4. `getTime()` — return ค่า seconds ปัจจุบัน
+ทดสอบความเข้าใจกับโจทย์ 6 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 
+### 🎯 Challenge 1: Scope Identification
+**หัวข้อ:** 1. Scope
+
+**โจทย์:** ตัวแปร `x`, `y`, `z` อยู่ใน Scope ไหนบ้าง? (Global, Function, หรือ Block)
 ```javascript
-const timer1 = createTimer("Cooking");
-const timer2 = createTimer("Studying");
-
-timer1.tick(); // "Cooking: 1s"
-timer1.tick(); // "Cooking: 2s"
-timer1.tick(); // "Cooking: 3s"
-
-timer2.tick(); // "Studying: 1s" ← timer คนละตัว!
-
-timer1.reset();
-timer1.tick(); // "Cooking: 1s" ← กลับมาเริ่มใหม่!
+const x = 1;
+function test() {
+    const y = 2;
+    if (true) {
+        const z = 3;
+    }
+}
 ```
+::: details ✨ ดูเฉลย
+- `x`: Global Scope
+- `y`: Function Scope
+- `z`: Block Scope
+:::
 
+### 🎯 Challenge 2: Shadow Hunter
+**หัวข้อ:** 2. Scope Chain
+
+**โจทย์:** ผลลัพธ์คืออะไร? และทำไม?
+```javascript
+const n = 10;
+function show() {
+    const n = 20;
+    console.log(n);
+}
+show();
+```
+::: details ✨ ดูเฉลย
+**20** ครับ เพราะเกิด **Variable Shadowing** (ตัวแปรข้างในบังตัวแปรข้างนอก)
+:::
+
+### 🎯 Challenge 3: Var Leak
+**หัวข้อ:** 3. Var Problem
+
+**โจทย์:** พิสูจน์ว่า `var` รั่วออกจาก `if` block แต่ `let` ไม่รั่ว
 ::: details ✨ ดูเฉลย
 ```javascript
-function createTimer(name) {
-    let seconds = 0; // Closure: ซ่อนไว้ข้างใน
+if (true) {
+    var a = "I leak";
+    let b = "I stay";
+}
+console.log(a); // "I leak"
+// console.log(b); // ReferenceError
+```
+:::
 
+### 🎯 Challenge 4: Simple Closure
+**หัวข้อ:** 4. Closures
+
+**โจทย์:** สร้างฟังก์ชัน `adder(x)` ที่ return ฟังก์ชันใหม่ที่เอาค่า `y` มาบวกกับ `x`
+```javascript
+const add5 = adder(5);
+console.log(add5(10)); // 15
+```
+::: details ✨ ดูเฉลย
+```javascript
+function adder(x) {
+    return function(y) {
+        return x + y;
+    }
+}
+```
+:::
+
+### 🎯 Challenge 5: Loop Fixer
+**หัวข้อ:** 5. Closures + Loops
+
+**โจทย์:** แก้โค้ดนี้ให้พิมพ์ 0, 1, 2 (ห้ามแก้ `setTimeout`)
+```javascript
+for (var i = 0; i < 3; i++) {
+    setTimeout(() => console.log(i), 100);
+}
+```
+::: details ✨ ดูเฉลย
+เปลี่ยน `var` เป็น `let` ครับ!
+```javascript
+for (let i = 0; i < 3; i++) { ... }
+```
+:::
+
+### 🎯 Challenge 6: Private Counter
+**หัวข้อ:** 6. Module Pattern
+
+**โจทย์:** สร้าง `createCounter()` ที่มีตัวแปร `count` (Private) และมี 2 method คือ `inc()` (เพิ่มค่า) และ `show()` (แสดงค่า)
+::: details ✨ ดูเฉลย
+```javascript
+function createCounter() {
+    let count = 0;
     return {
-        tick() {
-            seconds++;
-            console.log(`${name}: ${seconds}s`);
-        },
-        reset() {
-            seconds = 0;
-            console.log(`${name}: Reset!`);
-        },
-        getTime() {
-            return seconds;
-        },
+        inc() { count++; },
+        show() { console.log(count); }
     };
 }
-
-const timer1 = createTimer("Cooking");
-const timer2 = createTimer("Studying");
-
-timer1.tick();  // "Cooking: 1s"
-timer1.tick();  // "Cooking: 2s"
-timer1.tick();  // "Cooking: 3s"
-timer2.tick();  // "Studying: 1s"
-timer1.reset(); // "Cooking: Reset!"
-timer1.tick();  // "Cooking: 1s"
-
-console.log(timer1.getTime()); // 1
-console.log(timer2.getTime()); // 1
 ```
-
-**สิ่งที่ได้ฝึก:**
-- **Closure** เก็บ `seconds` และ `name` เป็น Private
-- แต่ละ Timer มี **State เป็นของตัวเอง**
-- **Module Pattern** ในรูปแบบ Factory Function
 :::
 
 ---

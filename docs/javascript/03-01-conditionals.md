@@ -299,68 +299,100 @@ console.log(value2); // "Default" ✅
 
 ---
 
-## 6. Final Challenge: The Decision Lab 🧪
+## 6. Challenges 🏆
 
-### 🎯 Challenge 1: Season Finder
-เขียนฟังก์ชัน `getSeason(month)` ที่รับเลขเดือน (1-12) แล้ว Return ฤดูกาล:
-- 12, 1, 2 → "❄️ Winter"
-- 3, 4, 5 → "🌸 Spring"
-- 6, 7, 8 → "☀️ Summer"
-- 9, 10, 11 → "🍂 Autumn"
-- อื่นๆ → "Invalid month"
+ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 
-ลองเขียนทั้งแบบ `if/else` และ แบบ `switch`
+### 🎯 Challenge 1: The Bouncer
+**หัวข้อ:** 1. if / else if / else
 
+**โจทย์:** เขียนฟังก์ชัน `checkAge(age)`:
+- อายุ < 18: "ห้ามเข้า"
+- อายุ 18-20: "เข้าได้แต่ห้ามดื่ม"
+- อายุ 21+: "จัดไปวัยรุ่น"
 ::: details ✨ ดูเฉลย
 ```javascript
-// แบบ if/else
-function getSeason(month) {
-    if (month === 12 || month === 1 || month === 2) return "❄️ Winter";
-    if (month >= 3 && month <= 5) return "🌸 Spring";
-    if (month >= 6 && month <= 8) return "☀️ Summer";
-    if (month >= 9 && month <= 11) return "🍂 Autumn";
-    return "Invalid month";
+function checkAge(age) {
+    if (age < 18) return "ห้ามเข้า";
+    if (age <= 20) return "เข้าได้แต่ห้ามดื่ม";
+    return "จัดไปวัยรุ่น";
 }
-
-// แบบ switch
-function getSeasonSwitch(month) {
-    switch (month) {
-        case 12: case 1: case 2: return "❄️ Winter";
-        case 3: case 4: case 5: return "🌸 Spring";
-        case 6: case 7: case 8: return "☀️ Summer";
-        case 9: case 10: case 11: return "🍂 Autumn";
-        default: return "Invalid month";
-    }
-}
-
-console.log(getSeason(7));   // "☀️ Summer"
-console.log(getSeason(12));  // "❄️ Winter"
-console.log(getSeason(13));  // "Invalid month"
 ```
 :::
 
-### 🎯 Challenge 2: Ticket Pricing
-เขียนฟังก์ชัน `getTicketPrice(age, isStudent)` ที่:
-- อายุ < 5 → ฟรี (0 บาท)
-- อายุ 5-12 → 50 บาท
-- อายุ 13-59 → 100 บาท (ถ้าเป็นนักเรียน 70 บาท)
-- อายุ 60+ → 60 บาท
+### 🎯 Challenge 2: Short & Sweet
+**หัวข้อ:** 2. Ternary Operator
 
+**โจทย์:** แปลงโค้ด `if/else` นี้ให้เป็น **Ternary Operator (บรรทัดเดียว)**:
+```javascript
+let status;
+if (score >= 50) {
+    status = "Pass";
+} else {
+    status = "Fail";
+}
+```
 ::: details ✨ ดูเฉลย
 ```javascript
-function getTicketPrice(age, isStudent = false) {
-    if (age < 0) return "Invalid age";
-    if (age < 5) return 0;
-    if (age <= 12) return 50;
-    if (age <= 59) return isStudent ? 70 : 100;
-    return 60; // 60+
-}
+const status = score >= 50 ? "Pass" : "Fail";
+```
+:::
 
-console.log(getTicketPrice(3));         // 0
-console.log(getTicketPrice(10));        // 50
-console.log(getTicketPrice(25));        // 100
-console.log(getTicketPrice(25, true));  // 70
-console.log(getTicketPrice(65));        // 60
+### 🎯 Challenge 3: The Switch
+**หัวข้อ:** 3. switch Statement
+
+**โจทย์:** เขียน `switch` เพื่อแปลง `grade` ("A", "B", "C") เป็นคำชม:
+- "A" → "Excellent"
+- "B" → "Good"
+- "C" → "Okay"
+- อื่นๆ → "Unknown"
+::: details ✨ ดูเฉลย
+```javascript
+switch (grade) {
+    case "A": console.log("Excellent"); break;
+    case "B": console.log("Good"); break;
+    case "C": console.log("Okay"); break;
+    default: console.log("Unknown");
+}
+```
+:::
+
+### 🎯 Challenge 4: Guard Your Code
+**หัวข้อ:** 4. Guard Clauses
+
+**โจทย์:** Refactor ฟังก์ชันนี้โดยใช้ **Guard Clause** เพื่อลด Nesting:
+```javascript
+function login(user) {
+    if (user) {
+        if (user.isVerified) {
+            return "Welcome!";
+        } else {
+            return "Please verify email";
+        }
+    } else {
+        return "No user found";
+    }
+}
+```
+::: details ✨ ดูเฉลย
+```javascript
+function login(user) {
+    if (!user) return "No user found";
+    if (!user.isVerified) return "Please verify email";
+    return "Welcome!";
+}
+```
+:::
+
+### 🎯 Challenge 5: Logic Master
+**หัวข้อ:** 5. Logical Operators
+
+**โจทย์:** ใช้ `??` (Nullish Coalescing) เพื่อกำหนดค่า Default ให้ `username` เป็น "Anonymous" ถ้าค่าที่รับมาเป็น `null` หรือ `undefined` (แต่ถ้าเป็น `""` ให้ใช้ค่าว่างได้)
+::: details ✨ ดูเฉลย
+```javascript
+const displayName = inputName ?? "Anonymous";
+// ถ้า inputName = "" → displayName = "" (ถูกต้อง)
+// ถ้าใช้ || จะได้ "Anonymous" (ผิดโจทย์)
 ```
 :::
 

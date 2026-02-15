@@ -67,24 +67,7 @@
 | **Child** | โหนดลูก (ชั้นล่าง) | `<h1>` เป็น Child ของ `<body>` |
 | **Sibling** | โหนดพี่น้อง (ชั้นเดียวกัน) | `<h1>` กับ `<p>` เป็น Siblings |
 
-### 🧠 Challenge: DOM Tree Drawing
-จาก HTML นี้ ลองวาด DOM Tree ดูครับ:
-```html
-<div>
-  <h2>Title</h2>
-  <p>Paragraph</p>
-</div>
-```
 
-::: details ✨ ดูเฉลย
-```
-    div
-   /   \
-  h2    p
-  │     │
-"Title" "Paragraph"
-```
-:::
 
 ---
 
@@ -142,28 +125,7 @@ allLi.forEach((li, index) => {
 
 > **⭐ Best Practice:** ใช้ `querySelector()` / `querySelectorAll()` เป็นหลัก — ยืดหยุ่นที่สุดเพราะรับ CSS Selector ได้!
 
-### 🧠 Challenge: Select the Element
-HTML:
-```html
-<div class="card">
-  <h2 id="card-title">Profile</h2>
-  <p class="card-text">Hello World</p>
-</div>
-```
 
-จงเขียน JS เพื่อหยิบ `<p class="card-text">` ขึ้นมา (ใช้ได้ 2 วิธี):
-
-::: details ✨ ดูเฉลย
-```javascript
-// วิธี 1: querySelector with class
-const text = document.querySelector(".card-text");
-
-// วิธี 2: querySelector with nested selector
-const text2 = document.querySelector(".card > .card-text");
-
-console.log(text.textContent);  // "Hello World"
-```
-:::
 
 ---
 
@@ -318,16 +280,7 @@ console.log(card.classList); // DOMTokenList ["card", "shadow", "rounded"]
 
 > **⭐ Best Practice:** ใช้ `classList` แทน `.style` เมื่อทำได้ — เพราะแยก Logic (JS) ออกจาก Presentation (CSS) ได้สะอาดกว่า!
 
-### 🧠 Challenge: Dark Mode Toggle
-เขียน JS เพื่อสลับ Class `"dark-mode"` บน `<body>`:
 
-::: details ✨ ดูเฉลย
-```javascript
-document.body.classList.toggle("dark-mode");
-// กดครั้งแรก → เพิ่ม dark-mode
-// กดครั้งที่สอง → ลบ dark-mode
-```
-:::
 
 ---
 
@@ -377,57 +330,67 @@ console.log(active.nextElementSibling);     // <li>Contact</li>
 
 ## 7. Challenges 🏆
 
-### 🎯 Challenge 1: DOM Detective
-ให้ HTML:
-```html
-<main>
-  <section id="hero">
-    <h1>Welcome</h1>
-    <p>Read more below</p>
-  </section>
-</main>
-```
+ทดสอบความเข้าใจกับโจทย์ 6 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 
-เขียน JS เพื่อ:
-1. เปลี่ยนข้อความ `<h1>` เป็น `"Hello, World!"`
-2. เปลี่ยนสีพื้นหลังของ `<section>` เป็น `"#f0f0f0"`
-3. เพิ่ม Class `"highlighted"` ให้ `<p>`
+### 🎯 Challenge 1: Tree Inspector
+**หัวข้อ:** 1. DOM Basics
 
+**โจทย์:** จาก HTML `<div id="box"><p>Text</p></div>` ถ้าเราใช้ `document.querySelector("#box")` จะได้ Element อะไร? และมี Child กี่ตัว?
+::: details ✨ ดูเฉลย
+ได้ Element `<div>` และมี Child 1 ตัวคือ `<p>` (ไม่นับ Text Node ถ้าพูดถึง Element children)
+:::
+
+### 🎯 Challenge 2: The Selector
+**หัวข้อ:** 2. Selecting Elements
+
+**โจทย์:** เขียนคำสั่ง `querySelector` เพื่อเลือก `<span>` ที่อยู่ใน `<div class="content">`
 ::: details ✨ ดูเฉลย
 ```javascript
-// 1. เปลี่ยนข้อความ
-document.querySelector("#hero h1").textContent = "Hello, World!";
-
-// 2. เปลี่ยนสีพื้นหลัง
-document.querySelector("#hero").style.backgroundColor = "#f0f0f0";
-
-// 3. เพิ่ม Class
-document.querySelector("#hero p").classList.add("highlighted");
+const span = document.querySelector(".content span");
 ```
 :::
 
-### 🎯 Challenge 2: Attribute Master
-```html
-<a id="link" href="https://google.com" target="_blank">Google</a>
+### 🎯 Challenge 3: Text vs HTML
+**หัวข้อ:** 3. Content
+
+**โจทย์:** ถ้าต้องการใส่ข้อความ `<b>Bold</b>` ลงใน Element โดยให้ **แสดงตัวหนาจริงๆ** ต้องใช้ Property อะไร? (`textContent` หรือ `innerHTML`)
+::: details ✨ ดูเฉลย
+ต้องใช้ **`innerHTML`** ครับ (ถ้า `textContent` จะเห็น tags `<b>` เป็นข้อความธรรมดา)
+```javascript
+el.innerHTML = "<b>Bold</b>";
 ```
+:::
 
-เขียน JS เพื่อ:
-1. อ่านค่า `href` ของลิงค์
-2. เปลี่ยน `href` เป็น `"https://mdn.dev"`
-3. เปลี่ยนข้อความจาก "Google" เป็น "MDN"
+### 🎯 Challenge 4: Attribute Swap
+**หัวข้อ:** 4. Attributes
 
+**โจทย์:** เปลี่ยนรูปภาพ `<img src="cat.jpg">` ให้กลายเป็น "dog.jpg"
 ::: details ✨ ดูเฉลย
 ```javascript
-const link = document.querySelector("#link");
+const img = document.querySelector("img");
+img.src = "dog.jpg";
+// หรือ img.setAttribute("src", "dog.jpg");
+```
+:::
 
-// 1. อ่าน href
-console.log(link.getAttribute("href")); // "https://google.com"
+### 🎯 Challenge 5: Styling Up
+**หัวข้อ:** 5. Styling
 
-// 2. เปลี่ยน href
-link.setAttribute("href", "https://mdn.dev");
+**โจทย์:** จงเปลี่ยนสีพื้นหลังของ `body` เป็น "black" และสีตัวอักษรเป็น "white" โดยใช้ JS
+::: details ✨ ดูเฉลย
+```javascript
+document.body.style.backgroundColor = "black";
+document.body.style.color = "white";
+```
+:::
 
-// 3. เปลี่ยนข้อความ
-link.textContent = "MDN";
+### 🎯 Challenge 6: Family Travel
+**หัวข้อ:** 6. Traversing
+
+**โจทย์:** จาก `const btn = document.querySelector("button")` จงหา **Parent Element** ของปุ่มนี้
+::: details ✨ ดูเฉลย
+```javascript
+const parent = btn.parentElement;
 ```
 :::
 
