@@ -231,7 +231,6 @@ console.log(names); // ["Dolar", "Somchai"]
 
 ## 6. Challenges 🏆
 
-## 6. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 

@@ -387,6 +387,20 @@ console.log(addToTotal(10)); // 20 (ผลลัพธ์ต่างกัน!)
 
 > **Best Practice:** พยายามเขียน **Pure Functions** ให้มากที่สุด เพราะ Debug ง่าย ทดสอบง่าย และ Predict ผลลัพธ์ได้แน่นอน
 
+## Real-World Use Case: Utility Functions ในโปรเจกต์จริง 🌐
+
+```javascript
+// ฟังก์ชันที่ใช้ซ้ำบ่อยในทุกโปรเจกต์
+const formatPrice = (price) => "฿" + price.toLocaleString();
+const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+console.log(formatPrice(42900));    // "฿42,900"
+console.log(capitalize("hello"));   // "Hello"
+console.log(clamp(150, 0, 100));    // 100
+```
+
 ---
 
 ## 9. Challenges 🏆

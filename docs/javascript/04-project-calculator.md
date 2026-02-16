@@ -54,34 +54,101 @@ console.log(calculate(10, 0, "divide"));   // Infinity (ใน JS หาร 0 �
 console.log(calculate(10, 5, "power"));    // Error: Invalid operation
 ```
 
-## 5. Challenge: Level Up! 🚀
+## 5. Challenges 🚀
+
 โค้ดข้างบนยัง "ดิบ" อยู่ครับ มาช่วยกันเติมฟีเจอร์หน่อย:
 
-1.  **Handle Division by Zero:** ถ้าบวกหารด้วย 0 ให้ Return ว่า "Cannot divide by zero!"
+### 🎯 Challenge 1: Handle Edge Cases
+1.  **Division by Zero:** ถ้าหารด้วย 0 ให้ Return ว่า "Cannot divide by zero!"
 2.  **Power Operation:** เพิ่มฟังก์ชัน `power(a, b)` (ยกกำลัง) และรองรับใน Switch
 
-::: details ✨ ดูเฉลย (Solution)
+::: details ✨ ดูเฉลย
 ```javascript
-// 1. Update divide helper
 const divide = (a, b) => {
     if (b === 0) return "Cannot divide by zero!";
     return a / b;
 };
 
-// 2. Add power helper
 const power = (a, b) => a ** b;
 
-// 3. Update switch
 function calculate(a, b, operation) {
     switch (operation) {
-        // ... (existing cases)
-        case "divide": 
-            return divide(a, b); // เรียกตัวใหม่ที่มี check 0
-        case "power":
-            return power(a, b);
-        // ...
+        case "add":      return add(a, b);
+        case "subtract": return subtract(a, b);
+        case "multiply": return multiply(a, b);
+        case "divide":   return divide(a, b);
+        case "power":    return power(a, b);
+        default:         return "Error: Invalid operation";
     }
 }
+```
+:::
+
+### 🎯 Challenge 2: Higher-Order Calculator
+แทนที่จะใช้ `switch` ลองเปลี่ยนเป็น **Object ที่เก็บ Functions** (Higher-Order Function Pattern):
+
+*   **Hint:** สร้าง Object `const operations = { add: (a,b) => a+b, ... }` แล้วเรียกด้วย `operations[operation](a, b)`
+
+::: details ✨ ดูเฉลย
+```javascript
+const operations = {
+    add:      (a, b) => a + b,
+    subtract: (a, b) => a - b,
+    multiply: (a, b) => a * b,
+    divide:   (a, b) => b === 0 ? "Cannot divide by zero!" : a / b,
+    power:    (a, b) => a ** b,
+    modulo:   (a, b) => a % b,
+};
+
+function calculate(a, b, operation) {
+    const fn = operations[operation];
+    if (!fn) return "Error: Unknown operation '" + operation + "'";
+    return fn(a, b);
+}
+
+// ใช้งาน:
+console.log(calculate(10, 3, "add"));     // 13
+console.log(calculate(10, 3, "modulo"));  // 1
+console.log(calculate(10, 3, "sqrt"));    // Error: Unknown operation 'sqrt'
+```
+> วิธีนี้เจ๋งกว่า `switch` เพราะ **เพิ่ม operation ใหม่ไม่ต้องแก้ if/switch** แค่เพิ่มใน Object!
+:::
+
+### 🎯 Challenge 3: Calculator with History
+เพิ่มระบบ **ประวัติการคำนวณ** ที่บันทึกทุกครั้งที่ calculate แล้วแสดงออกมาได้:
+
+```javascript
+// ตัวอย่างการใช้งาน:
+calc(10, 5, "add");      // 15
+calc(20, 4, "divide");   // 5
+showHistory();
+// Output:
+// 1. 10 add 5 = 15
+// 2. 20 divide 4 = 5
+```
+
+::: details ✨ ดูเฉลย
+```javascript
+const history = [];
+
+function calc(a, b, operation) {
+    const result = calculate(a, b, operation);  // ใช้ calculate จาก Challenge 2
+    history.push({ a, b, operation, result });
+    return result;
+}
+
+function showHistory() {
+    console.log("--- Calculator History ---");
+    history.forEach((entry, index) => {
+        console.log(`${index + 1}. ${entry.a} ${entry.operation} ${entry.b} = ${entry.result}`);
+    });
+}
+
+// ทดสอบ:
+calc(10, 5, "add");
+calc(20, 4, "divide");
+calc(2, 10, "power");
+showHistory();
 ```
 :::
 

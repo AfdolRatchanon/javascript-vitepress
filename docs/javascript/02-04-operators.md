@@ -297,6 +297,25 @@ console.log(status); // "Adult"
 // if (age >= 18) { status = "Adult"; } else { status = "Minor"; }
 ```
 
+## Real-World Use Case: Operators ในระบบตะกร้าสินค้า 🌐
+
+```javascript
+// คำนวณราคาสินค้า
+const price = 590;
+const quantity = 3;
+const subtotal = price * quantity;        // 1,770 (Arithmetic)
+
+// ตรวจสอบ Free Shipping
+const hasFreeShipping = subtotal >= 1500; // true (Comparison)
+
+// คำนวณราคาสุดท้าย
+const shipping = hasFreeShipping ? 0 : 50;  // 0 (Ternary)
+const discount = subtotal > 1000 && hasFreeShipping ? 0.05 : 0; // 5% (Logical)
+const total = subtotal * (1 - discount) + shipping; // 1,681.50
+
+console.log("Total: ฿" + total.toFixed(2));
+```
+
 ---
 
 ## 7. Challenges 🏆

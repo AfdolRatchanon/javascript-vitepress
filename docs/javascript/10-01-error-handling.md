@@ -211,9 +211,46 @@ if (error) {
 
 ---
 
-## 5. Challenges 🏆
+## 5. Real-World Use Case: Form Validation with Custom Errors 🌐
 
-## 5. Challenges 🏆
+ในโปรเจกต์จริง Custom Error ช่วยแยกประเภทปัญหาได้ชัดเจน:
+
+```javascript
+class ValidationError extends Error {
+    constructor(field, message) {
+        super(message);
+        this.name = "ValidationError";
+        this.field = field;
+    }
+}
+
+function validateRegistration(data) {
+    if (!data.email.includes("@")) {
+        throw new ValidationError("email", "อีเมลไม่ถูกต้อง");
+    }
+    if (data.password.length < 8) {
+        throw new ValidationError("password", "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร");
+    }
+    return true;
+}
+
+// ใช้งาน:
+try {
+    validateRegistration({ email: "test", password: "123" });
+} catch (error) {
+    if (error instanceof ValidationError) {
+        // แสดง Error ที่ช่อง Input ที่ผิด
+        showFieldError(error.field, error.message);
+    } else {
+        // Error อื่นๆ ที่ไม่คาดคิด
+        console.error("Unexpected:", error);
+    }
+}
+```
+
+---
+
+## 6. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 4 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 

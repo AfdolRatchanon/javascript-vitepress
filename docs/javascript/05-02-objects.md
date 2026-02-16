@@ -353,6 +353,33 @@ console.log(company.employees[0].name);     // "Dolar"
 console.log(company.address?.country?.code); // undefined (ไม่ Error!)
 ```
 
+## Real-World Use Case: User Profile System 🌐
+
+```javascript
+const user = {
+    id: 42,
+    name: "Dolar",
+    email: "dolar@example.com",
+    settings: {
+        theme: "dark",
+        language: "th",
+        notifications: { email: true, push: false }
+    },
+
+    getDisplayName() {
+        return this.name + " (#" + this.id + ")";
+    },
+
+    toggleTheme() {
+        this.settings.theme = this.settings.theme === "dark" ? "light" : "dark";
+    }
+};
+
+console.log(user.getDisplayName()); // "Dolar (#42)"
+user.toggleTheme();
+console.log(user.settings.theme);   // "light"
+```
+
 ---
 
 ## 9. Challenges 🏆

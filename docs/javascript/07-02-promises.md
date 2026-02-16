@@ -230,11 +230,28 @@ const myPromise = new Promise((resolve, reject) => {
 });
 ```
 
+## Real-World Use Case: โหลดข้อมูลหลาย API พร้อมกัน 🌐
+
+```javascript
+// Dashboard ต้องโหลดข้อมูลจาก 3 API พร้อมกัน
+async function loadDashboard() {
+    const [users, orders, stats] = await Promise.all([
+        fetch("/api/users").then(r => r.json()),
+        fetch("/api/orders").then(r => r.json()),
+        fetch("/api/stats").then(r => r.json()),
+    ]);
+
+    renderUsers(users);
+    renderOrders(orders);
+    renderStats(stats);
+}
+// 3 requests พร้อมกัน แทนที่จะรอทีละอัน → เร็วขึ้น 3 เท่า!
+```
+
 ---
 
 ## 6. Challenges 🏆
 
-## 6. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 

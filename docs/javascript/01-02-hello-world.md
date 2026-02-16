@@ -242,6 +242,23 @@ console.log(getObjectFixed()); // { name: "Dolar" } ✅
 
 > **Best Practice:** เติม `;` เองทุกบรรทัด — อย่าพึ่ง ASI ครับ!
 
+## Real-World Use Case: console.log ในงานจริง 🌐
+
+`console.log` ไม่ได้ใช้แค่ตอนเรียน — Developer มืออาชีพก็ใช้ทุกวัน:
+
+```javascript
+// 1. Debug ข้อมูลจาก API
+console.log("API Response:", data);
+
+// 2. ตรวจสอบค่าตัวแปรระหว่าง Development
+console.log("User logged in:", user.email);
+
+// 3. วัด Performance
+console.time("render");
+renderPage();
+console.timeEnd("render"); // "render: 42ms"
+```
+
 ---
 
 ## 7. Challenges 🏆

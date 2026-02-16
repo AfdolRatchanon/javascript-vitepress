@@ -210,9 +210,52 @@ console.log(cat instanceof Animal); // true
 
 ---
 
-## 6. Challenges 🏆
+## 6. Real-World Use Case: UI Component Hierarchy 🌐
 
-## 6. Challenges 🏆
+ในการพัฒนาเว็บจริง Inheritance ใช้สร้าง Component ที่มีพฤติกรรมร่วมกัน:
+
+```javascript
+class BaseComponent {
+    constructor(selector) {
+        this.element = document.querySelector(selector);
+    }
+
+    show() { this.element.style.display = "block"; }
+    hide() { this.element.style.display = "none"; }
+    
+    render(html) {
+        this.element.innerHTML = html;
+    }
+}
+
+class Modal extends BaseComponent {
+    constructor(selector) {
+        super(selector);
+        this.isOpen = false;
+    }
+
+    open() {
+        this.isOpen = true;
+        super.show();  // เรียก Parent method
+        this.element.classList.add("modal-active");
+    }
+
+    close() {
+        this.isOpen = false;
+        super.hide();
+        this.element.classList.remove("modal-active");
+    }
+}
+
+// ใช้งาน:
+const loginModal = new Modal("#login-modal");
+loginModal.open();    // แสดง Modal + animation
+loginModal.close();   // ซ่อน Modal
+```
+
+---
+
+## 7. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 

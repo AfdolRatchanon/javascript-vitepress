@@ -255,11 +255,35 @@ console.log(b.settings.theme); // "light" — b โดนเปลี่ยน�
 | **`hasOwnProperty()`** | เช็ค Property ของตัวเอง | `obj.hasOwnProperty("name")` |
 | **Class = Sugar** | Class เป็นแค่ Syntax Sugar | `class X {}` ≡ `function X() {}` |
 
+## Real-World Use Case: Extend Built-in Methods อย่างปลอดภัย 🌐
+
+```javascript
+// ❌ ห้ามแก้ Built-in Prototype โดยตรง!
+// Array.prototype.last = function() { ... }
+
+// ✅ สร้าง Utility Class แทน
+class ArrayUtils {
+    static last(arr) {
+        return arr[arr.length - 1];
+    }
+
+    static chunk(arr, size) {
+        const chunks = [];
+        for (let i = 0; i < arr.length; i += size) {
+            chunks.push(arr.slice(i, i + size));
+        }
+        return chunks;
+    }
+}
+
+console.log(ArrayUtils.last([1, 2, 3]));       // 3
+console.log(ArrayUtils.chunk([1,2,3,4,5], 2)); // [[1,2],[3,4],[5]]
+```
+
 ---
 
 ## 7. Challenges 🏆
 
-## 7. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 

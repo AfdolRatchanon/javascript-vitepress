@@ -196,11 +196,53 @@ button.addEventListener("click", async () => {
 });
 ```
 
+### ⚠️ Common Mistakes:
+
+```javascript
+// ❌ ลืมนามสกุลไฟล์ใน Browser
+import { add } from "./math";     // ❌ ใน Browser ต้องมี .js
+import { add } from "./math.js";  // ✅
+
+// ❌ Import Default ด้วย { }
+import { User } from "./User.js"; // ❌ ถ้าเป็น default export
+import User from "./User.js";     // ✅
+```
+
 ---
 
-## 6. Challenges 🏆
+## 6. Real-World Use Case: จัดโครงสร้างโปรเจกต์จริง 🌐
 
-## 6. Challenges 🏆
+ในโปรเจกต์จริง Module ช่วยจัดโค้ดให้เป็นระเบียบ ตัวอย่างโครงสร้าง Todo App:
+
+```
+src/
+├── models/
+│   └── Todo.js          ← export default class Todo
+├── services/
+│   └── api.js           ← export { fetchTodos, createTodo }
+├── utils/
+│   ├── validate.js      ← export { isValidTitle }
+│   ├── format.js        ← export { formatDate }
+│   └── index.js         ← Barrel: re-export ทุกอย่าง
+└── app.js               ← import จาก utils/index.js จุดเดียว
+```
+
+```javascript
+// 📁 utils/index.js (Barrel)
+export { isValidTitle } from "./validate.js";
+export { formatDate } from "./format.js";
+
+// 📁 app.js — Import สะอาด!
+import Todo from "./models/Todo.js";
+import { fetchTodos, createTodo } from "./services/api.js";
+import { isValidTitle, formatDate } from "./utils/index.js";
+```
+
+> 💡 **กฎทอง:** 1 ไฟล์ = 1 หน้าที่ (Single Responsibility) — ถ้าไฟล์ยาวเกิน 200 บรรทัด ลองแยกเป็น Module ย่อย!
+
+---
+
+## 7. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 5 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 

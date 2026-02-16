@@ -348,7 +348,6 @@ async function safe() {
 
 ## 8. Challenges 🏆
 
-## 8. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 7 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 

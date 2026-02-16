@@ -206,6 +206,37 @@ JavaScript ไม่ได้แค่ "ทำเว็บ" อีกต่อ�
 
 > **Stack Overflow Survey 2024:** JavaScript เป็นภาษา **#1** ที่ Developer ใช้มากที่สุดในโลก ติดต่อกัน **12 ปีซ้อน!**
 
+### ตัวอย่าง JavaScript ข้ามยุค:
+
+```javascript
+// 1995 — Netscape ยุคแรก
+alert("Hello World!");
+
+// 2009 — ES5
+var fruits = ["apple", "banana"];
+fruits.forEach(function(fruit) {
+    console.log(fruit);
+});
+
+// 2015+ — ES6 Modern JavaScript
+const greet = (name) => `สวัสดี ${name}!`;
+console.log(greet("Dolar")); // "สวัสดี Dolar!"
+```
+
+## Real-World Use Case: JavaScript ในชีวิตประจำวัน 🌐
+
+เว็บไซต์และแอปที่คุณใช้ทุกวันล้วนขับเคลื่อนด้วย JavaScript:
+
+```javascript
+// YouTube: เล่นวิดีโอ, แนะนำคลิป, โหลด Comments แบบ Infinite Scroll
+// Netflix: Streaming UI, ระบบแนะนำหนัง
+// Google Maps: แผนที่โต้ตอบ, คำนวณเส้นทาง, Street View
+// Facebook: Real-time Notifications, Chat, News Feed
+// VS Code: Editor ที่คุณเขียนโค้ด ก็เขียนด้วย JavaScript (Electron)!
+```
+
+> 💡 ทุกครั้งที่คุณกด Like, พิมพ์ค้นหา, หรือเลื่อน Feed — นั่นคือ JavaScript กำลังทำงานอยู่เบื้องหลัง!
+
 ---
 
 ## 7. Challenges 🏆

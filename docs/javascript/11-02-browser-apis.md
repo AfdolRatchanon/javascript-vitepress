@@ -372,11 +372,32 @@ function toggleFullScreen() {
 | **Visibility** | Tab ซ่อน/แสดง | ❌ | หยุด Video เมื่อซ่อน |
 | **Fullscreen** | เต็มหน้าจอ | ❌ | Video Player, Game |
 
+## Real-World Use Case: ระบบ Notification + Geolocation 🌐
+
+```javascript
+// ขอสิทธิ์แจ้งเตือน + ตำแหน่ง เพื่อแจ้งร้านอาหารใกล้เคียง
+async function notifyNearbyRestaurant() {
+    // 1. ขอสิทธิ์ Notification
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return;
+
+    // 2. ขอตำแหน่ง GPS
+    navigator.geolocation.getCurrentPosition((pos) => {
+        const { latitude, longitude } = pos.coords;
+
+        // 3. แจ้งเตือน
+        new Notification("🍜 ร้านอาหารใกล้คุณ!", {
+            body: `พบร้านอร่อยห่างแค่ 200 เมตร (${latitude.toFixed(2)}, ${longitude.toFixed(2)})`,
+            icon: "/food-icon.png"
+        });
+    });
+}
+```
+
 ---
 
 ## 8. Challenges 🏆
 
-## 8. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 6 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 

@@ -260,6 +260,23 @@ console.log(processAge("hello")); // "Invalid input!"
 console.log(processAge("-5"));    // "Age out of range!"
 ```
 
+## Real-World Use Case: แปลงข้อมูลจาก HTML Form 🌐
+
+ข้อมูลจาก `<input>` ใน HTML เป็น **String เสมอ** ถ้าไม่แปลงก่อนคำนวณจะเกิดบัค:
+
+```javascript
+// ❌ ไม่แปลง — ได้ผลลัพธ์ผิด!
+const priceInput = "100";    // จาก <input type="text">
+const qtyInput = "3";
+console.log(priceInput * qtyInput);  // 300 (บังเอิญถูก เพราะ * แปลงให้)
+console.log(priceInput + qtyInput);  // "1003" 😱 (+ ต่อ String!)
+
+// ✅ แปลงก่อน — ปลอดภัย
+const price = Number(priceInput);
+const qty = parseInt(qtyInput);
+console.log(price + qty); // 103 ✅
+```
+
 ---
 
 ## 7. Challenges 🏆

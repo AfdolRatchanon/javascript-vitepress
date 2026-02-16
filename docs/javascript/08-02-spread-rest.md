@@ -177,9 +177,88 @@ console.log(user);
 
 ---
 
-## 5. Challenges 🏆
+## 5. Common Mistakes & Gotchas ⚠️
 
-## 5. Challenges 🏆
+### ❌ Rest ต้องอยู่ตัวสุดท้ายเสมอ:
+
+```javascript
+// ❌ SyntaxError!
+const { ...rest, name } = { name: "Dolar", age: 25 };
+
+// ✅ ถูกต้อง:
+const { name, ...rest } = { name: "Dolar", age: 25 };
+```
+
+### ❌ Spread ทำ Shallow Copy เท่านั้น:
+
+```javascript
+const original = {
+    name: "Dolar",
+    address: { city: "BKK", zip: "10110" }  // ← Nested Object!
+};
+
+const copy = { ...original };
+copy.address.city = "CNX";
+
+console.log(original.address.city); // "CNX" 😱 Nested ยังชี้ที่เดียวกัน!
+
+// ✅ Deep Copy ต้องใช้ structuredClone():
+const deepCopy = structuredClone(original);
+```
+
+### ❌ Spread ใน Object ใช้กับ null/undefined ได้ แต่ Array ไม่ได้:
+
+```javascript
+// ✅ Object Spread กับ null — ได้ (ไม่มีผลอะไร)
+const obj = { ...null, ...undefined, name: "Dolar" };
+console.log(obj); // { name: "Dolar" }
+
+// ❌ Array Spread กับ null — TypeError!
+// const arr = [...null]; // TypeError: null is not iterable
+```
+
+### 📊 Spread Gotchas Summary
+
+| สถานการณ์ | ผลลัพธ์ | วิธีแก้ |
+|:----------|:--------|:-------|
+| Spread Nested Object | Shallow Copy (ชี้ที่เดียวกัน) | `structuredClone()` |
+| Rest ไม่อยู่ตัวสุดท้าย | SyntaxError | ย้ายไปท้ายสุดเสมอ |
+| Spread `null` ใน Array | TypeError | ตรวจก่อน: `...(arr ?? [])` |
+| Spread Object ซ้ำ key | ตัวหลังทับ | ระวังลำดับ `{...a, ...b}` |
+
+---
+
+## 6. Real-World Use Case: API Response Handling 🌐
+
+สถานการณ์จริงที่ใช้ Spread/Rest บ่อยมากคือ **จัดการข้อมูลจาก API**:
+
+```javascript
+// ข้อมูลจาก API
+const apiResponse = {
+    id: 42,
+    username: "dolar_dev",
+    email: "dolar@example.com",
+    password_hash: "abc123...",   // ❌ ห้ามส่งไป Frontend!
+    created_at: "2025-01-01",
+    __v: 0                        // ❌ MongoDB internal field
+};
+
+// ✅ ใช้ Rest ลบ fields ที่ไม่ต้องการ
+const { password_hash, __v, ...publicProfile } = apiResponse;
+console.log(publicProfile);
+// { id: 42, username: "dolar_dev", email: "dolar@example.com", created_at: "2025-01-01" }
+
+// ✅ ใช้ Spread เพิ่ม fields ก่อนส่งกลับ
+const enrichedProfile = {
+    ...publicProfile,
+    avatar: `https://api.example.com/avatar/${publicProfile.id}`,
+    isOnline: true
+};
+```
+
+---
+
+## 7. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 4 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 

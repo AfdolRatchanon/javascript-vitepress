@@ -55,14 +55,85 @@ console.log("Role:  Frontend Developer");
 console.log("*****************************");
 ```
 
-## 🏆 Challenge: Improve It!
-ของจริงต้องสวยกว่านี้! ลองปรับปรุงโค้ดของคุณ:
+## 📖 3. Escape Characters ที่ต้องรู้
+
+ตอนสร้าง Bio คุณอาจอยากใส่ตัวอักษรพิเศษ เช่น Tab หรือเครื่องหมายคำพูด:
+
+```javascript
+// \n = ขึ้นบรรทัดใหม่
+console.log("Name: Dolar\nAge: 25\nCity: Bangkok");
+// Output:
+// Name: Dolar
+// Age: 25
+// City: Bangkok
+
+// \t = Tab (เว้นวรรคยาว)
+console.log("Name:\tDolar");
+console.log("Age:\t25");
+console.log("City:\tBangkok");
+// Output (จัดเป็นตารางสวยๆ):
+// Name:   Dolar
+// Age:    25
+// City:   Bangkok
+
+// \" = เครื่องหมายคำพูดใน String
+console.log("Nickname: \"Dolar\"");
+// Output: Nickname: "Dolar"
+
+// \\ = Backslash ตัวเดียว
+console.log("Path: C:\\Users\\Dolar");
+// Output: Path: C:\Users\Dolar
+```
+
+### 📊 Escape Characters Quick Reference
+
+| Escape | ผลลัพธ์ | ใช้เมื่อ |
+|:-------|:--------|:--------|
+| `\n` | ขึ้นบรรทัดใหม่ | แยกข้อมูลหลายบรรทัดใน log เดียว |
+| `\t` | Tab | จัดข้อความให้ตรงกัน |
+| `\"` | `"` | ใส่ " ใน String ที่ใช้ " ครอบ |
+| `\\` | `\` | แสดง Backslash |
+
+## 🔨 4. Upgrade: ใช้ Template Literals
+
+ลองอัปเกรด Bio ด้วย **Template Literals** (backtick `` ` ``) ที่สามารถเขียนหลายบรรทัดได้ในที่เดียว:
+
+```javascript
+// ❌ แบบเดิม (ต้อง console.log ทุกบรรทัด)
+console.log("*****************************");
+console.log("*      MY BIOGRAPHY         *");
+console.log("*****************************");
+
+// ✅ Template Literal (เขียนทีเดียวจบ!)
+console.log(`
+╔═══════════════════════════╗
+║       MY BIOGRAPHY        ║
+╠═══════════════════════════╣
+║ Name:  Dolar              ║
+║ Age:   25                 ║
+║ Role:  Frontend Developer ║
+╠═══════════════════════════╣
+║ Skills:                   ║
+║ - JavaScript  ████░ 80%   ║
+║ - HTML/CSS    █████ 100%  ║
+║ - Gaming      █████ 100%  ║
+╚═══════════════════════════╝
+`);
+```
+
+> 💡 **Tip:** ตัวอักษรกรอบ ╔ ╗ ╚ ╝ ═ ║ เรียกว่า **Box Drawing Characters** — ใน Windows กด `Alt` + ตัวเลขบน Numpad หรือ copy จาก Google ได้เลย!
+
+---
+
+## 🏆 Challenges
+
+### 🎯 Challenge 1: Improve It!
+ปรับปรุง Bio ให้สวยขึ้น:
 1.  เพิ่มหัวข้อ **"Favorite Foods"**
-2.  ลองใช้สัญลักษณ์แปลกๆ เช่น `=`, `#`, `~` แทน `*` หรือ `-` ดูสิ
+2.  ลองใช้สัญลักษณ์แปลกๆ เช่น `=`, `#`, `~` แทน `*` หรือ `-`
 3.  ลองจัดย่อหน้าให้ตรงกันเป๊ะๆ (Alignment)
 
-::: details ✨ ดูเฉลย Challenge (Click to Show Improvement)
-ตัวอย่างการเพิ่ม Skills และจัดหน้า:
+::: details ✨ ดูเฉลย
 ```javascript
 console.log("=============================");
 console.log("       MY BIOGRAPHY          ");
@@ -75,6 +146,42 @@ console.log("Skills:");
 console.log("- JavaScript  [#####]");
 console.log("- Eating      [#####+]");
 console.log("=============================");
+```
+:::
+
+### 🎯 Challenge 2: Tab Master
+ใช้ `\t` จัดข้อมูลเพื่อน 3 คนให้เป็นตารางสวยๆ (ชื่อ, อายุ, เมือง)
+
+::: details ✨ ดูเฉลย
+```javascript
+console.log("Name\tAge\tCity");
+console.log("----\t---\t------");
+console.log("Dolar\t25\tBangkok");
+console.log("Somchai\t30\tChiang Mai");
+console.log("Malee\t22\tPhuket");
+```
+:::
+
+### 🎯 Challenge 3: Ultimate Bio Card
+ใช้ Template Literal สร้าง Bio Card ที่มีทั้ง Header, ข้อมูลส่วนตัว, Skills พร้อม Progress Bar, และ Footer ใน `console.log` เดียว
+
+::: details ✨ ดูเฉลย
+```javascript
+console.log(`
+┌─────────────────────────┐
+│    ⭐ MY BIO CARD ⭐     │
+├─────────────────────────┤
+│ Name:  [Your Name]      │
+│ Age:   [Your Age]       │
+│ Hobby: [Your Hobby]     │
+├─────────────────────────┤
+│ Skills:                 │
+│ JS   ████░░ 60%         │
+│ CSS  ██████ 100%        │
+├─────────────────────────┤
+│ "Keep learning!"        │
+└─────────────────────────┘
+`);
 ```
 :::
 

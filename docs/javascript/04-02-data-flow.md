@@ -346,6 +346,28 @@ console.log("Outside:", myCar.name); // Outside: New Name ← เปลี่ย
 
 
 
+## Real-World Use Case: Data Pipeline (ท่อส่งข้อมูล) 🌐
+
+```javascript
+// ข้อมูลดิบจาก API
+const rawUsers = [
+    { name: " DOLAR ", age: 25, active: true },
+    { name: "somchai", age: 17, active: false },
+    { name: " MALEE", age: 30, active: true },
+];
+
+// Data Pipeline: แปลงข้อมูลทีละขั้น
+const result = rawUsers
+    .filter(u => u.active && u.age >= 18)  // กรอง: active + อายุ 18+
+    .map(u => ({                            // แปลง: ทำความสะอาดข้อมูล
+        name: u.name.trim().toLowerCase(),
+        age: u.age
+    }));
+
+console.log(result);
+// [{ name: "dolar", age: 25 }, { name: "malee", age: 30 }]
+```
+
 ---
 
 ## 6. Challenges 🏆

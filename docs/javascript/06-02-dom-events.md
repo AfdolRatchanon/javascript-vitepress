@@ -325,6 +325,26 @@ btn.removeEventListener("click", handleClick);
 btn.addEventListener("click", handleClick, { once: true });
 ```
 
+## Real-World Use Case: Live Search Filter 🌐
+
+```javascript
+const searchInput = document.querySelector("#search");
+const productList = document.querySelector("#products");
+
+// ใช้ Event Delegation + Input Event
+searchInput.addEventListener("input", (e) => {
+    const query = e.target.value.toLowerCase();
+    const items = productList.querySelectorAll(".product");
+
+    items.forEach(item => {
+        const name = item.textContent.toLowerCase();
+        item.style.display = name.includes(query) ? "" : "none";
+    });
+});
+```
+
+> 💡 ใช้ `input` event แทน `keyup` เพราะจับได้ทั้งพิมพ์, วาง (paste), และ autocomplete!
+
 ---
 
 ## 8. Challenges 🏆

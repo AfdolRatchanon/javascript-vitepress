@@ -326,6 +326,23 @@ console.log(active.nextElementSibling);     // <li>Contact</li>
 
 > ⚠️ มี `parentNode`, `firstChild`, `nextSibling` ด้วย — แต่มันได้ Text Nodes ด้วย (ช่องว่าง, newline) ซึ่งมักไม่ต้องการ ใช้ `*Element*` versions แทน!
 
+## Real-World Use Case: Dark Mode Toggle 🌐
+
+```javascript
+// อ่านค่าจาก localStorage
+const savedTheme = localStorage.getItem("theme") || "light";
+document.body.classList.add(savedTheme);
+
+// Toggle เมื่อกดปุ่ม
+const btn = document.querySelector("#theme-toggle");
+btn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    const current = document.body.classList.contains("dark") ? "dark" : "light";
+    localStorage.setItem("theme", current);
+    btn.textContent = current === "dark" ? "☀️" : "🌙";
+});
+```
+
 ---
 
 ## 7. Challenges 🏆

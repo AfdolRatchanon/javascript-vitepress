@@ -338,6 +338,25 @@ console.log(doubled); // [2, 4, 6, 8, 10]
 const doubled2 = numbers.map(n => n * 2);
 ```
 
+## Real-World Use Case: แสดงรายการสินค้าจาก API 🌐
+
+```javascript
+const products = [
+    { name: "iPhone", price: 42900, inStock: true },
+    { name: "iPad", price: 15900, inStock: false },
+    { name: "AirPods", price: 6790, inStock: true },
+];
+
+// แสดงเฉพาะสินค้าที่มีในสต็อค
+for (const product of products) {
+    if (!product.inStock) continue;  // ข้ามสินค้าหมด
+    console.log(`${product.name} - ฿${product.price.toLocaleString()}`);
+}
+// Output:
+// iPhone - ฿42,900
+// AirPods - ฿6,790
+```
+
 ---
 
 ## 9. Challenges 🏆

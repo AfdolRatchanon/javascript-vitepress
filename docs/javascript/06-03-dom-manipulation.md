@@ -350,11 +350,33 @@ const users = [
 document.body.appendChild(createTable(users));
 ```
 
+## Real-World Use Case: Dynamic Comment Section 🌐
+
+```javascript
+function addComment(username, text) {
+    const commentSection = document.querySelector("#comments");
+    const comment = document.createElement("div");
+    comment.className = "comment";
+    comment.innerHTML = `
+        <strong>${username}</strong>
+        <p>${text}</p>
+        <small>${new Date().toLocaleString("th-TH")}</small>
+        <button class="delete-btn">ลบ</button>
+    `;
+
+    // Event Delegation สำหรับปุ่มลบ
+    comment.querySelector(".delete-btn").addEventListener("click", () => {
+        comment.remove();
+    });
+
+    commentSection.prepend(comment); // แสดง Comment ใหม่ด้านบน
+}
+```
+
 ---
 
 ## 8. Challenges 🏆
 
-## 8. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 6 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 

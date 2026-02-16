@@ -330,6 +330,27 @@ const withExtra = [0, ...arr1, 99];      // [0, 1, 2, 3, 99]
 const copy = [...arr1];                   // [1, 2, 3] (Shallow Copy)
 ```
 
+## Real-World Use Case: Todo List ด้วย Array Methods 🌐
+
+```javascript
+let todos = [
+    { id: 1, text: "เรียน JavaScript", done: true },
+    { id: 2, text: "ทำโปรเจกต์", done: false },
+    { id: 3, text: "สมัครงาน", done: false },
+];
+
+// เพิ่ม Todo
+todos = [...todos, { id: 4, text: "สัมภาษณ์งาน", done: false }];
+
+// นับที่ยังไม่เสร็จ
+const pending = todos.filter(t => !t.done).length;
+console.log("เหลืออีก " + pending + " งาน"); // "เหลืออีก 3 งาน"
+
+// หา Todo ตาม ID
+const found = todos.find(t => t.id === 2);
+console.log(found.text); // "ทำโปรเจกต์"
+```
+
 ---
 
 ## 8. Challenges 🏆

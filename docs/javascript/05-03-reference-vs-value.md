@@ -320,11 +320,29 @@ console.log(dev.skills);        // ["JS"] ✅ (ไม่เปลี่ยน!)
 console.log(updatedDev.skills);  // ["JS", "React"]
 ```
 
+## Real-World Use Case: State Management ใน UI 🌐
+
+```javascript
+// ❌ ผิด: แก้ state โดยตรง (Mutation)
+const state = { count: 0, items: ["a"] };
+state.count = 1;          // Mutate!
+state.items.push("b");    // Mutate!
+
+// ✅ ถูก: สร้าง state ใหม่ทุกครั้ง (Immutable Update)
+const newState = {
+    ...state,
+    count: state.count + 1,
+    items: [...state.items, "c"]
+};
+// state เดิมไม่เปลี่ยน, newState เป็นค่าใหม่
+```
+
+> 💡 นี่คือหลักการเดียวกับที่ **React** และ **Redux** ใช้ — ห้าม mutate state โดยตรง!
+
 ---
 
 ## 9. Challenges 🏆
 
-## 9. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 8 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 

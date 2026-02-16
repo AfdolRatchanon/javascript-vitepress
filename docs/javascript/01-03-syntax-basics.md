@@ -255,6 +255,27 @@ if (x > 5) {
 
 > **เครื่องมือช่วย:** ติดตั้ง **Prettier** (VS Code Extension) แล้วกด Save — จัดโค้ดสวยอัตโนมัติ!
 
+## Real-World Use Case: ทำไม Syntax ต้องถูกต้อง 🌐
+
+ในโปรเจกต์จริง Syntax Error เพียง 1 ตัว ก็ทำให้เว็บล่มทั้งหมดได้:
+
+```javascript
+// ❌ ลืม ; ปิด JSON — ทำให้ API Response พัง
+const config = {
+    apiUrl: "https://api.example.com"   // ลืม comma!
+    timeout: 5000
+}
+// SyntaxError: Unexpected identifier
+
+// ✅ Syntax ถูกต้อง
+const config = {
+    apiUrl: "https://api.example.com",
+    timeout: 5000
+};
+```
+
+> 💡 **Tip:** ติดตั้ง **ESLint** ใน VS Code จะช่วยตรวจ Syntax Error ให้อัตโนมัติก่อนรันโค้ด!
+
 ---
 
 ## 7. Challenges 🏆

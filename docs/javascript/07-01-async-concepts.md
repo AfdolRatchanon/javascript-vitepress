@@ -278,11 +278,34 @@ console.log("2. Sync");
 | 🥈 2 | **Microtask Queue** | `Promise.then`, `queueMicrotask` | หลัง Sync แต่ก่อน Macrotask |
 | 🥉 3 | **Macrotask Queue** | `setTimeout`, `setInterval` | หลัง Microtask |
 
+## Real-World Use Case: Debounce Search Input 🌐
+
+```javascript
+// ใช้ setTimeout ทำ Debounce — รอให้หยุดพิมพ์ก่อนค่อยค้นหา
+function debounce(fn, delay) {
+    let timer;
+    return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+    };
+}
+
+const searchAPI = debounce(async (query) => {
+    console.log("Searching:", query);
+    const res = await fetch("/api/search?q=" + query);
+    const data = await res.json();
+    renderResults(data);
+}, 300);
+
+searchInput.addEventListener("input", (e) => searchAPI(e.target.value));
+```
+
+> 💡 ถ้าไม่มี Debounce ทุก keystroke จะเรียก API — พิมพ์ "hello" = 5 requests! Debounce ลดเหลือ 1 request
+
 ---
 
 ## 7. Challenges 🏆
 
-## 7. Challenges 🏆
 
 ทดสอบความเข้าใจกับโจทย์ 6 ข้อ (1 ข้อต่อ 1 หัวข้อ):
 
