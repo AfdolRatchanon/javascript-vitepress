@@ -50,18 +50,18 @@ features:
 
 | Module | 📖 หัวข้อ | 🏗️ โปรเจกต์ |
 |:------:|:---------|:--------|
-| 1 | **Node.js Introduction** — V8, npm, REPL | 🎯 CLI Tool App |
-| 2 | **Modules System** — CommonJS vs ESM | 📦 Utility Package |
+| 1 | **[Node.js Introduction](/node/01-01-what-is-node)** — V8, npm, REPL | [🎯 CLI Tool App](/node/01-project-cli-tool) |
+| 2 | **[Modules System](/node/02-01-commonjs-esm)** — CommonJS vs ESM | [📦 Utility Package](/node/02-project-utility-package) |
 | 3 | **[File System & Path](/node/03-01-filesystem)** — อ่าน/เขียนไฟล์ | [📁 File Manager CLI](/node/03-project-file-manager) |
-| 4 | **HTTP & Server** — Request/Response | 🌐 Mini HTTP Server |
-| 5 | **Express.js** — Routing, Middleware | 🛣️ Express Routes App |
-| 6 | **REST API Design** — CRUD, JSON API | 📡 Todo API |
-| 7 | **MySQL (SQL)** — SELECT, JOIN, Relations | 🗃️ Student DB |
-| 8 | **MongoDB (NoSQL)** — Mongoose ODM | 📘 Blog API |
-| 9 | **Authentication** — JWT, bcrypt | 🔐 Auth System |
-| 10 | **File Upload** — Multer, Validation | 📤 Upload API |
-| 11 | **Security** — CORS, Helmet, Rate Limit | 🛡️ Secure API |
-| 12 | **🏆 Capstone** — รวมทุก Module! | 🏆 E-Commerce API |
+| 4 | **[HTTP & Server](/node/04-01-http-basics)** — Request/Response | [🌐 Mini HTTP Server](/node/04-project-simple-api) |
+| 5 | **[Express.js](/node/05-01-express-setup)** — Routing, Middleware | [🛣️ Express Routes App](/node/05-project-rest-api) |
+| 6 | **[REST API Design](/node/06-01-rest-api-concepts)** — CRUD, JSON API | [📡 Todo API](/node/06-project-memory-api) |
+| 7 | **[MySQL & SQL](/node/07-01-mysql-basics)** — Queries, Relations | [🗃️ Student DB](/node/07-project-student-db) |
+| 8 | **[MongoDB & NoSQL](/node/08-01-mongodb-basics)** — Mongoose ODM | [🍃 Blog API](/node/08-project-blog-api) |
+| 9 | **[Authentication](/node/09-01-auth-jwt)** — JWT, Cookies | [🔐 Auth System](/node/09-project-auth-system) |
+| 10 | **[File Upload](/node/10-01-file-upload)** — Multer, Validation | [📤 Upload API](/node/10-project-upload-api) |
+| 11 | **[Security](/node/11-01-security)** — Helmet, CORS | [🛡️ Secure API](/node/11-project-secure-api) |
+| 12 | **[Capstone](/node/12-01-capstone)** — E-Commerce API | [🏆 E-Commerce](/node/12-project-ecommerce-api) |
 
 ---
 

@@ -13,6 +13,9 @@ hero:
     - theme: alt
       text: "📗 เข้าสู่บทเรียน Node.js"
       link: /node/
+    - theme: alt
+      text: "⚛️ เข้าสู่บทเรียน React.js"
+      link: /react/
 
 features:
   - icon: "⚡"
@@ -23,6 +26,10 @@ features:
     title: "Node.js Course"
     details: "ต่อยอดสู่ Backend Development ด้วย Node.js, Express และ Database"
     link: /node/
+  - icon: "⚛️"
+    title: "React.js Course"
+    details: "สร้าง Modern Frontend ด้วย React Hooks, Router และ State Management"
+    link: /react/
   - icon: "🛠️"
     title: "Real World Projects"
     details: "เน้นลงมือทำจริงด้วยโปรเจกต์ประกอบการเรียนการสอนทุกบท"

@@ -192,35 +192,41 @@ export default defineConfig({
                 {
                     text: 'Module 7: MySQL & SQL',
                     items: [
-                        { text: '7.1 - MySQL Basics', link: '/node/07-01-mysql-basics' },
+                        { text: '7.1 - SQL Fundamentals', link: '/node/07-01-sql-fundamentals' },
+                        { text: '7.2 - Node.js + MySQL', link: '/node/07-02-node-mysql' },
+                        { text: '7.3 - Advanced SQL', link: '/node/07-03-advanced-sql' },
                         { text: '🗃️ Project: Student DB', link: '/node/07-project-student-db' }
                     ]
                 },
                 {
                     text: 'Module 8: MongoDB & NoSQL',
                     items: [
-                        { text: '8.1 - MongoDB Basics', link: '/node/08-01-mongodb-basics' },
+                        { text: '8.1 - NoSQL & MongoDB', link: '/node/08-01-nosql-mongodb' },
+                        { text: '8.2 - Mongoose ODM', link: '/node/08-02-mongoose-odm' },
                         { text: '🍃 Project: Blog API', link: '/node/08-project-blog-api' }
                     ]
                 },
                 {
                     text: 'Module 9: Authentication',
                     items: [
-                        { text: '9.1 - Auth & JWT basics', link: '/node/09-01-auth-jwt' },
+                        { text: '9.1 - Password Security', link: '/node/09-01-password-security' },
+                        { text: '9.2 - JWT Authentication', link: '/node/09-02-jwt-auth' },
                         { text: '🔐 Project: Auth System', link: '/node/09-project-auth-system' }
                     ]
                 },
                 {
-                    text: 'Module 10: File Upload',
+                    text: 'Module 10: File Upload & Validation',
                     items: [
                         { text: '10.1 - File Upload Basics', link: '/node/10-01-file-upload' },
+                        { text: '10.2 - Input Validation', link: '/node/10-02-input-validation' },
                         { text: '📤 Project: Upload API', link: '/node/10-project-upload-api' }
                     ]
                 },
                 {
                     text: 'Module 11: Security',
                     items: [
-                        { text: '11.1 - Security Best Practices', link: '/node/11-01-security' },
+                        { text: '11.1 - Security Fundamentals', link: '/node/11-01-security-fundamentals' },
+                        { text: '11.2 - Security Tools', link: '/node/11-02-security-tools' },
                         { text: '🛡️ Project: Secure API', link: '/node/11-project-secure-api' }
                     ]
                 },

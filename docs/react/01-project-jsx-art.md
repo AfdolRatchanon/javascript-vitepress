@@ -147,40 +147,7 @@ const getFrameColor = (year) => {
 แล้วเรียกใช้ function นี้ใน return หลัก เพื่อลดการเขียนโค้ดซ้ำ
 
 ::: details ✨ เฉลย Challenge
-```jsx
-const ArtGallery = () => {
-    const art1 = { ... };
-    const art2 = { ... };
-
-    // Helper Function สำหรับ render การ์ด 1 ใบ
-    const renderArtwork = (art) => {
-        const frameColor = art.year < 1800 ? '#8B4513' : '#FFD700';
-        
-        return (
-            <div style={{ 
-                border: `5px solid ${frameColor}`, 
-                padding: '10px', 
-                margin: '10px' 
-            }}>
-                <img src={art.image} alt={art.title} width="200" />
-                <h3>{art.title}</h3>
-                <p>{art.artist}, {art.year}</p>
-                {art.isMasterpiece && <span>💎 Rare Item</span>}
-            </div>
-        );
-    };
-
-    return (
-        <div>
-            <h1>My Gallery</h1>
-            <div style={{ display: 'flex' }}>
-                {renderArtwork(art1)}
-                {renderArtwork(art2)}
-            </div>
-        </div>
-    );
-};
-```
+(โค้ดตัวอย่างสำหรับการ Refactor จะใช้ Loop หรือ Function แยกก็ได้ครับ)
 :::
 
 ---
@@ -194,13 +161,6 @@ const ArtGallery = () => {
 
 ---
 
-## 🎁 Bonus: Dynamic Background
 
-ลองทำให้ Background ของเว็บไซต์เปลี่ยนสีไปเรื่อยๆ ทุกครั้งที่กด Refresh?
-hint: `const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);`
-
-(ลองเอาไปเล่นดูนะครับ เป็นการฝึกใช้ Expression ใน `style={{ backgroundColor: ... }}`)
-
----
 
 > 👉 **ไปต่อ: [Module 2 - Components & Props](/react/02-01-components-props)**

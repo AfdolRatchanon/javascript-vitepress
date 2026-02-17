@@ -4,7 +4,7 @@ pageClass: javascript-home
 
 hero:
   name: "JavaScript Zero to Hero"
-  text: "เรียน JavaScript จากศูนย์สู่เซียน 🚀"
+  text: "Zero to Hero🚀"
   tagline: "คอร์ส JavaScript ภาษาไทย-อังกฤษ ครบ 12 Modules พร้อมโปรเจกต์จริง — เหมาะสำหรับมือใหม่ที่อยากเขียนเว็บเป็น!"
   actions:
     - theme: brand
@@ -50,19 +50,19 @@ features:
 
 | Module | 📖 หัวข้อ | 🏗️ โปรเจกต์ |
 |:------:|:---------|:--------|
-| 0 | **Setup** — เตรียมเครื่องมือ | - |
-| 1 | **JS Introduction** — ประวัติ, Console, ตัวแปรเบื้องต้น | 🎨 Console Artist, 📜 Bio Card |
-| 2 | **Variables & Data Types** — String, Number, Boolean, Type Conversion | ⚖️ BMI Calculator |
-| 3 | **Control Flow** — if/else, switch, for, while | 🐝 FizzBuzz |
-| 4 | **Functions & Scope** — ฟังก์ชัน, Closure, Arrow Function | 🧮 Calculator |
-| 5 | **Arrays & Objects** — Array Methods, Object Methods, Iteration | ✅ Todo List |
-| 6 | **DOM Manipulation** — Events, Styling, Element CRUD | 🎴 Interactive Card |
-| 7 | **Async JavaScript** — Callback, Promise, Async/Await, Fetch | 🌤️ Weather App |
-| 8 | **ES6+ Modern Features** — Destructuring, Spread/Rest, Modules | 👨‍🎓 Student Manager |
-| 9 | **OOP** — Classes, Inheritance, Prototypes | ⚔️ RPG Game |
-| 10 | **Error Handling & Debugging** — try/catch, DevTools, Patterns | 📋 Form Validator |
-| 11 | **Web Storage & Browser APIs** — localStorage, Geolocation, Clipboard | 📝 Note App |
-| 12 | **🏆 Capstone Project** — รวมทุกอย่าง | 🏆 Final Project |
+| 0 | **[Setup](/javascript/00-setup)** — เตรียมเครื่องมือ | - |
+| 1 | **[JS Introduction](/javascript/01-01-history)** — ประวัติ, Console, ตัวแปรเบื้องต้น | [🎨 Console Artist](/javascript/01-project-artist), [📜 Bio Card](/javascript/01-project-bio) |
+| 2 | **[Variables & Data Types](/javascript/02-01-variables)** — String, Number, Boolean | [⚖️ BMI Calculator](/javascript/02-project-bmi) |
+| 3 | **[Control Flow](/javascript/03-01-conditionals)** — if/else, switch, for, while | [🐝 FizzBuzz](/javascript/03-project-fizzbuzz) |
+| 4 | **[Functions & Scope](/javascript/04-01-functions)** — ฟังก์ชัน, Closure, Arrow Function | [🧮 Calculator](/javascript/04-project-calculator) |
+| 5 | **[Arrays & Objects](/javascript/05-01-arrays)** — Array Methods, Object Methods | [✅ Todo List](/javascript/05-project-todo) |
+| 6 | **[DOM Manipulation](/javascript/06-01-dom-basics)** — Events, Styling, Element CRUD | [🎴 Interactive Card](/javascript/06-project-interactive-card) |
+| 7 | **[Async JavaScript](/javascript/07-01-async-concepts)** — Callback, Promise, Async/Await | [🌤️ Weather App](/javascript/07-project-weather-app) |
+| 8 | **[ES6+ Modern Features](/javascript/08-01-destructuring)** — Destructuring, Spread/Rest | [👨‍🎓 Student Manager](/javascript/08-project-student-manager) |
+| 9 | **[OOP](/javascript/09-01-classes)** — Classes, Inheritance, Prototypes | [⚔️ RPG Game](/javascript/09-project-rpg-game) |
+| 10 | **[Error Handling & Debugging](/javascript/10-01-error-handling)** — try/catch, DevTools | [📋 Form Validator](/javascript/10-project-form-validator) |
+| 11 | **[Web Storage & Browser APIs](/javascript/11-01-web-storage)** — localStorage, Geolocation | [📝 Note App](/javascript/11-project-note-app) |
+| 12 | **[🏆 Capstone Project](/javascript/12-capstone-project)** — รวมทุกอย่าง | [🏆 Final Project](/javascript/12-capstone-project) |
 
 ---
 
