@@ -103,9 +103,40 @@ JavaScript/docs/
 - [x] ตัดสินใจสถาปัตยกรรม (Single VitePress, Dual Section)
 - [x] สร้าง `node/` subfolder + อัปเดต VitePress config
 - [x] สร้างเนื้อหา Module 1-3 (Node.js Introduction, Modules System, File System & Path)
-- [ ] สร้างเนื้อหา Module 4-12
+- [x] สร้างเนื้อหา Module 4-6 (HTTP, Express, REST API)
+- [x] สร้างเนื้อหา Module 7-12
 
 > 📖 **รายละเอียดเต็ม:** ดู [`NodeJS/README.md`](./docs/node/README.md) สำหรับแผนการพัฒนาฉบับสมบูรณ์
+
+---
+
+## ⚛️ React.js Frontend Course (New!)
+
+> **Section ใหม่ล่าสุด!** สอนสร้าง Web Application สมัยใหม่ด้วย **React.js** (Hooks & Functional Components)
+
+### 🗺️ React Module Outline
+
+| Module | หัวข้อ | โปรเจกต์ |
+|:------:|:-------|:--------|
+| 1 | **Introduction & JSX** | 🎨 JSX Art Gallery |
+| 2 | **Components & Props** | 👤 User Profile Card |
+| 3 | **State & Events** | 🔢 Counter & Toggler |
+| 4 | **Lists & Keys** | 📝 Simple Todo List |
+| 5 | **Forms** | 📋 Registration Form |
+| 6 | **Effects & Lifecycle** | ⏱️ Digital Clock |
+| 7 | **API Integration** | 🐶 Random Dog |
+| 8 | **Routing** | 🧭 Portfolio Site |
+| 9 | **Context API** | 🌙 Dark Mode Theme |
+| 10 | **Custom Hooks** | 🪝 useWindowSize |
+| 11 | **Optimization** | ⚡ Performance Demo |
+| 12 | **🏆 Capstone** | 🛒 E-Commerce Shop |
+
+### 📌 Status: 🟢 COMPLETED
+
+- [x] กำหนด Module Outline
+- [x] สร้าง Landing Page (`docs/react/index.md`)
+- [x] อัปเดต Nav & Sidebar
+- [x] สร้างเนื้อหา Module 1-12
 
 ---
 

@@ -18,6 +18,7 @@ export default defineConfig({
             { text: 'หน้าแรก (Home)', link: '/' },
             { text: '📘 JavaScript', link: '/javascript/' },
             { text: '📗 Node.js', link: '/node/' },
+            { text: '⚛️ React.js', link: '/react/' },
         ],
 
         sidebar: {
@@ -164,6 +165,164 @@ export default defineConfig({
                         { text: '📁 Project: File Manager', link: '/node/03-project-file-manager' }
                     ]
                 },
+                {
+                    text: 'Module 4: HTTP & Server Basics',
+                    items: [
+                        { text: '4.1 - HTTP Basics & Status Codes', link: '/node/04-01-http-basics' },
+                        { text: '4.2 - Basic Routing', link: '/node/04-02-basic-routing' },
+                        { text: '🌐 Project: Simple API', link: '/node/04-project-simple-api' }
+                    ]
+                },
+                {
+                    text: 'Module 5: Express.js Basics',
+                    items: [
+                        { text: '5.1 - Express Setup', link: '/node/05-01-express-setup' },
+                        { text: '5.2 - Middleware', link: '/node/05-02-middleware' },
+                        { text: '🛣️ Project: REST API', link: '/node/05-project-rest-api' }
+                    ]
+                },
+                {
+                    text: 'Module 6: REST API Design',
+                    items: [
+                        { text: '6.1 - REST Concepts', link: '/node/06-01-rest-api-concepts' },
+                        { text: '6.2 - Best Practices', link: '/node/06-02-api-design-best-practices' },
+                        { text: '📡 Project: Memory API', link: '/node/06-project-memory-api' }
+                    ]
+                },
+                {
+                    text: 'Module 7: MySQL & SQL',
+                    items: [
+                        { text: '7.1 - MySQL Basics', link: '/node/07-01-mysql-basics' },
+                        { text: '🗃️ Project: Student DB', link: '/node/07-project-student-db' }
+                    ]
+                },
+                {
+                    text: 'Module 8: MongoDB & NoSQL',
+                    items: [
+                        { text: '8.1 - MongoDB Basics', link: '/node/08-01-mongodb-basics' },
+                        { text: '🍃 Project: Blog API', link: '/node/08-project-blog-api' }
+                    ]
+                },
+                {
+                    text: 'Module 9: Authentication',
+                    items: [
+                        { text: '9.1 - Auth & JWT basics', link: '/node/09-01-auth-jwt' },
+                        { text: '🔐 Project: Auth System', link: '/node/09-project-auth-system' }
+                    ]
+                },
+                {
+                    text: 'Module 10: File Upload',
+                    items: [
+                        { text: '10.1 - File Upload Basics', link: '/node/10-01-file-upload' },
+                        { text: '📤 Project: Upload API', link: '/node/10-project-upload-api' }
+                    ]
+                },
+                {
+                    text: 'Module 11: Security',
+                    items: [
+                        { text: '11.1 - Security Best Practices', link: '/node/11-01-security' },
+                        { text: '🛡️ Project: Secure API', link: '/node/11-project-secure-api' }
+                    ]
+                },
+                {
+                    text: 'Module 12: Capstone Project',
+                    items: [
+                        { text: '12.1 - E-Commerce API Intro', link: '/node/12-01-capstone' },
+                        { text: '🏆 Final Project: E-Commerce', link: '/node/12-project-ecommerce-api' }
+                    ]
+                }
+            ],
+            '/react/': [
+                {
+                    text: '⚛️ React.js Frontend',
+                    items: [
+                        { text: '🏠 หน้าแรก React.js', link: '/react/' }
+                    ]
+                },
+                {
+                    text: 'Module 1: Introduction',
+                    items: [
+                        { text: '1.1 - Intro to React & JSX', link: '/react/01-01-intro-jsx' },
+                        { text: '🎨 Project: JSX Art Gallery', link: '/react/01-project-jsx-art' }
+                    ]
+                },
+                {
+                    text: 'Module 2: Components & Props',
+                    items: [
+                        { text: '2.1 - Components & Props', link: '/react/02-01-components-props' },
+                        { text: '👤 Project: User Profile Card', link: '/react/02-project-user-profile' }
+                    ]
+                },
+                {
+                    text: 'Module 3: State & Events',
+                    items: [
+                        { text: '3.1 - State & Events', link: '/react/03-01-state-events' },
+                        { text: '🔢 Project: Counter & Toggler', link: '/react/03-project-counter-toggler' }
+                    ]
+                },
+                {
+                    text: 'Module 4: Lists & Keys',
+                    items: [
+                        { text: '4.1 - Lists & Keys', link: '/react/04-01-lists-keys' },
+                        { text: '📝 Project: Simple Todo List', link: '/react/04-project-simple-todo' }
+                    ]
+                },
+                {
+                    text: 'Module 5: Forms',
+                    items: [
+                        { text: '5.1 - Forms & Controlled Components', link: '/react/05-01-forms' },
+                        { text: '📋 Project: Registration Form', link: '/react/05-project-registration-form' }
+                    ]
+                },
+                {
+                    text: 'Module 6: Effects & Lifecycle',
+                    items: [
+                        { text: '6.1 - Effects & Lifecycle', link: '/react/06-01-effects-lifecycle' },
+                        { text: '⏱️ Project: Digital Clock', link: '/react/06-project-digital-clock' }
+                    ]
+                },
+                {
+                    text: 'Module 7: API Integration',
+                    items: [
+                        { text: '7.1 - API Integration', link: '/react/07-01-api-integration' },
+                        { text: '📉 Project: Crypto Price Tracker', link: '/react/07-project-crypto-tracker' }
+                    ]
+                },
+                {
+                    text: 'Module 8: Context API',
+                    items: [
+                        { text: '8.1 - Context API', link: '/react/08-01-context-api' },
+                        { text: '🌗 Project: Theme Switcher', link: '/react/08-project-theme-context' }
+                    ]
+                },
+                {
+                    text: 'Module 9: React Router',
+                    items: [
+                        { text: '9.1 - React Router', link: '/react/09-01-react-router' },
+                        { text: '🌏 Project: Multi-page Portfolio', link: '/react/09-project-portfolio' }
+                    ]
+                },
+                {
+                    text: 'Module 10: Deployment',
+                    items: [
+                        { text: '10.1 - Deployment Guide', link: '/react/10-01-deployment' },
+                        { text: '🚀 Project: Hosting on Vercel', link: '/react/10-project-hosting' }
+                    ]
+                },
+                {
+                    text: 'Module 11: Optimization',
+                    items: [
+                        { text: '11.1 - Performance Optimization', link: '/react/11-01-performance' },
+                        { text: '⚡ Project: Optimization Challenge', link: '/react/11-project-optimization' }
+                    ]
+                },
+                {
+                    text: 'Module 12: Capstone Project',
+                    items: [
+                        { text: '12.1 - Capstone Overview', link: '/react/12-01-capstone' },
+                        { text: '🛍️ Project: E-Commerce Shop', link: '/react/12-project-ecommerce' }
+                    ]
+                }
             ]
         },
 

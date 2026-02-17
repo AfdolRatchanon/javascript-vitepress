@@ -49,7 +49,7 @@ features:
 ## 🗺️ Module Outline
 
 | Module | 📖 หัวข้อ | 🏗️ โปรเจกต์ |
-|:------:|:---------|:--------:|
+|:------:|:---------|:--------|
 | 1 | **Node.js Introduction** — V8, npm, REPL | 🎯 CLI Tool App |
 | 2 | **Modules System** — CommonJS vs ESM | 📦 Utility Package |
 | 3 | **[File System & Path](/node/03-01-filesystem)** — อ่าน/เขียนไฟล์ | [📁 File Manager CLI](/node/03-project-file-manager) |
