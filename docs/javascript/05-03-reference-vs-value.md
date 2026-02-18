@@ -9,7 +9,7 @@
 > - **Pass by Value** = ถ่ายเอกสาร 📄 (คนละชุด แก้ไม่กระทบกัน)
 > - **Pass by Reference** = ให้ที่อยู่บ้าน 🏠 (ชี้ไปที่เดียวกัน แก้คนหนึ่งอีกคนเห็น!)
 
----
+
 
 ## 1. Primitive = Copy by Value (ถ่ายเอกสาร) 📄
 
@@ -51,7 +51,7 @@ flag2 = false;
 console.log(flag1); // true (ไม่เปลี่ยน!)
 ```
 
----
+
 
 ## 2. Object/Array = Copy by Reference (ให้ที่อยู่) 🏠
 
@@ -95,7 +95,7 @@ console.log(snacks); // ["Apple", "Banana", "Cherry"]
 
 
 
----
+
 
 ## 3. `const` กับ Reference Types (กับดัก!) ⚠️
 
@@ -123,7 +123,7 @@ console.log(user); // { name: "Somchai", age: 30 }
 
 
 
----
+
 
 ## 4. Equality with Reference Types (เปรียบเทียบ) ⚖️
 
@@ -158,7 +158,7 @@ console.log(JSON.stringify(obj1) === JSON.stringify(obj2)); // true
 // ⚠️ JSON.stringify ไม่เหมาะกับ: functions, undefined, circular references
 ```
 
----
+
 
 ## 5. Shallow Copy (สำเนาตื้น) 📋
 
@@ -194,7 +194,7 @@ const userCopy2 = Object.assign({}, user);
 | **Array** | `[...arr]` ⭐ | `arr.slice()` | `Array.from(arr)` |
 | **Object** | `{...obj}` ⭐ | `Object.assign({}, obj)` | — |
 
----
+
 
 ## 6. ⚠️ Shallow Copy Trap (กับดักสำเนาตื้น!)
 
@@ -235,7 +235,7 @@ Stack                       Heap (Layer 1)                  Heap (Layer 2)
                              (แก้ theme ไม่กระทบ)               (แก้ fontSize กระทบ!)
 ```
 
----
+
 
 ## 7. Deep Copy (สำเนาลึก) 🏊
 
@@ -276,7 +276,7 @@ const deepCopy2 = JSON.parse(JSON.stringify(team));
 | `structuredClone()` | **Deep** | ❌ | 🐢 ช้ากว่า | ⭐ **Object ซ้อน** |
 | `JSON.parse(stringify())` | Deep | ❌ | 🐢 ช้า | ⚠️ Backup เท่านั้น |
 
----
+
 
 ## 8. Function Arguments — Value vs Reference 📨
 
@@ -339,7 +339,7 @@ const newState = {
 
 > 💡 นี่คือหลักการเดียวกับที่ **React** และ **Redux** ใช้ — ห้าม mutate state โดยตรง!
 
----
+
 
 ## 9. Challenges 🏆
 
@@ -431,7 +431,7 @@ function addPoints(player, points) {
 ```
 :::
 
----
+
 
 > **📖 คำศัพท์เทคนิค (Glossary):**
 > *   **Primitive:** ข้อมูลพื้นฐาน 7 ชนิด (string, number, boolean, null, undefined, bigint, symbol)
@@ -447,5 +447,5 @@ function addPoints(player, points) {
 > *   **Alias:** ชื่อเล่นที่ชี้ไปที่ Object/Array เดียวกัน
 > *   **Stack / Heap:** ส่วนของหน่วยความจำ — Stack เก็บ Primitive, Heap เก็บ Object
 
----
-👉 **[เริ่มทำโปรเจกต์: Project - The Console Todo List](/05-project-todo)**
+
+👉 **[เริ่มทำโปรเจกต์: Project - The Console Todo List](/javascript/05-project-todo)**

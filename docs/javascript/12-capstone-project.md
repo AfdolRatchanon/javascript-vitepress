@@ -1,8 +1,8 @@
-# 🏆 Module 12: Capstone Project — Task Manager App 🏆
+# 🏆 Project 13: Capstone Project — Task Manager App 🏆
 
 > **"ถ้าทำได้ถึงจุดนี้ — คุณเข้าใจ JavaScript แล้ว!"**
 
----
+
 
 ## 🎯 Capstone Goal
 
@@ -17,7 +17,7 @@
 6. 📊 **Dashboard** — สรุปจำนวน Task (Completed, Pending, Overdue)
 7. 🎨 **Responsive UI** — ใช้ได้ทั้ง Desktop และ Mobile
 
----
+
 
 ## 🧩 Skills Map — ทุก Module ที่ใช้
 
@@ -35,7 +35,7 @@
 | 10 | Error Handling | Validation, try/catch |
 | 11 | Web Storage | localStorage Persistence |
 
----
+
 
 ## 📐 Project Structure
 
@@ -52,7 +52,7 @@ task-manager/
 │   └── utils.js         # Date formatting, ID generation
 ```
 
----
+
 
 ## 📋 Task Data Structure
 
@@ -81,7 +81,7 @@ class Task {
 }
 ```
 
----
+
 
 ## 💡 Implementation Hints
 
@@ -151,7 +151,7 @@ function getPriorityColor(priority) {
 }
 ```
 
----
+
 
 ## 🌟 Extra Challenges (ท้าทายเพิ่ม!)
 
@@ -161,7 +161,7 @@ function getPriorityColor(priority) {
 4. **Keyboard Shortcuts** — `Ctrl+N` สร้าง Task ใหม่
 5. **Undo Delete** — แสดง Toast "Undo" หลังลบ Task
 
----
+
 
 ## 🎓 ยินดีด้วย! คุณเรียนจบ JavaScript Zero to Hero แล้ว! 🎉
 

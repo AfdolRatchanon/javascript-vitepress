@@ -40,96 +40,107 @@ export default defineConfig({
                     ]
                 },
                 {
-                    text: 'Module 2: Variables & Types',
+                    text: 'Module 2: Variables & Memory',
                     items: [
                         { text: '2.1 - Variables Deep Dive', link: '/javascript/02-01-variables' },
-                        { text: '2.2 - Data Types & Memory', link: '/javascript/02-02-data-types' },
-                        { text: '2.3 - Type Conversion', link: '/javascript/02-03-type-conversion' },
-                        { text: '2.4 - Operators (Math & Logic)', link: '/javascript/02-04-operators' },
+                        { text: '2.2 - Data Types', link: '/javascript/02-02-data-types' },
+                        { text: '2.3 - Operators', link: '/javascript/02-03-operators' },
+                        { text: '2.4 - Type Conversion', link: '/javascript/02-04-type-conversion' },
+                        { text: '2.5 - Memory & References', link: '/javascript/02-05-memory-management' },
                         { text: '⚖️ Project 3: BMI Calculator', link: '/javascript/02-project-bmi' }
                     ]
                 },
                 {
                     text: 'Module 3: Control Flow',
                     items: [
-                        { text: '3.1 - Conditionals (Logic)', link: '/javascript/03-01-conditionals' },
-                        { text: '3.2 - Loops (Repetition)', link: '/javascript/03-02-loops' },
+                        { text: '3.1 - Conditionals', link: '/javascript/03-01-conditionals' },
+                        { text: '3.2 - Loops', link: '/javascript/03-02-loops' },
                         { text: '🐝 Project 4: FizzBuzz', link: '/javascript/03-project-fizzbuzz' }
                     ]
                 },
                 {
-                    text: 'Module 4: Functions & Scope',
+                    text: 'Module 4: Functions & Context',
                     items: [
                         { text: '4.1 - Functions Basics', link: '/javascript/04-01-functions' },
                         { text: '4.2 - Data Flow & Params', link: '/javascript/04-02-data-flow' },
                         { text: '4.3 - Scope & Closures', link: '/javascript/04-03-scope-closures' },
+                        { text: '4.4 - Function Context (this)', link: '/javascript/04-04-function-context' },
                         { text: '🧮 Project 5: Calculator', link: '/javascript/04-project-calculator' }
                     ]
                 },
                 {
-                    text: 'Module 5: Arrays & Objects',
+                    text: 'Module 5: Data Structures',
                     items: [
-                        { text: '5.1 - Arrays (Lists)', link: '/javascript/05-01-arrays' },
-                        { text: '5.2 - Objects (Key-Value)', link: '/javascript/05-02-objects' },
-                        { text: '5.3 - Reference vs Value', link: '/javascript/05-03-reference-vs-value' },
-                        { text: '✅ Project 6: Todo List', link: '/javascript/05-project-todo' }
+                        { text: '5.1 - Arrays', link: '/javascript/05-01-arrays' },
+                        { text: '5.2 - Array Iteration', link: '/javascript/05-02-array-iteration' },
+                        { text: '5.3 - Objects', link: '/javascript/05-03-objects' },
+                        { text: '5.4 - Maps & Sets', link: '/javascript/05-04-maps-sets' },
+                        { text: '5.5 - Strings, Math, Date', link: '/javascript/05-05-strings-math-dates' },
+                        { text: '5.6 - Regex', link: '/javascript/05-06-regex' },
+                        { text: '5.7 - JSON', link: '/javascript/05-07-json-fundamentals' },
+                        { text: '5.8 - Typed Arrays', link: '/javascript/05-08-typed-arrays' },
+                        { text: '🧹 Project 6: Data Cleanser', link: '/javascript/05-project-data-cleanser' },
+                        { text: '⌨️ Project 7: Typing Logic', link: '/javascript/05-project-typing-logic' }
                     ]
                 },
                 {
-                    text: 'Module 6: DOM Manipulation',
+                    text: 'Module 6: Async JavaScript',
                     items: [
-                        { text: '6.1 - DOM Basics', link: '/javascript/06-01-dom-basics' },
-                        { text: '6.2 - DOM Events', link: '/javascript/06-02-dom-events' },
-                        { text: '6.3 - DOM Manipulation', link: '/javascript/06-03-dom-manipulation' },
-                        { text: '🎴 Project 7: Interactive Card', link: '/javascript/06-project-interactive-card' }
+                        { text: '6.1 - Event Loop', link: '/javascript/06-01-event-loop' },
+                        { text: '6.2 - Promises', link: '/javascript/06-02-promises' },
+                        { text: '6.3 - Async/Await', link: '/javascript/06-03-async-await' },
+                        { text: '🌤️ Project 8: Async Fetcher', link: '/javascript/06-project-data-fetcher' }
                     ]
                 },
                 {
-                    text: 'Module 7: Async JavaScript',
+                    text: 'Module 7: ES6+ & Advanced Control',
                     items: [
-                        { text: '7.1 - Async Concepts', link: '/javascript/07-01-async-concepts' },
-                        { text: '7.2 - Promises', link: '/javascript/07-02-promises' },
-                        { text: '7.3 - Async/Await & Fetch', link: '/javascript/07-03-async-await' },
-                        { text: '🌤️ Project 8: Weather App', link: '/javascript/07-project-weather-app' }
+                        { text: '7.1 - Destructuring', link: '/javascript/07-01-destructuring' },
+                        { text: '7.2 - Spread & Rest', link: '/javascript/07-02-spread-rest' },
+                        { text: '7.3 - Iterators & Generators', link: '/javascript/07-03-iterators-generators' },
+                        { text: '👨‍🎓 Project 9: Data Transformer', link: '/javascript/07-project-data-transformer' }
                     ]
                 },
                 {
-                    text: 'Module 8: ES6+ Modern Features',
+                    text: 'Module 8: OOP & Metaprogramming',
                     items: [
-                        { text: '8.1 - Destructuring', link: '/javascript/08-01-destructuring' },
-                        { text: '8.2 - Spread & Rest', link: '/javascript/08-02-spread-rest' },
-                        { text: '8.3 - Modules (import/export)', link: '/javascript/08-03-modules' },
-                        { text: '👨‍🎓 Project 9: Student Manager', link: '/javascript/08-project-student-manager' }
+                        { text: '8.1 - Prototypes', link: '/javascript/08-01-prototypes' },
+                        { text: '8.2 - Classes', link: '/javascript/08-02-classes' },
+                        { text: '8.3 - Inheritance', link: '/javascript/08-03-inheritance' },
+                        { text: '8.4 - Metaprogramming', link: '/javascript/08-04-metaprogramming' },
+                        { text: '8.5 - Event Emitters', link: '/javascript/08-05-event-emitter' },
+                        { text: '🛡️ Project 10: Reactive Proxy', link: '/javascript/08-project-reactive-proxy' },
+                        { text: '⚔️ Project 11: RPG Logic', link: '/javascript/08-project-rpg-logic' }
                     ]
                 },
                 {
-                    text: 'Module 9: OOP',
+                    text: 'Module 9: Error Handling & Debugging',
                     items: [
-                        { text: '9.1 - Classes', link: '/javascript/09-01-classes' },
-                        { text: '9.2 - Inheritance', link: '/javascript/09-02-inheritance' },
-                        { text: '9.3 - Prototypes', link: '/javascript/09-03-prototypes' },
-                        { text: '⚔️ Project 10: RPG Game', link: '/javascript/09-project-rpg-game' }
+                        { text: '9.1 - Error Handling', link: '/javascript/09-01-error-handling' },
+                        { text: '9.2 - Debugging', link: '/javascript/09-02-debugging' },
+                        { text: '📋 Project 12: Validator', link: '/javascript/09-project-validator' }
                     ]
                 },
                 {
-                    text: 'Module 10: Error Handling & Debugging',
+                    text: 'Module 10: Modules System',
                     items: [
-                        { text: '10.1 - Error Handling', link: '/javascript/10-01-error-handling' },
-                        { text: '10.2 - Debugging', link: '/javascript/10-02-debugging' },
-                        { text: '📋 Project 11: Form Validator', link: '/javascript/10-project-form-validator' }
+                        { text: '10.1 - ES Modules', link: '/javascript/10-01-es-modules' }
                     ]
                 },
                 {
-                    text: 'Module 11: Web Storage & Browser APIs',
+                    text: 'Module 11: DOM Manipulation',
                     items: [
-                        { text: '11.1 - Web Storage', link: '/javascript/11-01-web-storage' },
-                        { text: '11.2 - Browser APIs', link: '/javascript/11-02-browser-apis' },
-                        { text: '📝 Project 12: Note App', link: '/javascript/11-project-note-app' }
+                        { text: '11.1 - DOM Basics', link: '/javascript/11-01-dom-basics' },
+                        { text: '11.2 - DOM Events', link: '/javascript/11-02-dom-events' },
+                        { text: '11.3 - DOM Mutations', link: '/javascript/11-03-dom-mutations' },
+                        { text: '🎴 Project 13: Interactive UI', link: '/javascript/11-project-interactive-ui' }
                     ]
                 },
                 {
-                    text: 'Module 12: Capstone Project',
+                    text: 'Module 12: Web Storage & APIs',
                     items: [
+                        { text: '12.1 - Browser Storage', link: '/javascript/12-01-browser-storage' },
+                        { text: '12.2 - Browser APIs', link: '/javascript/12-02-browser-apis' },
                         { text: '🏆 Capstone: Task Manager', link: '/javascript/12-capstone-project' }
                     ]
                 }
@@ -142,99 +153,127 @@ export default defineConfig({
                     ]
                 },
                 {
-                    text: 'Module 1: Node.js Introduction',
+                    text: 'Module 1: Node.js Basics & Environment',
                     items: [
-                        { text: '1.1 - Node.js คืออะไร?', link: '/node/01-01-what-is-node' },
-                        { text: '1.2 - npm & package.json', link: '/node/01-02-npm-basics' },
+                        { text: '1.1 - Node.js Architecture', link: '/node/01-01-node-architecture' },
+                        { text: '1.2 - npm & Packages', link: '/node/01-02-npm-and-packages' },
                         { text: '🎯 Project: CLI Tool', link: '/node/01-project-cli-tool' }
                     ]
                 },
                 {
-                    text: 'Module 2: Modules System',
+                    text: 'Module 2: Module Systems & Core APIs',
                     items: [
-                        { text: '2.1 - CommonJS vs ESM', link: '/node/02-01-commonjs-esm' },
-                        { text: '2.2 - npm Packages', link: '/node/02-02-npm-packages' },
-                        { text: '📦 Project: Utility Package', link: '/node/02-project-utility-package' }
+                        { text: '2.1 - Module Systems', link: '/node/02-01-module-systems' },
+                        { text: '2.2 - File System', link: '/node/02-02-file-system' },
+                        { text: '2.3 - Buffers & Streams', link: '/node/02-03-buffers-streams' },
+                        { text: '📁 Project: Stream File Manager', link: '/node/02-project-file-manager' }
                     ]
                 },
                 {
-                    text: 'Module 3: File System & Path',
+                    text: 'Module 3: Native HTTP & API Tools 🔍',
                     items: [
-                        { text: '3.1 - File System (fs)', link: '/node/03-01-filesystem' },
-                        { text: '3.2 - Path & Streams', link: '/node/03-02-path-streams' },
-                        { text: '📁 Project: File Manager', link: '/node/03-project-file-manager' }
+                        { text: '3.1 - API Testing Tools', link: '/node/03-01-api-testing-tools' },
+                        { text: '3.2 - Native HTTP Reference', link: '/node/03-02-native-http-reference' }
                     ]
                 },
                 {
-                    text: 'Module 4: HTTP & Server Basics',
+                    text: 'Module 4: Express.js Fundamentals',
                     items: [
-                        { text: '4.1 - HTTP Basics & Status Codes', link: '/node/04-01-http-basics' },
-                        { text: '4.2 - Basic Routing', link: '/node/04-02-basic-routing' },
-                        { text: '🌐 Project: Simple API', link: '/node/04-project-simple-api' }
+                        { text: '4.1 - Express Setup', link: '/node/04-01-express-setup' },
+                        { text: '4.2 - Handling Requests', link: '/node/04-02-handling-requests' },
+                        { text: '4.3 - Environment Variables', link: '/node/04-03-environment-variables' },
+                        { text: '🛣️ Project: Basic CRUD', link: '/node/04-project-basic-crud' }
                     ]
                 },
                 {
-                    text: 'Module 5: Express.js Basics',
+                    text: 'Module 5: Middleware & Clean Architecture',
                     items: [
-                        { text: '5.1 - Express Setup', link: '/node/05-01-express-setup' },
-                        { text: '5.2 - Middleware', link: '/node/05-02-middleware' },
-                        { text: '🛣️ Project: REST API', link: '/node/05-project-rest-api' }
+                        { text: '5.1 - Middleware Concept', link: '/node/05-01-middleware-concept' },
+                        { text: '5.2 - Layered Architecture', link: '/node/05-02-layered-architecture' },
+                        { text: '🏗️ Project: Refactored API', link: '/node/05-project-refactored-api' }
                     ]
                 },
                 {
-                    text: 'Module 6: REST API Design',
+                    text: 'Module 6: Relational Database (MySQL)',
                     items: [
-                        { text: '6.1 - REST Concepts', link: '/node/06-01-rest-api-concepts' },
-                        { text: '6.2 - Best Practices', link: '/node/06-02-api-design-best-practices' },
-                        { text: '📡 Project: Memory API', link: '/node/06-project-memory-api' }
+                        { text: '6.1 - SQL Fundamentals', link: '/node/06-01-sql-fundamentals' },
+                        { text: '6.2 - Node.js + MySQL', link: '/node/06-02-node-mysql' },
+                        { text: '6.3 - Advanced SQL', link: '/node/06-03-advanced-sql' },
+                        { text: '🗃️ Project: Inventory API', link: '/node/06-project-inventory-api' }
                     ]
                 },
                 {
-                    text: 'Module 7: MySQL & SQL',
+                    text: 'Module 7: NoSQL Database (MongoDB)',
                     items: [
-                        { text: '7.1 - SQL Fundamentals', link: '/node/07-01-sql-fundamentals' },
-                        { text: '7.2 - Node.js + MySQL', link: '/node/07-02-node-mysql' },
-                        { text: '7.3 - Advanced SQL', link: '/node/07-03-advanced-sql' },
-                        { text: '🗃️ Project: Student DB', link: '/node/07-project-student-db' }
+                        { text: '7.1 - MongoDB Basics', link: '/node/07-01-mongodb-basics' },
+                        { text: '7.2 - Mongoose ODM', link: '/node/07-02-mongoose-odm' },
+                        { text: '7.3 - Mongoose Relations', link: '/node/07-03-mongoose-relations' },
+                        { text: '🍃 Project: Blog API', link: '/node/07-project-blog-api' }
                     ]
                 },
                 {
-                    text: 'Module 8: MongoDB & NoSQL',
+                    text: 'Module 8: Authentication & Authorization',
                     items: [
-                        { text: '8.1 - NoSQL & MongoDB', link: '/node/08-01-nosql-mongodb' },
-                        { text: '8.2 - Mongoose ODM', link: '/node/08-02-mongoose-odm' },
-                        { text: '🍃 Project: Blog API', link: '/node/08-project-blog-api' }
+                        { text: '8.1 - Password Hashing', link: '/node/08-01-password-hashing' },
+                        { text: '8.2 - JWT Fundamentals', link: '/node/08-02-jwt-fundamentals' },
+                        { text: '8.3 - Auth Middleware', link: '/node/08-03-auth-middleware' },
+                        { text: '🔐 Project: Auth System', link: '/node/08-project-auth-system' }
                     ]
                 },
                 {
-                    text: 'Module 9: Authentication',
+                    text: 'Module 9: File Upload & Cloud Storage',
                     items: [
-                        { text: '9.1 - Password Security', link: '/node/09-01-password-security' },
-                        { text: '9.2 - JWT Authentication', link: '/node/09-02-jwt-auth' },
-                        { text: '🔐 Project: Auth System', link: '/node/09-project-auth-system' }
+                        { text: '9.1 - Multer Upload', link: '/node/09-01-multer-upload' },
+                        { text: '9.2 - Cloud Storage', link: '/node/09-02-cloud-storage' },
+                        { text: '📤 Project: Gallery API', link: '/node/09-project-gallery-api' }
                     ]
                 },
                 {
-                    text: 'Module 10: File Upload & Validation',
+                    text: 'Module 10: Validation, Errors & Security',
                     items: [
-                        { text: '10.1 - File Upload Basics', link: '/node/10-01-file-upload' },
-                        { text: '10.2 - Input Validation', link: '/node/10-02-input-validation' },
-                        { text: '📤 Project: Upload API', link: '/node/10-project-upload-api' }
+                        { text: '10.1 - Input Validation', link: '/node/10-01-input-validation' },
+                        { text: '10.2 - Centralized Errors', link: '/node/10-02-centralized-errors' },
+                        { text: '10.3 - Security Hardening', link: '/node/10-03-security-hardening' },
+                        { text: '🛡️ Project: Secure API', link: '/node/10-project-secure-api' }
                     ]
                 },
                 {
-                    text: 'Module 11: Security',
+                    text: 'Module 11: Caching & Performance',
                     items: [
-                        { text: '11.1 - Security Fundamentals', link: '/node/11-01-security-fundamentals' },
-                        { text: '11.2 - Security Tools', link: '/node/11-02-security-tools' },
-                        { text: '🛡️ Project: Secure API', link: '/node/11-project-secure-api' }
+                        { text: '11.1 - Caching Concepts', link: '/node/11-01-caching-concepts' },
+                        { text: '11.2 - Redis Integration', link: '/node/11-02-redis-integration' },
+                        { text: '🚀 Project: Fast API', link: '/node/11-project-fast-api' }
                     ]
                 },
                 {
-                    text: 'Module 12: Capstone Project',
+                    text: 'Module 12: Real-time Communication',
                     items: [
-                        { text: '12.1 - E-Commerce API Intro', link: '/node/12-01-capstone' },
-                        { text: '🏆 Final Project: E-Commerce', link: '/node/12-project-ecommerce-api' }
+                        { text: '12.1 - WebSockets Intro', link: '/node/12-01-websockets-intro' },
+                        { text: '12.2 - Socket.io', link: '/node/12-02-socket-io' },
+                        { text: '💬 Project: Chat API', link: '/node/12-project-chat-api' }
+                    ]
+                },
+                {
+                    text: 'Module 13: Automated Testing',
+                    items: [
+                        { text: '13.1 - Unit Testing (Jest)', link: '/node/13-01-unit-testing-jest' },
+                        { text: '13.2 - API Testing (Supertest)', link: '/node/13-02-api-testing-supertest' },
+                        { text: '🧪 Project: Tested API', link: '/node/13-project-tested-api' }
+                    ]
+                },
+                {
+                    text: 'Module 14: Containerization & Deployment',
+                    items: [
+                        { text: '14.1 - Process Managers', link: '/node/14-01-process-managers' },
+                        { text: '14.2 - Docker Basics', link: '/node/14-02-docker-basics' },
+                        { text: '🚢 Project: Deployment', link: '/node/14-project-deployment' }
+                    ]
+                },
+                {
+                    text: 'Module 15: Capstone Project',
+                    items: [
+                        { text: '15.1 - Capstone Overview', link: '/node/15-01-capstone' },
+                        { text: '🏆 Project: E-Commerce API', link: '/node/15-project-ecommerce-api' }
                     ]
                 }
             ],

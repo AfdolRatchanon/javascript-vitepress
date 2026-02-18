@@ -44,7 +44,6 @@ features:
 > - ✅ Modules (import/export)
 > - ✅ Promises & Async/Await
 
----
 
 ## 🗺️ Module Outline
 
@@ -63,6 +62,5 @@ features:
 | 11 | **Optimization** — `useMemo`, `useCallback` | ⚡ Performance Demo |
 | 12 | **🏆 Capstone** — Final Project | 🛒 E-Commerce Shop |
 
----
 
 > **พร้อมแล้ว? 👉 [เริ่มจาก Module 1: React คืออะไร?](/react/01-01-intro-jsx)**

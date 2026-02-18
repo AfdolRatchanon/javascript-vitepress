@@ -372,6 +372,5 @@ const PokemonList = () => {
 | **Interpolation** | การแทรกค่า `{expression}` ลงใน JSX |
 | **CamelCase** | รูปแบบการตั้งชื่อที่ React ใช้กับ Attribute เช่น `className`, `onClick`, `tabIndex` |
 
----
 
 > 👉 **ไปต่อ: [Project 1: JSX Art Gallery](/react/01-project-jsx-art)**

@@ -3,7 +3,7 @@
 > **บทนี้จะ Combine ทุกอย่างที่เรียนใน Module 7:**
 > Async/Await + Fetch API + DOM Manipulation = **แอปดึงข้อมูลจริงจาก API!**
 
----
+
 
 ## 🎯 Project Goal (เป้าหมาย)
 
@@ -14,7 +14,7 @@
 4. **Error Handling** → แสดงข้อความถ้าค้นหาไม่เจอ
 5. **แสดงประวัติ** → บันทึกเมืองที่ค้นหาล่าสุด
 
----
+
 
 ## 🌐 API ที่ใช้: wttr.in (ไม่ต้อง API Key!)
 
@@ -44,7 +44,7 @@ const url = "https://wttr.in/Bangkok?format=j1";
 }
 ```
 
----
+
 
 ## 📐 HTML Structure
 
@@ -118,7 +118,7 @@ const url = "https://wttr.in/Bangkok?format=j1";
 </html>
 ```
 
----
+
 
 ## 🎨 CSS
 
@@ -243,7 +243,7 @@ h1 { text-align: center; margin-bottom: 24px; font-size: 2rem; }
 ```
 :::
 
----
+
 
 ## ⚙️ JavaScript Requirements
 
@@ -272,7 +272,7 @@ h1 { text-align: center; margin-bottom: 24px; font-size: 2rem; }
 - สร้าง `.history-item` สำหรับแต่ละเมือง
 - คลิกเมืองในประวัติ → ค้นหาเมืองนั้นอีกครั้ง
 
----
+
 
 ## 🧩 Hints (คำใบ้)
 
@@ -311,7 +311,7 @@ function addToHistory(city) {
 ```
 </details>
 
----
+
 
 ## ✅ Full Solution (เฉลยเต็ม)
 
@@ -429,7 +429,7 @@ searchForm.addEventListener("submit", (e) => {
 ```
 :::
 
----
+
 
 ## 🌟 Extra Challenges (ของแถม!)
 
@@ -438,7 +438,7 @@ searchForm.addEventListener("submit", (e) => {
 3. **Geolocation** — ใช้ `navigator.geolocation` เพื่อดึงสภาพอากาศของตำแหน่งปัจจุบัน
 4. **Temperature Toggle** — สลับระหว่าง °C / °F
 
----
+
 
 ## 📋 Skills Used in This Project
 

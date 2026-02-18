@@ -10,7 +10,6 @@ React ไม่ได้แถมระบบ Router มาให้ (ต่า�
 npm install react-router-dom
 ```
 
----
 
 ## 🛣️ Basic Setup
 
@@ -35,7 +34,6 @@ function App() {
 }
 ```
 
----
 
 ## 🔗 Navigation with `<Link>`
 
@@ -54,7 +52,6 @@ function Navbar() {
 }
 ```
 
----
 
 ## 📦 Dynamic Routes (Params)
 
@@ -77,7 +74,6 @@ function UserProfile() {
 }
 ```
 
----
 
 ## 🚦 Programmatic Navigation (`useNavigate`)
 
@@ -98,7 +94,6 @@ function Login() {
 }
 ```
 
----
 
 ##  boxer Challenges
 
@@ -118,6 +113,5 @@ import { NavLink } from 'react-router-dom';
 ```
 :::
 
----
 
 > 👉 **ไปต่อ: [Project 9: Multi-page Portfolio](/react/09-project-portfolio)**

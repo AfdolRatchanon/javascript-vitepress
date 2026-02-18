@@ -86,7 +86,7 @@ score >= 70? ──YES──► "Grade B" (ไม่ถึง)
 ... (ไม่ถึง)
 ```
 
----
+
 
 ## 2. Ternary Operator (if/else แบบสั้น) ⚡
 
@@ -125,7 +125,7 @@ console.log(greeting); // "สวัสดีคุณ!"
 | **Logic หลายบรรทัด** | ❌ ใช้ if/else | ฟังก์ชันที่มีหลายขั้นตอน |
 | **เงื่อนไข 3+ ทาง** | ❌ ใช้ if/else | เกรด A/B/C/D/F |
 
----
+
 
 ## 3. The switch Statement (สวิตช์เลือกทาง) 🔀
 
@@ -197,7 +197,7 @@ switch (color) {
 > switch ("1") { case 1: console.log("Match!"); } // ไม่ Match! ("1" !== 1)
 > ```
 
----
+
 
 ## 4. Guard Clauses (ดักกรณีพิเศษ — Best Practice!) 🛡️
 
@@ -240,7 +240,7 @@ function processOrder(order) {
 
 > **หลักการ:** ดัก "สิ่งผิดปกติ" ไว้ข้างบน แล้ว "สิ่งปกติ" อยู่ข้างล่าง — โค้ดอ่านง่ายขึ้น 10 เท่า!
 
----
+
 
 ## 5. Logical Operators in Conditions (Short-Circuit) ⚡
 
@@ -320,7 +320,7 @@ function handleLogin(username, password, isLocked) {
 }
 ```
 
----
+
 
 ## 6. Challenges 🏆
 
@@ -419,7 +419,7 @@ const displayName = inputName ?? "Anonymous";
 ```
 :::
 
----
+
 
 > **📖 คำศัพท์เทคนิค (Glossary):**
 > *   **Conditional Statement:** คำสั่งที่ทำให้โค้ด "ตัดสินใจ" ทำสิ่งต่างๆ ตามเงื่อนไข
@@ -435,5 +435,5 @@ const displayName = inputName ?? "Anonymous";
 > *   **Optional Chaining (`?.`):** Operator ที่เข้าถึง Property โดยไม่ Error ถ้า Object เป็น null/undefined
 > *   **Nesting:** การซ้อน if/else หลายชั้น ทำให้โค้ดอ่านยาก
 
----
-👉 **[ไปต่อ: 03-2 - Loops (ลูป)](/03-02-loops)**
+
+👉 **[ไปต่อ: 03-2 - Loops (ลูป)](/javascript/03-02-loops)**

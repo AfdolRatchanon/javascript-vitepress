@@ -4,7 +4,6 @@
 
 > **ความรู้ที่ใช้**: Object State, `onChange` (Dynamic Key), `onSubmit`, Conditional Rendering (Error Message)
 
----
 
 ## 🎯 เป้าหมาย (Goal)
 สร้างฟอร์มสมัครสมาชิกที่รับข้อมูล:
@@ -19,7 +18,6 @@
 
 ถ้าผ่าน ให้แสดงข้อความ "✅ Registration Successful!"
 
----
 
 ## 🚀 ลงมือทำ (Step-by-Step)
 
@@ -129,7 +127,6 @@ return (
 );
 ```
 
----
 
 ## 🧩 Challenge: Real-time Validation
 
@@ -145,6 +142,5 @@ const isPasswordShort = formData.password.length > 0 && formData.password.length
 {isPasswordShort && <small style={{color:'red'}}>Password must be at least 6 chars</small>}
 ```
 
----
 
 > 👉 **ไปต่อ: [Module 6 - Effects & Lifecycle](/react/06-01-effects-lifecycle)** (Coming Soon!)

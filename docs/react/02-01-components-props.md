@@ -11,7 +11,6 @@
 
 เรามี "สูตรเดียว" (Component) แต่สร้างเบอร์เกอร์ได้ "หลายรูปแบบ" (Instances) ตาม "คำสั่ง" (Props) ที่ได้รับ
 
----
 
 ## 🏗️ Creating Components
 
@@ -34,7 +33,6 @@ const Welcome = () => {
 
 > ⚠️ **กฎเหล็ก**: ชื่อ Component ต้องขึ้นต้นด้วย **Capital Letter** (เช่น `MyButton` ไม่ใช่ `myButton`) เพื่อให้ React แยกออกว่าเป็น Component หรือ HTML Tag ปกติ
 
----
 
 ## 📦 What are Props?
 
@@ -56,7 +54,6 @@ function Welcome(props) {
 }
 ```
 
----
 
 ## ✂️ Destructuring Props (นิยมใช้มากที่สุด)
 
@@ -78,7 +75,6 @@ function UserCard({ name, role }) {
 <UserCard name="Bob" role="Designer" />
 ```
 
----
 
 ## 👶 Children Props
 
@@ -99,7 +95,6 @@ function Button({ children }) {
 </Button>
 ```
 
----
 
 ## 🛠️ Comparison: HTML Attributes vs React Props
 
@@ -110,7 +105,6 @@ function Button({ children }) {
 | `tabindex` | `tabIndex` | ใช้ CamelCase |
 | `for` | `htmlFor` | สำหรับ label (กันซ้อน for loop) |
 
----
 
 ## 🥊 Challenges
 
@@ -141,6 +135,5 @@ const Product = ({ name, price, onSale }) => (
 ```
 :::
 
----
 
 > 👉 **ไปต่อ: [Project 2: User Profile Card](/react/02-project-user-profile)**

@@ -28,7 +28,6 @@ const App = () => {
 };
 ```
 
----
 
 ## 🧠 Memoization (`useMemo`)
 
@@ -52,7 +51,6 @@ const MyComponent = ({ num }) => {
 };
 ```
 
----
 
 ## 📞 Callback Memoization (`useCallback`)
 
@@ -71,7 +69,6 @@ const Parent = () => {
 };
 ```
 
----
 
 ## 🧱 PureComponent (`React.memo`)
 
@@ -86,13 +83,11 @@ const Child = React.memo(({ name }) => {
 });
 ```
 
----
 
 ## 🥊 Challenge: Optimize List Filtering
 
 ลองสร้าง List ที่มีของ 10,000 ชิ้น แล้วทำช่อง Search
 - เปรียบเทียบ performance ระหว่างใช้ `useMemo` กับไม่ใช้ (ดูความลื่นไหลตอนพิมพ์)
 
----
 
 > 👉 **ไปต่อ: [Project 11: Optimization Challenge](/react/11-project-optimization)**

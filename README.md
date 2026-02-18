@@ -33,8 +33,8 @@
 
 | คอร์ส | รายละเอียด | ไฟล์ |
 |:------|:----------|:-----|
-| 📘 **JavaScript** | 33 บทเรียน + 13 โปรเจกต์ (12 Module) | [JS_COURSE.md](JS_COURSE.md) |
-| 📗 **Node.js** | 36 ไฟล์เนื้อหา (12 Module) — Backend + Express + MySQL + MongoDB | [NODE_COURSE.md](NODE_COURSE.md) |
+| 📘 **JavaScript** | 44 บทเรียน + 15 โปรเจกต์ (12 Module) | [JS_COURSE.md](JS_COURSE.md) |
+| 📗 **Node.js** | 45 ไฟล์เนื้อหา + 15 โปรเจกต์ (16 Module) — Backend + Express + MySQL + MongoDB | [NODE_COURSE.md](NODE_COURSE.md) |
 | ⚛️ **React** | 28 ไฟล์เนื้อหา (12 Module) — Hooks & Functional Components | [REACT_COURSE.md](REACT_COURSE.md) |
 
 ---
@@ -81,8 +81,8 @@ JavaScript/
 │   ├── .vitepress/
 │   │   └── config.mts              # ⚙️ Config VitePress (Sidebar, Nav)
 │   ├── index.md                    # 🏠 Main Portal (ทางเข้าหลัก)
-│   ├── javascript/                 # 📘 เนื้อหา JavaScript (33 บทเรียน + 13 โปรเจกต์)
-│   ├── node/                       # 📗 เนื้อหา Node.js (18 บทเรียน + 12 โปรเจกต์)
+│   ├── javascript/                 # 📘 เนื้อหา JavaScript (44 บทเรียน + 15 โปรเจกต์)
+│   ├── node/                       # 📗 เนื้อหา Node.js (45 บทเรียน + 15 โปรเจกต์)
 │   └── react/                      # ⚛️ เนื้อหา React (12 บทเรียน + 12 โปรเจกต์)
 ├── package.json
 ├── .gitignore
@@ -180,6 +180,7 @@ JavaScript/
 - ❌ **เนื้อหาซ้ำซ้อนข้ามบท** — ห้ามอธิบายหัวข้อเดียวกันเต็มรูปแบบใน 2 บท
 - ❌ **Padding เพื่อให้ถึงเกณฑ์** — ห้ามเพิ่มเนื้อหาที่ไม่จำเป็นแค่เพื่อนับบรรทัด
 - ❌ **Challenge Header ซ้ำ** — แต่ละบทต้องมี `## Challenges` เพียง 1 ครั้งเท่านั้น
+- ❌ **Horizontal Rules (`---`)** — ห้ามใช้ `---` ขีดเส้นคั่นเนื้อหา (ยกเว้นใน Table หรือ Frontmatter)
 
 #### ✅ ตัวอย่างรูปแบบที่ดี
 

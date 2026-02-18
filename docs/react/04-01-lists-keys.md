@@ -28,7 +28,6 @@ return <ul>{listItems}</ul>;
 </ul>
 ```
 
----
 
 ## 🔑 The Importance of "Keys"
 
@@ -64,7 +63,6 @@ return (
 );
 ```
 
----
 
 ## 🗑️ Filter & Map
 
@@ -91,7 +89,6 @@ return (
 );
 ```
 
----
 
 ## 🥊 Challenges
 
@@ -126,6 +123,5 @@ const users = [
 ```
 :::
 
----
 
 > 👉 **ไปต่อ: [Project 4: Simple Todo List](/react/04-project-simple-todo)**

@@ -44,7 +44,6 @@ features:
 > - ✅ ES6+ (Destructuring, Modules, Classes)
 > - ✅ Error Handling (try/catch)
 
----
 
 ## 🗺️ Module Outline
 
@@ -63,6 +62,5 @@ features:
 | 11 | **[Security](/node/11-01-security)** — Helmet, CORS | [🛡️ Secure API](/node/11-project-secure-api) |
 | 12 | **[Capstone](/node/12-01-capstone)** — E-Commerce API | [🏆 E-Commerce](/node/12-project-ecommerce-api) |
 
----
 
 > **พร้อมแล้ว? 👉 [เริ่มจาก Module 1: Node.js คืออะไร?](/node/01-01-what-is-node)**

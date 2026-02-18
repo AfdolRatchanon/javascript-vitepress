@@ -1,113 +1,143 @@
-# 📘 JavaScript Course — เนื้อหาในคอร์ส
+# 📗 Node.js Backend Course
 
-> **33 บทเรียน + 13 โปรเจกต์** เรียงจากง่ายไปยาก ครอบคลุม JavaScript ครบทุกด้าน
+> **45 บทเรียน + 15 โปรเจกต์** (16 Module) — สอน Backend Development ระดับ Production พร้อมสถาปัตยกรรมระดับองค์กร
+> ⚠️ **อ้างอิงมาตรฐาน:** ทุกไฟล์เนื้อหาต้องยึดหลัก **Gold Standard (10 องค์ประกอบ)** และกฎ **No Duplication** ตามที่ระบุใน `README.md`
 
-### Module 0: Setup Environment
+### 🏗️ สถาปัตยกรรม (Single Site, Triple Section)
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `00-setup.md` | Install Node.js, VS Code, สร้างโปรเจกต์แรก |
+ทุก Course อยู่ใน **VitePress เดียวกัน** แยกเป็น Section ใน Sidebar:
 
-### Module 1: Introduction (3 บทเรียน + 2 โปรเจกต์)
+\`\`\`text
+JavaScript/docs/
+├── javascript/              ← 📘 JavaScript Section 
+├── node/                    ← 📗 Node.js Section (คุณอยู่ที่นี่)
+└── react/                   ← ⚛️ React Section
+\`\`\`
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `01-01-history.md` | กำเนิด JS (1995), Browser Wars, ECMA Standards, Java vs JavaScript, V8 Engine, JS Today |
-| `01-02-hello-world.md` | console.log Deep Dive, Console Methods (10+), Where JS Runs, String Basics, Semicolons & ASI |
-| `01-03-syntax-basics.md` | Comments, Blocks, Case Sensitivity, Expression vs Statement, ASI Bug, Code Formatting |
-| 🎨 `01-project-artist.md` | Console ASCII Art, Styled Console (%c), Template Literals |
-| 📜 `01-project-bio.md` | Digital Bio Card, Escape Characters, Template Literals upgrade |
+---
 
-### Module 2: Variables & Data Types (4 บทเรียน + 1 โปรเจกต์)
+### 🗺️ Node.js Module Outline (หัวข้อย่อย)
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `02-01-variables.md` | var/let/const, Naming Rules, Declaration vs Initialization, Hoisting & TDZ (preview), const กับ Object |
-| `02-02-data-types.md` | Primitive vs Reference, String/Number/Boolean/null/undefined, Stack vs Heap (preview), Dynamic Typing, typeof |
-| `02-03-type-conversion.md` | Explicit Conversion (Number/String/Boolean), Falsy vs Truthy, Implicit Coercion, Best Practices |
-| `02-04-operators.md` | Arithmetic, Precedence, Assignment, Comparison (== vs ===), Logical, Nullish Coalescing, Optional Chaining |
-| ⚖️ `02-project-bmi.md` | BMI Calculator, toFixed(), Ternary Category, Template Literal output |
+#### Module 1: Node.js Basics & Environment (2 บทเรียน + 1 โปรเจกต์)
 
-### Module 3: Control Flow (2 บทเรียน + 1 โปรเจกต์)
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `01-01-node-architecture.md` | สถาปัตยกรรม V8 Engine, Non-blocking I/O, Event Loop ระดับ Server | เปรียบเทียบการทำงานของ Node.js vs Browser |
+| `01-02-npm-and-packages.md` | `package.json`, คำสั่ง NPM พื้นฐาน, Semantic Versioning | |
+| 🎯 `01-project-cli-tool.md` | CLI Tool App: รับค่าผ่าน `process.argv` และสร้างเครื่องมือ Command Line | ปูพื้นฐานการเขียนสคริปต์ฝั่ง Server |
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `03-01-conditionals.md` | if/else if/else, Ternary, switch, Guard Clauses, Short-Circuit Evaluation |
-| `03-02-loops.md` | for, while, do...while, for...of, for...in, break/continue, Infinite Loops, Nested Loops |
-| 🐝 `03-project-fizzbuzz.md` | FizzBuzz Classic, ลำดับเงื่อนไข, String Concatenation approach, Custom FizzBuzz |
+#### Module 2: Module Systems & Core APIs (3 บทเรียน + 1 โปรเจกต์)
 
-### Module 4: Functions & Scope (3 บทเรียน + 1 โปรเจกต์)
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `02-01-module-systems.md` | CommonJS (`require`) vs ESM (`import`), Module Resolution | *อ้างอิงเนื้อหา ESM จากฝั่ง JS Module 10* |
+| `02-02-file-system.md` | การใช้งาน `fs/promises`, การจัดการ `path` และ `__dirname` | |
+| `02-03-buffers-streams.md` | ข้อมูลระดับไบต์ (`Buffer`), การสตรีมไฟล์ขนาดใหญ่ (`Streams`), `EventEmitter` | หัวใจความเร็วของ Node.js |
+| 📁 `02-project-file-manager.md` | Stream File Manager: โปรแกรมจัดการไฟล์ที่ใช้ทรัพยากรน้อยด้วย Streams | |
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `04-01-functions.md` | Declaration vs Expression, Arrow Functions, First-Class Citizens, Recursion, IIFE |
-| `04-02-data-flow.md` | Parameters vs Arguments, Default/Rest Parameters, return, Pass-by-Value vs Reference |
-| `04-03-scope-closures.md` | Global/Function/Block Scope, Scope Chain, var Problem, Closures, Module Pattern |
-| 🧮 `04-project-calculator.md` | Modular Calculator, switch Controller, Higher-Order Pattern, History feature |
+#### Module 3: Native HTTP & API Tools 🔍 (2 บทเรียน)
 
-### Module 5: Arrays & Objects (3 บทเรียน + 1 โปรเจกต์)
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `03-01-api-testing-tools.md` | วงจร Request/Response, การใช้ **Postman** หรือ **Thunder Client** | **[Main Track]** เครื่องมือหลักที่ต้องใช้ตลอดคอร์ส |
+| `03-02-native-http-reference.md` | **[Reference]** สร้าง Server ด้วย `http` module, ดัก Route เอง, จัดการ Chunk | **[Optional]** มีไว้อ่านเป็นคู่มือใต้กระโปรงรถ ไม่บังคับทำโปรเจกต์ |
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `05-01-arrays.md` | Creating, Accessing, Mutating Methods (push/pop/splice), Non-Mutating (map/filter/reduce), Chaining, Destructuring |
-| `05-02-objects.md` | Creation, Dot vs Bracket, CRUD Properties, Methods & this, Checking Keys, Iteration, Destructuring & Spread |
-| `05-03-reference-vs-value.md` | Copy by Value, Copy by Reference, const Gotcha, Equality, Shallow vs Deep Copy, structuredClone() |
-| ✅ `05-project-todo.md` | Console Todo List: CRUD operations, Array manipulation |
+#### Module 4: Express.js Fundamentals (3 บทเรียน + 1 โปรเจกต์)
 
-### Module 6: DOM Manipulation (3 บทเรียน + 1 โปรเจกต์)
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `04-01-express-setup.md` | Hello Express, Routing พื้นฐาน, JSON Response | นำเข้าสู่ Framework พระเอกของเรา |
+| `04-02-handling-requests.md` | Route Parameters, Query Strings, Request Body | |
+| `04-03-environment-variables.md` | การตั้งค่า `.env`, `dotenv`, การซ่อนพอร์ตและรหัสผ่าน | สอนซ่อนความลับก่อนพาไปต่อ Database |
+| 🛣️ `04-project-basic-crud.md` | Express CRUD API: สร้างระบบจัดการข้อมูล (In-memory) พร้อมซ่อน Config | |
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `06-01-dom-basics.md` | What is DOM, Selecting Elements (querySelector), Reading/Changing Content, Attributes, Styling, Traversing |
-| `06-02-dom-events.md` | addEventListener, Event Types (click/input/submit), Event Object, Keyboard Events, Form Events, Bubbling & Delegation |
-| `06-03-dom-manipulation.md` | createElement, Inserting (append/prepend/before/after), Removing, Cloning, DocumentFragment, innerHTML vs createElement |
-| 🎴 `06-project-interactive-card.md` | Interactive Profile Card: HTML/CSS/JS integration |
+#### Module 5: Middleware & Clean Architecture (2 บทเรียน + 1 โปรเจกต์)
 
-### Module 7: Async JavaScript (3 บทเรียน + 1 โปรเจกต์)
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `05-01-middleware-concept.md` | Middleware Concept, `next()`, Built-in Middleware | กองกำลังด่านหน้าของ Express |
+| `05-02-layered-architecture.md` | สถาปัตยกรรมโค้ด: Routes ➡️ Controllers ➡️ Services | สอน Clean Code ตั้งแต่โปรเจกต์ยังเล็ก |
+| 🏗️ `05-project-refactored-api.md` | Architecture API: นำโปรเจกต์ Module 4 มารีแฟกเตอร์ใหม่ให้เป็นระเบียบ | |
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `07-01-async-concepts.md` | Sync vs Async, Event Loop, Callbacks, setTimeout/setInterval, Microtasks vs Macrotasks |
-| `07-02-promises.md` | Promise States, .then/.catch/.finally, Chaining, Promise.all/race/allSettled, Error Handling |
-| `07-03-async-await.md` | async/await Basics, try/catch, Fetch API, Parallel vs Sequential, Common Mistakes |
-| 🌤️ `07-project-weather-app.md` | Weather App: Fetch API, DOM rendering, Error handling |
+#### Module 6: Relational Database (MySQL) (3 บทเรียน + 1 โปรเจกต์)
 
-### Module 8: ES6+ Modern Features (3 บทเรียน + 1 โปรเจกต์)
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `06-01-sql-fundamentals.md` | `CREATE TABLE`, Data Types, Basic CRUD (SQL Commands) | |
+| `06-02-node-mysql.md` | เชื่อมต่อผ่าน `mysql2`, Connection Pool, Parameterized Queries | เน้นเรื่องป้องกัน SQL Injection |
+| `06-03-advanced-sql.md` | `JOIN` (Relations) และ Database Transactions (การทำ Rollback) | |
+| 🗃️ `06-project-inventory-api.md` | Inventory API: ระบบตัดสต็อกที่ใช้ Transactions เพื่อความปลอดภัยของข้อมูล | |
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `08-01-destructuring.md` | Object Destructuring, Array Destructuring, Destructuring in Functions, Nested Destructuring |
-| `08-02-spread-rest.md` | Spread Array/Object/Function, Rest Parameters/Destructuring, Gotchas (Shallow Copy), Immutable Update |
-| `08-03-modules.md` | Named Export/Import, Default Export, Module in Browser, Barrel Export, Dynamic Import, Common Mistakes |
-| 👨‍🎓 `08-project-student-manager.md` | Student Manager: ES6 Modules, Destructuring, Spread/Rest |
+#### Module 7: NoSQL Database (MongoDB) (3 บทเรียน + 1 โปรเจกต์)
 
-### Module 9: OOP (3 บทเรียน + 1 โปรเจกต์)
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `07-01-mongodb-basics.md` | Document Model (BSON), NoSQL vs SQL, MongoDB Atlas | เปรียบเทียบกับ MySQL ใน Module 6 ให้เห็นภาพชัด |
+| `07-02-mongoose-odm.md` | Mongoose Schema, Model, Validation พื้นฐาน | |
+| `07-03-mongoose-relations.md` | การเชื่อมข้อมูลแบบ Reference และการใช้ `populate()` | |
+| 📘 `07-project-blog-api.md` | Blog API: ระบบโพสต์และคอมเมนต์ (One-to-Many Relationship) | |
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `09-01-classes.md` | Class Basics (constructor/methods), Getters & Setters, Static Methods, Private Fields (#) |
-| `09-02-inheritance.md` | extends, super(), Method Overriding, instanceof, UI Component Hierarchy |
-| `09-03-prototypes.md` | Prototype Chain, Class = Prototype Sugar, Object.create(), hasOwnProperty vs in |
-| ⚔️ `09-project-rpg-game.md` | RPG Game: Class hierarchy, Inheritance, Polymorphism |
+#### Module 8: Authentication & Authorization (3 บทเรียน + 1 โปรเจกต์)
 
-### Module 10: Error Handling & Debugging (2 บทเรียน + 1 โปรเจกต์)
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `08-01-password-hashing.md` | Hashing vs Encryption, การใช้ `bcrypt` | |
+| `08-02-jwt-fundamentals.md` | โครงสร้าง JWT, `jsonwebtoken` package, Token Lifecycle | |
+| `08-03-auth-middleware.md` | สร้าง Auth Middleware, Role-based Access Control (RBAC) | |
+| 🔐 `08-project-auth-system.md` | Auth System: ระบบ Register/Login และป้องกัน Route เฉพาะ Admin | |
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `10-01-error-handling.md` | try/catch/finally, Error Types (7 ชนิด), throw & Custom Error, Patterns (safeFetch) |
-| `10-02-debugging.md` | Console Methods (10+), Chrome DevTools, Breakpoints, Strategies (Binary Search, Rubber Duck), Common Bugs |
-| 📋 `10-project-form-validator.md` | Form Validator: Custom validation, Error display, DOM integration |
+#### Module 9: File Upload & Cloud Storage (2 บทเรียน + 1 โปรเจกต์)
 
-### Module 11: Web Storage & Browser APIs (2 บทเรียน + 1 โปรเจกต์)
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `09-01-multer-upload.md` | `multer` package, จัดการ `multipart/form-data`, กรองชนิดไฟล์ | |
+| `09-02-cloud-storage.md` | ส่งภาพไปเก็บที่ Cloudinary / AWS S3, เก็บเฉพาะ URL ลง Database | สอนแนวทางการทำงานจริงบน Cloud |
+| 📤 `09-project-gallery-api.md` | User Profile API: อัปโหลดรูปโปรไฟล์เก็บขึ้น Cloud | |
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| `11-01-web-storage.md` | localStorage (CRUD), sessionStorage, JSON stringify/parse, Storage Helper Functions, Storage Event |
-| `11-02-browser-apis.md` | Geolocation, Clipboard, Notification, IntersectionObserver, URL & Location API |
-| 📝 `11-project-note-app.md` | Note App: localStorage CRUD, DOM rendering, Search |
+#### Module 10: Validation, Errors & Security (3 บทเรียน + 1 โปรเจกต์)
 
-### Module 12: Capstone Project
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `10-01-input-validation.md` | `express-validator`, Validation Chains, Sanitization | |
+| `10-02-centralized-errors.md` | Global Error Handler Middleware, โยน Custom Error ลงมาจัดการที่เดียว | อ้างอิง Custom Error จาก JS Module 9 |
+| `10-03-security-hardening.md` | `helmet`, `cors`, `express-rate-limit`, ป้องกัน NoSQL Injection | |
+| 🛡️ `10-project-secure-api.md` | Robust API: นำ API ที่มีอยู่มาสวมเกราะป้องกันและดัก Error ทุกจุด | |
 
-| ไฟล์ | หัวข้อย่อย |
-|:-----|:----------|
-| 🏆 `12-capstone-project.md` | Task Manager App: รวมทุก Module, Full CRUD, localStorage, DOM |
+#### Module 11: Caching & Performance (2 บทเรียน + 1 โปรเจกต์)
+
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `11-01-caching-concepts.md` | In-memory vs Distributed Cache, Cache Invalidation | |
+| `11-02-redis-integration.md` | ติดตั้งและใช้ Redis (`SET`, `GET`, `EXPIRE`) คั่นกลาง Database | ฟีเจอร์ระดับแข่งขัน (Hero Level) |
+| 🚀 `11-project-fast-api.md` | Fast API: ระบบดึงแคตตาล็อกสินค้าที่ดึงข้อมูลจาก Redis ภายในเสี้ยววินาที | |
+
+#### Module 12: Real-time Communication (2 บทเรียน + 1 โปรเจกต์)
+
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `12-01-websockets-intro.md` | WebSockets vs HTTP Polling | |
+| `12-02-socket-io.md` | การใช้งาน `Socket.io`, Broadcast, Rooms, Namespaces | |
+| 💬 `12-project-chat-api.md` | Live Chat API: ห้องแชทแบบเรียลไทม์พร้อมระบุตัวตน | |
+
+#### Module 13: Automated Testing (2 บทเรียน + 1 โปรเจกต์)
+
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `13-01-unit-testing-jest.md` | การเขียน Unit Test ด้วย `Jest`, Mocking | |
+| `13-02-api-testing-supertest.md` | API Integration Testing ด้วย `Supertest` (จำลองการยิง HTTP) | |
+| 🧪 `13-project-tested-api.md` | Tested API: เขียน Test Cases ครอบคลุมระบบ CRUD อย่างน้อย 80% | ทักษะสำคัญที่บริษัทคาดหวังจาก Junior Dev |
+
+#### Module 14: Containerization & Deployment (2 บทเรียน + 1 โปรเจกต์)
+
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `14-01-process-managers.md` | รันโปรเจกต์โหมด Production, ใช้ `PM2` จัดการ Background Process | |
+| `14-02-docker-basics.md` | ทฤษฎี Container, การเขียน `Dockerfile` และ `docker-compose.yml` | |
+| 🚢 `14-project-deployment.md` | Deployment Lab: แพ็กเกจ API และ Database ลง Docker ให้พร้อมนำขึ้น Cloud | โปรเจกต์เน้น Operation/DevOps ไม่เน้นเขียนโค้ด API ใหม่ |
+
+#### Module 15: Capstone Project (1 บทเรียน + 1 โปรเจกต์)
+
+| ไฟล์ | หัวข้อย่อย | กฎ No Duplication & Focus |
+|:-----|:----------|:---|
+| `15-01-capstone.md` | System Architecture Design, ER Diagram, วางแผน API Endpoints | |
+| 🏆 `15-project-ecommerce-api.md` | E-Commerce API: นำความรู้ตั้งแต่ Express, DB, Auth, Redis, Docker มาประกอบร่าง | โปรเจกต์จบที่ใช้เป็น Portfolio สมัครงานได้เลย |

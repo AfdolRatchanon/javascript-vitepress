@@ -3,7 +3,7 @@ layout: home
 pageClass: javascript-home
 
 hero:
-  name: "JavaScript Zero to Hero"
+  name: "JavaScript"
   text: "Zero to Hero🚀"
   tagline: "คอร์ส JavaScript ภาษาไทย-อังกฤษ ครบ 12 Modules พร้อมโปรเจกต์จริง — เหมาะสำหรับมือใหม่ที่อยากเขียนเว็บเป็น!"
   actions:
@@ -64,6 +64,6 @@ features:
 | 11 | **[Web Storage & Browser APIs](/javascript/11-01-web-storage)** — localStorage, Geolocation | [📝 Note App](/javascript/11-project-note-app) |
 | 12 | **[🏆 Capstone Project](/javascript/12-capstone-project)** — รวมทุกอย่าง | [🏆 Final Project](/javascript/12-capstone-project) |
 
----
+
 
 > **พร้อมแล้วหรือยัง? 👉 [เริ่มจาก Module 0: Setup Environment](/javascript/00-setup)**

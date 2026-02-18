@@ -21,7 +21,6 @@ const [email, setEmail] = useState("");
 />
 ```
 
----
 
 ## 📝 Handling Multiple Inputs
 
@@ -61,7 +60,6 @@ return (
 
 > ⚠️ **ระวัง!** อย่าลืม `...prev` (Spread Operator) ไม่งั้นค่าเก่าจะหายหมด เหลือแค่ค่าใหม่ที่พิมพ์!
 
----
 
 ## 💾 Submitting Forms
 
@@ -81,7 +79,6 @@ const handleSubmit = (e) => {
 </form>
 ```
 
----
 
 ## 🧱 Other Inputs
 
@@ -113,7 +110,6 @@ const handleSubmit = (e) => {
 />
 ```
 
----
 
 ## 🥊 Challenges
 
@@ -143,6 +139,5 @@ const [color, setColor] = useState("#000000");
 ```
 :::
 
----
 
 > 👉 **ไปต่อ: [Project 5: Registration Form](/react/05-project-registration-form)**
