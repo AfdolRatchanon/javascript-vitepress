@@ -56,7 +56,7 @@ export default ProtectedRoute
 
 ## กลับไปหน้าที่ต้องการหลัง Login
 
-เมื่อส่ง `state={{ from: location }}` ไปกับ `<Navigate>` เราสามารถอ่านค่านั้นใน LoginPage เพื่อ Redirect กลับ:
+เมื่อส่ง <code v-pre>state={{ from: location }}</code> ไปกับ `<Navigate>` เราสามารถอ่านค่านั้นใน LoginPage เพื่อ Redirect กลับ:
 
 ```jsx
 // src/pages/LoginPage.jsx
