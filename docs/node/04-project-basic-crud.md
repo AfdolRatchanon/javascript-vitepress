@@ -1,211 +1,566 @@
-# Project 4: Basic CRUD API (In-Memory) 🛒
+# 💻 Project 4: Basic CRUD API 🗂️
 
-> **"Create, Read, Update, Delete. The bread and butter of every developer."**
+> 💡 **เป้าหมาย:** สร้าง RESTful API สำหรับ WSA2026 Test Submission Management System โดยใช้ In-Memory Array จำลอง Database เพื่อฝึก CRUD operations ครบ 5 routes พร้อม validation และ curl testing
 
-ยินดีต้อนรับสู่โปรเจกต์แรกอย่างเป็นทางการ! เราจะสร้าง **RESTful API** สำหรับจัดการข้อมูลสินค้า (Products)
-โดยในบทนี้เราจะยังไม่ใช้ Database (เพื่อให้โฟกัสที่ Logic ของ API ก่อน) แต่จะเก็บข้อมูลไว้ในตัวแปร Array ใน Ram (In-Memory) แทน
+---
 
+## 📖 ภาพรวมของโปรเจกต์ (Project Overview)
 
-## 🎯 Project Goals
+ในโปรเจกต์นี้เราจะสร้าง **CRUD API สำหรับ Tasks** ของระบบ WSA2026 โดยยังไม่ใช้ Database จริง แต่เก็บข้อมูลในตัวแปร Array (In-Memory) เพื่อให้โฟกัสที่ REST API Design และ Express.js ก่อน
 
-1.  เข้าใจ Concept ของ **RESTful API** (GET, POST, PUT, DELETE)
-2.  จัดการ **Status Code** ให้ถูกต้อง (200, 201, 404, 400)
-3.  Design **URL Endpoint** ที่สวยงามและสื่อความหมาย
-4.  ฝึกใช้ **Postman** ยิงทดสอบ
+### สิ่งที่จะสร้าง
 
+```
+GET    /api/tasks          -->  ดึง tasks ทั้งหมด
+GET    /api/tasks/:id      -->  ดึง task เดียวตาม ID
+POST   /api/tasks          -->  สร้าง task ใหม่
+PUT    /api/tasks/:id      -->  แก้ไข task
+DELETE /api/tasks/:id      -->  ลบ task
+```
 
-## 🛠️ Step 1: Project Setup
+### Architecture Diagram
 
-เริ่มจากการสร้างโฟลเดอร์และลง Express
+```
+                 HTTP Request
+                      |
+                      v
+         +------------+------------+
+         |       Express App       |
+         |  app.use(express.json())| <-- Middleware: parse body
+         |  app.use(cors())        | <-- Middleware: CORS
+         +------------+------------+
+                      |
+           +----------+----------+
+           |                     |
+    +------v------+       +------v------+
+    |   Router    |       |   Router    |
+    | /api/tasks  |       |  (future)   |
+    +------+------+       +-------------+
+           |
+  +--------+--------+
+  |                 |
++-v---------+  +----v------+
+| GET  ALL  |  | GET BY ID |  ...and POST, PUT, DELETE
++-----------+  +-----------+
+           |
+           v
+  +--------+---------+
+  |  In-Memory Store |
+  |  let tasks = []  | <-- จำลอง Database
+  +------------------+
+           |
+           v
+      JSON Response
+```
+
+---
+
+## 🗂️ โครงสร้างไฟล์ (File Structure)
+
+```
+wsa2026-tasks-api/
+├── .env
+├── .env.example
+├── .gitignore
+├── package.json
+└── app.js
+```
+
+---
+
+## ⏱️ เวลาที่ใช้: 45 นาที
+
+---
+
+## 📝 ขั้นตอนการทำงาน (Step-by-Step)
+
+### ขั้นตอนที่ 1: Project Setup
+
+- [ ] สร้างโฟลเดอร์และเริ่มต้น npm project
+- [ ] ติดตั้ง packages ที่จำเป็น
 
 ```bash
-mkdir my-crud-api
-cd my-crud-api
+mkdir wsa2026-tasks-api
+cd wsa2026-tasks-api
 npm init -y
-npm install express
+npm install express cors dotenv
 ```
 
-สร้างไฟล์ `app.js`:
+- [ ] สร้างไฟล์ `.env`
 
-```javascript
+```env
+PORT=3000
+NODE_ENV=development
+```
+
+- [ ] สร้างไฟล์ `.gitignore`
+
+```text
+node_modules/
+.env
+```
+
+---
+
+### ขั้นตอนที่ 2: In-Memory Data Store
+
+- [ ] สร้างไฟล์ `app.js`
+- [ ] กำหนด seed data สำหรับ WSA2026 tasks
+
+```js
+require('dotenv').config();
 const express = require('express');
-const app = express();
-const PORT = 3000;
+const cors = require('cors');
 
-// Middleware เพื่ออ่าน JSON Body
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
-```
-
-
-## 💾 Step 2: In-Memory Database
-
-เราจะจำลอง Database ด้วย Array ง่ายๆ
-
-```javascript
-// Mock Data
-let products = [
-    { id: 1, name: 'Laptop', price: 25000 },
-    { id: 2, name: 'Mouse', price: 500 },
-    { id: 3, name: 'Keyboard', price: 1200 }
+// ==============================================
+// IN-MEMORY STORE — จำลอง Database
+// ==============================================
+let tasks = [
+  {
+    id: 1,
+    title: 'Build REST API',
+    description: 'Create a full RESTful API using Express.js and Node.js',
+    time_limit_minutes: 240,
+    max_score: 100
+  },
+  {
+    id: 2,
+    title: 'Design Database Schema',
+    description: 'Design relational database schema for a submission system',
+    time_limit_minutes: 180,
+    max_score: 80
+  },
+  {
+    id: 3,
+    title: 'Build Frontend UI',
+    description: 'Build a responsive web interface using HTML/CSS/JavaScript',
+    time_limit_minutes: 300,
+    max_score: 120
+  }
 ];
 
-// POSTMAN Test: GET http://localhost:3000/products
-```
-
-
-## 💻 Step 3: Implementation (CRUD)
-
-### 3.1 READ (GET) 📖
-ดึงข้อมูลทั้งหมด หรือ ดึงตาม ID
-
-```javascript
-// 1. Get All Products
-app.get('/products', (req, res) => {
-    res.json(products);
-});
-
-// 2. Get Single Product by ID
-app.get('/products/:id', (req, res) => {
-    const id = parseInt(req.params.id); // params เป็น string ต้องแปลงเป็น int
-    const product = products.find(p => p.id === id);
-
-    if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-    }
-    
-    res.json(product);
-});
-```
-
-### 3.2 CREATE (POST) ➕
-เพิ่มข้อมูลใหม่
-
-```javascript
-app.post('/products', (req, res) => {
-    const newProduct = {
-        id: products.length + 1, // Generate ID แบบง่ายๆ (ระวังซ้ำถ้ามีการลบ)
-        name: req.body.name,
-        price: req.body.price
-    };
-
-    // Validation (กันข้อมูลมั่ว)
-    if (!newProduct.name || !newProduct.price) {
-        return res.status(400).json({ message: 'Please provide name and price' });
-    }
-
-    products.push(newProduct);
-    
-    // 201 Created ส่งข้อมูลที่เพิ่งสร้างกลับไปยืนยัน
-    res.status(201).json(newProduct);
-});
-```
-
-### 3.3 UPDATE (PUT) ✏️
-แก้ไขข้อมูล (แทนที่ทั้งก้อน)
-
-```javascript
-app.put('/products/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = products.findIndex(p => p.id === id);
-
-    if (index === -1) {
-        return res.status(404).json({ message: 'Product not found' });
-    }
-
-    // อัพเดทข้อมูล
-    products[index] = {
-        id: id,
-        name: req.body.name,
-        price: req.body.price
-    };
-
-    res.json(products[index]);
-});
-```
-
-### 3.4 DELETE (DELETE) 🗑️
-ลบข้อมูล
-
-```javascript
-app.delete('/products/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = products.findIndex(p => p.id === id);
-
-    if (index === -1) {
-        return res.status(404).json({ message: 'Product not found' });
-    }
-
-    // ลบออกจาก Array 1 ตัว ที่ตำแหน่ง index
-    const deletedProduct = products.splice(index, 1);
-
-    res.json({ message: 'Product deleted', product: deletedProduct[0] });
-});
-```
-
-
-## 🧪 4. Testing Guide (Postman)
-
-อย่าเชื่อ Code จนกว่าจะได้ Test! ให้เปิด Postman ขึ้นมาทดสอบตามนี้:
-
-1.  **GET All**
-    *   Method: `GET`
-    *   URL: `http://localhost:3000/products`
-    *   Expect: เห็น Array ของสินค้า 3 ชิ้น
-
-2.  **Create New**
-    *   Method: `POST`
-    *   URL: `http://localhost:3000/products`
-    *   Body (Raw JSON): `{"name": "Gaming Chair", "price": 5500}`
-    *   Expect: Status 201, ได้ JSON สินค้าใหม่กลับมา
-
-3.  **Update**
-    *   Method: `PUT`
-    *   URL: `http://localhost:3000/products/2`
-    *   Body: `{"name": "Wireless Mouse", "price": 990}`
-    *   Expect: Status 200, ชื่อเปลี่ยนจาก Mouse เป็น Wireless Mouse
-
-4.  **Delete**
-    *   Method: `DELETE`
-    *   URL: `http://localhost:3000/products/1`
-    *   Expect: Status 200, ลอง GET All อีกทีต้องไม่เจอ ID 1 แล้ว
-
-
-## 🛡️ 5. Challenges & Improvements
-
-### ⚠️ Bug Alert: ID Generation
-Code `id: products.length + 1` มีบั๊ก!
-ถ้าเรามีสินค้า ID 1, 2, 3
-ลบ ID 3 ออก -> products.length = 2
-เพิ่มใหม่ -> ได้ ID 3 (ซ้ำกับตัวที่เพิ่งลบไป ถ้ามี Log เก่าจะงง)
-
-**Challenge 1:** แก้ Logic การเจน ID ให้ไม่ซ้ำกัน (เช่น ใช้ `Date.now()` หรือหา Max ID + 1)
-
-### ⚠️ Bug Alert: Input Type
-ถ้า User ส่ง `price: "แพงมาก"` มา Code เราจะพังไหม?
-
-**Challenge 2:** เพิ่ม Validation เช็ค type ของราคาต้องเป็น number และมากกว่า 0
-
-```javascript
-/* ตัวอย่าง */
-if (typeof req.body.price !== 'number' || req.body.price <= 0) {
-    return res.status(400).json({ message: 'Price must be a positive number' });
+// Helper: generate next ID (safe even after deletions)
+function getNextId() {
+  return tasks.length === 0 ? 1 : Math.max(...tasks.map(t => t.id)) + 1;
 }
 ```
 
+---
 
-## 📚 FAQ
+### ขั้นตอนที่ 3: Implement GET Routes (Read)
 
-**Q: ทำไมพอ Restart Server แล้วข้อมูลที่เพิ่มหายหมด?**
-A: เพราะเราเก็บใน In-Memory (ตัวแปร) พอ Process จบ ตัวแปรก็หายครับ ถ้าอยากเก็บถาวรต้องใช้ Database หรือเขียนลง File (เดี๋ยวเรียนในบทต่อไป)
+- [ ] สร้าง route ดึง tasks ทั้งหมด
+- [ ] สร้าง route ดึง task ตาม ID
 
-**Q: PUT vs PATCH ต่างกันยังไง?**
-A:
-*   **PUT**: แทนที่ข้อมูล "ทั้งหมด" (ถ้าส่งมาแค่ name, price จะหายไป)
-*   **PATCH**: แก้ไข "บางส่วน" (ส่งมาแค่ name ก็แก้แค่ name)
+```js
+// GET /api/tasks — ดึงทุก tasks
+app.get('/api/tasks', (req, res) => {
+  res.json({
+    success: true,
+    count: tasks.length,
+    data: tasks
+  });
+});
 
+// GET /api/tasks/:id — ดึง task เดียว
+app.get('/api/tasks/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid ID format — must be a number'
+    });
+  }
+
+  const task = tasks.find(t => t.id === id);
+
+  if (!task) {
+    return res.status(404).json({
+      success: false,
+      message: `Task with id ${id} not found`
+    });
+  }
+
+  res.json({ success: true, data: task });
+});
+```
+
+---
+
+### ขั้นตอนที่ 4: Implement POST Route (Create)
+
+- [ ] สร้าง route สำหรับเพิ่ม task ใหม่
+- [ ] เพิ่ม input validation
+
+```js
+// POST /api/tasks — สร้าง task ใหม่
+app.post('/api/tasks', (req, res) => {
+  const { title, description, time_limit_minutes, max_score } = req.body;
+
+  // Validation — ตรวจว่า required fields ครบ
+  if (!title || !time_limit_minutes || !max_score) {
+    return res.status(400).json({
+      success: false,
+      message: 'title, time_limit_minutes, and max_score are required'
+    });
+  }
+
+  // Validation — ตรวจว่าตัวเลขถูกต้อง
+  if (typeof time_limit_minutes !== 'number' || time_limit_minutes <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'time_limit_minutes must be a positive number'
+    });
+  }
+
+  if (typeof max_score !== 'number' || max_score <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'max_score must be a positive number'
+    });
+  }
+
+  const newTask = {
+    id: getNextId(),
+    title: title.trim(),
+    description: description ? description.trim() : '',
+    time_limit_minutes,
+    max_score
+  };
+
+  tasks.push(newTask);
+
+  // 201 Created — ส่ง task ที่เพิ่งสร้างกลับไปยืนยัน
+  res.status(201).json({ success: true, data: newTask });
+});
+```
+
+---
+
+### ขั้นตอนที่ 5: Implement PUT Route (Update)
+
+- [ ] สร้าง route สำหรับแก้ไข task
+- [ ] ตรวจสอบว่า task นั้นมีอยู่ก่อน
+
+```js
+// PUT /api/tasks/:id — แก้ไข task ทั้งก้อน
+app.put('/api/tasks/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = tasks.findIndex(t => t.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({
+      success: false,
+      message: `Task with id ${id} not found`
+    });
+  }
+
+  const { title, description, time_limit_minutes, max_score } = req.body;
+
+  // Validation — ตรวจ required fields
+  if (!title || !time_limit_minutes || !max_score) {
+    return res.status(400).json({
+      success: false,
+      message: 'title, time_limit_minutes, and max_score are required'
+    });
+  }
+
+  // แทนที่ข้อมูลทั้งหมด (คง id เดิมไว้)
+  tasks[index] = {
+    id,
+    title: title.trim(),
+    description: description ? description.trim() : '',
+    time_limit_minutes,
+    max_score
+  };
+
+  res.json({ success: true, data: tasks[index] });
+});
+```
+
+---
+
+### ขั้นตอนที่ 6: Implement DELETE Route
+
+- [ ] สร้าง route สำหรับลบ task
+- [ ] ตรวจสอบว่า task มีอยู่ก่อนลบ
+
+```js
+// DELETE /api/tasks/:id — ลบ task
+app.delete('/api/tasks/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = tasks.findIndex(t => t.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({
+      success: false,
+      message: `Task with id ${id} not found`
+    });
+  }
+
+  // ลบออกจาก Array และเก็บตัวที่ลบไว้เพื่อตอบกลับ
+  const [deletedTask] = tasks.splice(index, 1);
+
+  res.json({
+    success: true,
+    message: `Task '${deletedTask.title}' deleted successfully`,
+    data: deletedTask
+  });
+});
+```
+
+---
+
+### ขั้นตอนที่ 7: Error Handler และ Start Server
+
+- [ ] เพิ่ม 404 handler สำหรับ routes ที่ไม่มี
+- [ ] เพิ่ม Error Middleware
+- [ ] เรียก `app.listen()`
+
+```js
+// 404 — Route ไม่มีในระบบ
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.method} ${req.url} not found`
+  });
+});
+
+// Error Middleware — ต้องมี 4 args เสมอ
+app.use((err, req, res, next) => {
+  console.error('Unexpected Error:', err.message);
+  res.status(500).json({
+    success: false,
+    message: 'Internal server error'
+  });
+});
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`WSA2026 Tasks API running at http://localhost:${PORT}`);
+  console.log('Available routes:');
+  console.log(`  GET    http://localhost:${PORT}/api/tasks`);
+  console.log(`  GET    http://localhost:${PORT}/api/tasks/:id`);
+  console.log(`  POST   http://localhost:${PORT}/api/tasks`);
+  console.log(`  PUT    http://localhost:${PORT}/api/tasks/:id`);
+  console.log(`  DELETE http://localhost:${PORT}/api/tasks/:id`);
+});
+```
+
+---
+
+## ✅ Expected Output
+
+### เริ่มต้น Server
+
+```
+WSA2026 Tasks API running at http://localhost:3000
+Available routes:
+  GET    http://localhost:3000/api/tasks
+  GET    http://localhost:3000/api/tasks/:id
+  POST   http://localhost:3000/api/tasks
+  PUT    http://localhost:3000/api/tasks/:id
+  DELETE http://localhost:3000/api/tasks/:id
+```
+
+### Testing ด้วย curl
+
+**1. GET /api/tasks — ดึงทั้งหมด**
+
+```bash
+curl http://localhost:3000/api/tasks
+```
+
+```json
+{
+  "success": true,
+  "count": 3,
+  "data": [
+    { "id": 1, "title": "Build REST API", "description": "...", "time_limit_minutes": 240, "max_score": 100 },
+    { "id": 2, "title": "Design Database Schema", "description": "...", "time_limit_minutes": 180, "max_score": 80 },
+    { "id": 3, "title": "Build Frontend UI", "description": "...", "time_limit_minutes": 300, "max_score": 120 }
+  ]
+}
+```
+
+**2. GET /api/tasks/1 — ดึงตาม ID**
+
+```bash
+curl http://localhost:3000/api/tasks/1
+```
+
+```json
+{
+  "success": true,
+  "data": { "id": 1, "title": "Build REST API", "time_limit_minutes": 240, "max_score": 100 }
+}
+```
+
+**3. GET /api/tasks/999 — ID ไม่มี → 404**
+
+```bash
+curl http://localhost:3000/api/tasks/999
+```
+
+```json
+{
+  "success": false,
+  "message": "Task with id 999 not found"
+}
+```
+
+**4. POST /api/tasks — สร้าง task ใหม่**
+
+```bash
+curl -X POST http://localhost:3000/api/tasks \
+  -H "Content-Type: application/json" \
+  -d "{\"title\": \"Network Configuration\", \"description\": \"Configure LAN and secure routing\", \"time_limit_minutes\": 120, \"max_score\": 60}"
+```
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 4,
+    "title": "Network Configuration",
+    "description": "Configure LAN and secure routing",
+    "time_limit_minutes": 120,
+    "max_score": 60
+  }
+}
+```
+
+**5. POST ข้อมูลไม่ครบ → 400**
+
+```bash
+curl -X POST http://localhost:3000/api/tasks \
+  -H "Content-Type: application/json" \
+  -d "{\"title\": \"Incomplete Task\"}"
+```
+
+```json
+{
+  "success": false,
+  "message": "title, time_limit_minutes, and max_score are required"
+}
+```
+
+**6. PUT /api/tasks/2 — แก้ไข**
+
+```bash
+curl -X PUT http://localhost:3000/api/tasks/2 \
+  -H "Content-Type: application/json" \
+  -d "{\"title\": \"Advanced DB Design\", \"description\": \"Design schema with normalization\", \"time_limit_minutes\": 200, \"max_score\": 90}"
+```
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 2,
+    "title": "Advanced DB Design",
+    "description": "Design schema with normalization",
+    "time_limit_minutes": 200,
+    "max_score": 90
+  }
+}
+```
+
+**7. DELETE /api/tasks/3 — ลบ**
+
+```bash
+curl -X DELETE http://localhost:3000/api/tasks/3
+```
+
+```json
+{
+  "success": true,
+  "message": "Task 'Build Frontend UI' deleted successfully",
+  "data": { "id": 3, "title": "Build Frontend UI", ... }
+}
+```
+
+**8. GET หลังลบ — ตรวจสอบ**
+
+```bash
+curl http://localhost:3000/api/tasks
+```
+
+```json
+{
+  "success": true,
+  "count": 2,
+  "data": [
+    { "id": 1, "title": "Build REST API", ... },
+    { "id": 2, "title": "Advanced DB Design", ... }
+  ]
+}
+```
+
+---
+
+## HTTP Status Code Summary
+
+```
++--------+--------------------+----------------------------------------+
+| Code   | Meaning            | เมื่อไหร่ใช้                           |
++--------+--------------------+----------------------------------------+
+|  200   | OK                 | GET, PUT, DELETE สำเร็จ                |
+|  201   | Created            | POST สร้างข้อมูลใหม่สำเร็จ             |
+|  400   | Bad Request        | ข้อมูลที่ส่งมาไม่ถูกต้องหรือไม่ครบ     |
+|  404   | Not Found          | ไม่พบ Resource ที่ขอ                  |
+|  500   | Internal Error     | Error ที่ไม่คาดคิดฝั่ง Server          |
++--------+--------------------+----------------------------------------+
+```
+
+---
+
+## 🔥 Challenge (โจทย์ท้าทาย!)
+
+- **โจทย์:** เพิ่ม Query Parameter Filtering ให้กับ `GET /api/tasks` รองรับ filter ดังนี้:
+  - `GET /api/tasks?max_score=100` — แสดงเฉพาะ tasks ที่มี `max_score` เท่ากับค่าที่ระบุ
+  - `GET /api/tasks?min_time=180` — แสดงเฉพาะ tasks ที่มี `time_limit_minutes` มากกว่าหรือเท่ากับค่าที่ระบุ
+  - `GET /api/tasks?max_score=100&min_time=180` — ใช้ทั้งสอง filter พร้อมกัน
+  - ถ้าไม่ระบุ filter ให้แสดงทั้งหมดตามเดิม
+
+::: details 💡 คำใบ้ (Hint)
+```js
+app.get('/api/tasks', (req, res) => {
+  let result = [...tasks]; // copy ก่อนเพื่อไม่แก้ array จริง
+
+  // ดึง query params
+  const { max_score, min_time } = req.query;
+
+  if (max_score) {
+    const score = parseInt(max_score);
+    result = result.filter(t => t.max_score === score);
+  }
+
+  if (min_time) {
+    const time = parseInt(min_time);
+    result = result.filter(t => t.time_limit_minutes >= time);
+  }
+
+  res.json({ success: true, count: result.length, data: result });
+});
+```
+
+ทดสอบด้วย curl:
+```bash
+curl "http://localhost:3000/api/tasks?max_score=100"
+curl "http://localhost:3000/api/tasks?min_time=200"
+curl "http://localhost:3000/api/tasks?max_score=80&min_time=120"
+```
+:::
+
+---
 
 👉 **[ไปต่อ: Module 5 - Middleware & Clean Architecture](/node/05-01-middleware-concept)**

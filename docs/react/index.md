@@ -5,11 +5,11 @@ pageClass: react-home
 hero:
   name: "React.js Frontend"
   text: "Zero to Hero ⚛️"
-  tagline: "เรียน React.js แบบ Modern — สร้าง Single Page Application (SPA), Hooks, Context API และ Custom Hooks!"
+  tagline: "เรียน React.js แบบ Modern — Hooks, Custom Hooks, State Management, Auth และ Deployment ครบจบ!"
   actions:
     - theme: brand
       text: "🎯 เริ่มเรียน Module 1"
-      link: /react/01-01-intro-jsx
+      link: /react/01-01-modern-setup
     - theme: alt
       text: "📘 กลับไป JavaScript Course"
       link: /javascript/00-setup
@@ -17,16 +17,16 @@ hero:
 features:
   - icon: "⚛️"
     title: "Modern React (Hooks)"
-    details: "เรียนรู้ Functional Components และ Hooks (useState, useEffect) — เลิกใช้ Class Component เดิมๆ"
+    details: "เรียนรู้ Functional Components และ Hooks ทุกตัว — useState, useEffect, useRef, useReducer, useContext และ Custom Hooks"
   - icon: "🧩"
     title: "Component-Based"
     details: "คิดแบบ Component — สร้าง UI ที่ซับซ้อนจากชิ้นส่วนเล็กๆ ที่นำกลับมาใช้ใหม่ได้ (Reusable)"
-  - icon: "🧭"
-    title: "React Router & SPA"
-    details: "สร้างเว็บหลายหน้า (Multi-page) ที่โหลดลื่นไหลไม่ต้อง Refresh หน้าจอด้วย React Router"
-  - icon: "🎨"
-    title: "Project-Based Learning"
-    details: "ลงมือทำ Workshop จริงทุกบท จาก Todo List ง่ายๆ สู่ E-Commerce Web Application"
+  - icon: "🔗"
+    title: "Full-Stack Integration"
+    details: "เชื่อมต่อ React กับ Node.js Backend ครบวงจร — JWT Auth, Axios Interceptors, Protected Routes"
+  - icon: "🏆"
+    title: "19 Modules + Capstone"
+    details: "จาก Hello React → E-Commerce App เต็มรูปแบบ — ลงมือทำโปรเจกต์จริงทุก Module"
 ---
 
 <style>
@@ -38,29 +38,34 @@ features:
 
 ## ⚠️ Prerequisite (เงื่อนไขก่อนเรียน)
 
-> ควรเรียน **[📘 JavaScript Zero to Hero](/00-setup)** ให้จบก่อน หรือมีพื้นฐาน JavaScript เทียบเท่า เช่น:
+> ควรเรียน **[📘 JavaScript Zero to Hero](/javascript/00-setup)** ให้จบก่อน หรือมีพื้นฐาน JavaScript เทียบเท่า เช่น:
 > - ✅ ES6+ Syntax (Arrow Functions, Destructuring, Spread/Rest)
-> - ✅ Array Methods (map, filter, reduce) - **สำคัญมาก!**
+> - ✅ Array Methods (map, filter, reduce) — **สำคัญมาก!**
 > - ✅ Modules (import/export)
 > - ✅ Promises & Async/Await
-
 
 ## 🗺️ Module Outline
 
 | Module | 📖 หัวข้อ | 🏗️ โปรเจกต์ |
 |:------:|:---------|:--------|
-| 1 | **Introduction & JSX** — Why React? Virtual DOM | 🎨 JSX Art Gallery |
-| 2 | **Components & Props** — Functional vs Class | 👤 User Profile Card |
-| 3 | **State & Events** — `useState`, Interactivity | 🔢 Counter & Toggler |
-| 4 | **Lists & Keys** — Rendering Arrays | 📝 Simple Todo List |
-| 5 | **Forms** — Controlled Components | 📋 Registration Form |
-| 6 | **Effects & Lifecycle** — `useEffect` | ⏱️ Digital Clock |
-| 7 | **API Integration** — Fetching Data | 🐶 Random Dog |
-| 8 | **Routing** — React Router DOM | 🧭 Portfolio Site |
-| 9 | **Context API** — Global State | 🌙 Dark Mode Theme |
-| 10 | **Custom Hooks** — Reusable Logic | 🪝 useWindowSize |
-| 11 | **Optimization** — `useMemo`, `useCallback` | ⚡ Performance Demo |
-| 12 | **🏆 Capstone** — Final Project | 🛒 E-Commerce Shop |
+| 1 | **Modern React & JSX** — React คืออะไร, Virtual DOM, Vite, JSX | 🎨 JSX Art Gallery |
+| 2 | **Components & Props** — Thinking in React, PropTypes | 👤 User Profile Card |
+| 3 | **Interactivity & State** — Events, useState, Batching | 🔢 Interactive Counter |
+| 4 | **Lists & Complex State** — map/key, Immutability, CRUD | 📝 Todo List App |
+| 5 | **Forms (The Hard Way)** — Controlled Components, Manual Validation | 📋 Registration Form |
+| 6 | **Side Effects, Refs & Fetching** — useEffect, **useRef**, Axios | 📉 Crypto Tracker |
+| 7 | **Custom Hooks** ✨ — Rules of Hooks, useFetch, useLocalStorage | 🪝 Hooks Collection |
+| 8 | **Styling** — CSS Modules, Tailwind CSS, shadcn/ui Concept | 🎨 Modern Dashboard |
+| 9 | **Modern Forms (Smart Way)** — React Hook Form, Zod | 🛒 Checkout Form |
+| 10 | **Modern Data Fetching** — TanStack Query, useMutation, Cache | 🎬 Movie Explorer |
+| 11 | **Routing** — React Router v6, Dynamic Routes, Nested Routes | 🌏 Portfolio Site |
+| 12 | **Global State** — Context API, useReducer, Provider Pattern | 🌙 Theme Switcher |
+| 13 | **Redux Toolkit** — Store, Slice, createAsyncThunk | 🛍️ Shopping Cart |
+| 14 | **Authentication** — JWT Flow, Axios Interceptors | 🔐 Auth System UI |
+| 15 | **Protected Routes** — Route Guards, Role-based Access | 🛡️ Admin Dashboard |
+| 16 | **Performance** — Code Splitting, useMemo, useCallback, React.memo | ⚡ Optimization Lab |
+| 17 | **Testing** — Vitest, React Testing Library | 🧪 Tested Todo App |
+| 18 | **Deployment** — Production Build, Vercel/Netlify, CI/CD | 🚀 Deployment Lab |
+| 19 | **🏆 Capstone** — Feature-based Architecture | 🛒 E-Commerce Frontend |
 
-
-> **พร้อมแล้ว? 👉 [เริ่มจาก Module 1: React คืออะไร?](/react/01-01-intro-jsx)**
+> **พร้อมแล้ว? 👉 [เริ่มจาก Module 1: React คืออะไร?](/react/01-01-modern-setup)**

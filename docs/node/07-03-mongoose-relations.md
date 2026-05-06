@@ -1,254 +1,439 @@
-# Module 7.3: Mongoose Relations (Relationships) 🔗
+# 7.3 Mongoose Relations & populate() 🔗
 
-> **"NoSQL doesn't mean No Relationships. It just means you have options."**
+> 💡 **เป้าหมาย:** เข้าใจ 2 กลยุทธ์หลักในการสร้าง Relationship ใน MongoDB (Embedding vs Referencing) และสามารถใช้ `populate()` ดึงข้อมูลจาก Collection ที่เกี่ยวข้องได้ทั้งแบบ shallow และ nested ในบริบท TP2026 Submission System
 
-หลายคนเข้าใจผิดว่าใช้ MongoDB แล้วห้ามมีความสัมพันธ์ (Relationship) เหมือน SQL... ผิดถนัด!
-ในโลกความเป็นจริง ข้อมูลมักจะเกี่ยวข้องกันเสมอ (เช่น User มีหลาย Order, Post มีคนเขียน)
-เพียงแต่ใน MongoDB เรามี **2 ทางเลือก** ในการออกแบบ ซึ่งต้องเลือกให้เหมาะกับงาน
+## 📖 ทฤษฎีและแนวคิด (Theory & Concepts)
 
+### MongoDB มี Relationship หรือเปล่า?
 
-## 🧐 1. Embedding vs Referencing (The Big Decision)
+หลายคนเข้าใจผิดว่า "NoSQL = ไม่มี Relationship" จริงๆ แล้วใน MongoDB เรา **มี** relationship
+เพียงแต่เราต้องตัดสินใจเอง ว่าจะ "เก็บข้อมูลยังไง" ไม่ใช่ Database engine บังคับให้
 
-ก่อนจะเขียนโค้ด ต้องตัดสินใจก่อนว่าจะเก็บข้อมูลยังไง
+เรามี **2 ทางเลือก** หลัก:
 
-### 1.1 Embedding (ฝังรวมกัน)
-เก็บข้อมูลลูก (Child) ฝังลงไปใน Document ของแม่ (Parent) เลย
+---
 
-```javascript
-// User Document
-{
-  "_id": "user1",
-  "name": "Somchai",
-  "addresses": [
-      { "city": "Bangkok", "zip": "10110" }, // 👈 ฝังอยู่ข้างในเลย
-      { "city": "Chiang Mai", "zip": "50000" }
-  ]
-}
+### Embedding vs Referencing — เปรียบเทียบแบบ Side by Side
+
 ```
-*   **✅ Pros**: อ่านเร็วมาก (Read Performance) ครั้งเดียวจบ ไม่ต้อง Join
-*   **❌ Cons**: ถ้าข้อมูลลูกเยอะเกินไป (เช่น 10,000 comment) Document จะใหญ่เกินลิมิต (16MB) และอัพเดทยาก
-
-### 1.2 Referencing (อ้างอิงถึง / Normalization)
-เก็บแยก Collection แล้วเก็บ `_id` มาอ้างอิงหากัน (เหมือน Foreign Key ใน SQL)
-
-```javascript
-// User Document
-{ "_id": "user1", "name": "Somchai" }
-
-// Order Document
-{ "_id": "order99", "amount": 5000, "user_id": "user1" } // 👈 ชี้ไปหา User
+  EMBEDDING (ฝังรวมกัน)          REFERENCING (อ้างอิงถึงกัน)
+  ─────────────────────────       ───────────────────────────────
+  {                               Collection: users
+    _id: "u1",                    { _id: "u1", name: "Somchai" }
+    name: "Somchai",
+    address: {                    Collection: submissions
+      city: "Bangkok",            {
+      zip: "10110"                  _id: "s1",
+    }                               candidateId: "u1",  ← ref
+  }                                 score: 87
+                                  }
+  ─────────────────────────       ───────────────────────────────
+  ✅ อ่านเร็ว ครั้งเดียวจบ       ✅ ข้อมูลไม่ซ้ำซ้อน
+  ✅ Atomic update ง่าย           ✅ Document ไม่บวมขึ้นเรื่อยๆ
+  ❌ Document บวมถ้าลูกเยอะ       ✅ Scale ได้ดี
+  ❌ ลิมิต 16MB ต่อ document      ❌ ต้องใช้ populate() (2 queries)
 ```
-*   **✅ Pros**: ข้อมูลไม่ซ้ำซ้อน, Scalable, Document ไม่บวม
-*   **❌ Cons**: ต้องใช้คำสั่ง `populate` (Join) ซึ่งช้ากว่า Embedding นิดหน่อย
 
-> **Rule of Thumb**:
-> *   ถ้าข้อมูลลูก **"มีน้อย"** และ **"ติดตัวแม่เสมอ"** (เช่น Address) -> **Embed**
-> *   ถ้าข้อมูลลูก **"มีเยอะ"** หรือ **"โตเรื่อยๆ"** (เช่น Orders, Comments) -> **Reference**
+---
 
+### Rule of Thumb — เลือกแบบไหน?
 
-## 🛠️ 2. Implementing References (One-to-Many)
+```
+  ข้อมูลลูก "น้อย" และ "คงที่"        →  EMBED
+  เช่น: user.address, post.metadata
 
-Scenario ยอดฮิต: **Blog System** (User 1 คน เขียนได้หลาย Post)
+  ข้อมูลลูก "เยอะ" หรือ "โตเรื่อยๆ"  →  REFERENCE
+  เช่น: task → submissions (เพิ่มได้เรื่อยๆ)
 
-### 2.1 Parent Model (`User`)
-```javascript
+  ข้อมูลลูก "แชร์ข้าม parent หลายตัว" →  REFERENCE
+  เช่น: task ถูกส่งโดย candidate หลายคน
+```
+
+ในระบบ TP2026:
+- `User.address` → Embed (address อยู่ติดตัว user เสมอ ไม่โตไม่หด)
+- `Submission.candidateId` → Reference (submission เชื่อมไปหา user)
+- `Submission.taskId` → Reference (submission เชื่อมไปหา task)
+
+---
+
+### One-to-Many ใน TP2026
+
+```
+  Task (1)  ────────────────────────────────►  Submission (Many)
+  ┌──────────────────────┐                     ┌─────────────────────────┐
+  │  _id: ObjectId(t1)   │                     │  _id: ObjectId(s1)      │
+  │  title: "Module A"   │◄────── taskId ──────│  taskId: ObjectId(t1)   │
+  │  maxScore: 100       │                     │  candidateId: ObjectId  │
+  └──────────────────────┘                     │  score: 87              │
+                                               └─────────────────────────┘
+  Task ไม่ได้เก็บ submissions[]               ┌─────────────────────────┐
+  Submission เก็บ taskId ชี้กลับไปหา Task     │  _id: ObjectId(s2)      │
+                                               │  taskId: ObjectId(t1)   │
+  → Reference Pattern                         │  candidateId: ObjectId  │
+                                               │  score: 91              │
+                                               └─────────────────────────┘
+```
+
+---
+
+### populate() ทำงานยังไงเบื้องหลัง?
+
+```
+  Code: Submission.find().populate('candidateId')
+
+  Step 1: MongoDB ยิง query แรก
+          db.submissions.find()
+          ได้: [{ candidateId: ObjectId("u1"), ... }, ...]
+
+  Step 2: Mongoose รวบรวม candidateId ทั้งหมด
+          ids = ["u1", "u2", "u3"]
+
+  Step 3: MongoDB ยิง query ที่สอง
+          db.users.find({ _id: { $in: ["u1","u2","u3"] } })
+          ได้: [{ _id:"u1", name:"Somchai",... }, ...]
+
+  Step 4: Mongoose ประกอบร่าง (ใน Node.js memory)
+          แทนที่ candidateId: "u1"
+          ด้วย   candidateId: { _id:"u1", name:"Somchai", ... }
+```
+
+ดังนั้น `populate()` ไม่ใช่ SQL JOIN ที่ DB level แต่คือ **2 queries + client-side merge**
+
+---
+
+### Virtual Populate (Reverse Reference)
+
+ปกติ Submission เก็บ `taskId` ชี้ไปหา Task
+แต่ถ้าเราอยากรู้จาก Task ฝั่งว่า "มี submissions อะไรบ้าง?" โดยไม่เก็บ array ใน Task
+เราใช้ **Virtual Populate**:
+
+```
+  taskSchema.virtual('submissions', {
+    ref: 'Submission',        ← ไปดูที่ collection นี้
+    localField: '_id',        ← เอา _id ของ Task
+    foreignField: 'taskId'    ← ไปหาที่ field taskId ของ Submission
+  });
+
+  ผลลัพธ์:
+  Task document จะมี virtual field 'submissions' ปรากฏขึ้นมา
+  เมื่อเรียก .populate('submissions')
+  (ไม่เก็บในฐานข้อมูล คำนวณ ณ runtime เท่านั้น)
+```
+
+---
+
+## 💻 ตัวอย่างโค้ด (Code Implementation)
+
+### Schema กับ ObjectId Reference
+
+::: code-group
+```js [models/Submission.js]
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, unique: true }
-}, {
-    toJSON: { virtuals: true }, // เพื่อให้ Virtuals ทำงาน
-    toObject: { virtuals: true }
+const submissionSchema = new mongoose.Schema(
+  {
+    // Reference ไปหา User collection
+    candidateId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',      // ← ชื่อต้องตรงกับ mongoose.model('User', ...)
+      required: true,
+    },
+    // Reference ไปหา Task collection
+    taskId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Task',
+      required: true,
+    },
+    submissionUrl: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    submittedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    score: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: null,
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'scored'],
+      default: 'pending',
+    },
+  },
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
+
+module.exports = mongoose.model('Submission', submissionSchema);
+```
+
+```js [models/Task.js]
+const mongoose = require('mongoose');
+
+const taskSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true, trim: true },
+    description: { type: String, required: true },
+    timeLimitMinutes: { type: Number, default: 240 },
+    maxScore: { type: Number, default: 100 },
+  },
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
+
+// Virtual Populate: Task ดึง submissions ของตัวเองได้
+// (ไม่เก็บ array ใน Task document จริง)
+taskSchema.virtual('submissions', {
+  ref: 'Submission',       // ไปดูที่ Submission collection
+  localField: '_id',       // เอา _id ของ Task เอง
+  foreignField: 'taskId',  // ไปเทียบกับ taskId ของ Submission
 });
 
-// (Optional) Reverse populate: ให้ User เห็น posts ของตัวเอง
-userSchema.virtual('posts', {
-    ref: 'Post',          // ไปดูที่โมเดล Post
-    localField: '_id',    // เอา _id ของเรา
-    foreignField: 'author' // ไปเทียบกับ field 'author' ของ Post
-});
-
-const User = mongoose.model('User', userSchema);
-```
-
-### 2.2 Child Model (`Post`)
-```javascript
-const postSchema = new mongoose.Schema({
-    title: String,
-    content: String,
-    author: { 
-        type: mongoose.Schema.Types.ObjectId, // 👈 เก็บเป็น ID
-        ref: 'User',                          // 🔗 อ้างอิงไปที่ Model 'User'
-        required: true 
-    }
-});
-
-const Post = mongoose.model('Post', postSchema);
-```
-
-
-## 💻 3. Playing with Relations
-
-### 3.1 Creating Related Data
-เวลาสร้าง Post เราแค่ใส่ `_id` ของ User ลงไปใน field `author`
-
-```javascript
-const createData = async () => {
-    // 1. สร้าง User
-    const user = await User.create({ name: 'Jojo', email: 'jojo@bizarre.com' });
-
-    // 2. สร้าง Post โดยอ้างอิง User
-    const post1 = await Post.create({
-        title: 'Star Platinum',
-        content: 'Ora Ora Ora!',
-        author: user._id // 🔗 Link Here!
-    });
-    
-    const post2 = await Post.create({
-        title: 'The World',
-        content: 'Muda Muda Muda!',
-        author: user._id
-    });
-
-    console.log('Created!');
-};
-```
-
-
-## 🔍 4. The `populate()` Magic
-
-ถ้าเรา `find()` เฉยๆ:
-```javascript
-const posts = await Post.find();
-// Result: { title: '...', author: "65b123..." } (ได้มาแค่ ID)
-```
-
-เราต้องบอก Mongoose ให้ไป "แปะ" ข้อมูลจริงมาให้หน่อย:
-
-### 4.1 Basic Populate
-```javascript
-const posts = await Post.find().populate('author');
-// Result:
-// {
-//    title: 'Star Platinum',
-//    author: {
-//        _id: "65b123...", 
-//        name: "Jojo", 
-//        email: "jojo@..."
-//    }
-// }
-```
-
-### 4.2 Select Fields (เลือกเฉพาะที่ใช้)
-ดึงมาทั้ง Object มันหนัก ไปเอาแค่ `name` พอ:
-```javascript
-// Parameter 2: fields string (เว้นวรรค)
-await Post.find().populate('author', 'name -_id'); 
-// -_id คือไม่เอา id
-```
-
-### 4.3 Nested Populate (ซ้อนของซ้อน)
-สมมติ `Comment` มี `author` ซึ่งเป็น `User`
-Post -> hasMany -> Comment -> hasOne -> Author
-
-```javascript
-await Post.find().populate({
-    path: 'comments',
-    populate: { path: 'author', select: 'name' }
-});
-```
-
-
-## 🏗️ 5. Advanced: Many-to-Many (N:N)
-
-Scenario: **Students** ลงทะเบียนเรียน **Courses**
-(นักเรียน 1 คนเรียนหลายวิชา, วิชา 1 มีนักเรียนหลายคน)
-
-### Helper Table? No Need!
-ใน SQL ต้องมีตารางกลาง (Join Table) แต่ใน Mongo เราเก็บ Array of IDs ได้เลย!
-
-```javascript
-// Student Model
-const studentSchema = new mongoose.Schema({
-    name: String,
-    courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }] // Array!
-});
-
-// Course Model
-const courseSchema = new mongoose.Schema({
-    title: String,
-    students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Student' }] // Array!
-});
-```
-
-### How to Query
-```javascript
-// หาว่า Student A เรียนวิชาอะไรบ้าง
-const s = await Student.findOne({ name: 'A' }).populate('courses');
-
-// หาว่า Course B มีใครเรียนบ้าง
-const c = await Course.findOne({ title: 'B' }).populate('students');
-```
-
-
-## ⚡ 6. Performance & Indexing
-
-การ `polluate()` คือการทำงานที่ Database (คล้ายๆ Join) ซึ่งถ้าทำเยอะๆ จะช้า
-**Best Practice**:
-1.  **Index Foreign Key**: ถ้าเราจะหา Post ของ user A `Post.find({ author: user_id })` เราควรทำ Index ที่ `author` ด้วย
-2.  **Lean()**: ใช้ `.lean()` ถ้าจะเอาแค่อ่าน (Read-only) ไม่แก้ข้อมูล Mongoose จะข้ามการสร้าง Mongoose Document ทำให้เร็วขึ้น 5-10 เท่า!
-
-```javascript
-const posts = await Post.find().populate('author').lean();
-```
-
-
-## 🛡️ 7. Cascade Delete (Middleware)
-
-ปัญหา: ถ้าลบ User ทิ้ง... Post ของเขาล่ะ?
-Default: Post จะยังอยู่ แต่ field `author` จะชี้ไปหาศพ (Null/Reference Error)
-**Solution**: ใช้ Mongoose Middleware (Pre-hook) เพื่อตามไปลบ
-
-```javascript
-// ใน userSchema
-userSchema.pre('remove', async function(next) {
-    console.log(`Deleting posts of user ${this._id}`);
-    await this.model('Post').deleteMany({ author: this._id });
-    next();
-});
-```
-*(Note: ตั้งแต่ Mongoose 5.x ขึ้นไป middleware จะทำงานได้ต้องเรียก `doc.remove()` ไม่ใช่ `Model.deleteMany()`)*
-
-
-## 🏆 Challenge: Social Media Follow System 🐦
-
-โจทย์: ออกแบบระบบ Follower/Following
-1.  User Model มี field `followers` และ `following`
-2.  เขียน Function `followUser(userId, targetId)`
-    *   เอา Id เราไปใส่ใน `followers` ของเขา
-    *   เอา Id เขามาใส่ใน `following` ของเรา
-    *   (ระวัง: ห้ามกด Follow ซ้ำ!)
-
-::: details ✨ แนวทาง (Hint)
-ใช้ `$addToSet` แทน `$push` เพื่อกันค่าซ้ำ!
-```javascript
-await User.findByIdAndUpdate(myId, { $addToSet: { following: targetId } });
-await User.findByIdAndUpdate(targetId, { $addToSet: { followers: myId } });
+module.exports = mongoose.model('Task', taskSchema);
 ```
 :::
 
+---
 
-## 📚 FAQ
+### populate() แบบต่างๆ
 
-**Q: Populate ทำงานยังไงเบื้องหลัง?**
-A: Mongoose จะยิง 2 Query ครับ
-1. `find posts` -> ได้ list of author_ids
-2. `find users WHERE _id IN (author_ids)`
-3. เอาข้อมูลมาประกอบร่างกันใน Node.js App (ไม่ได้ join ที่ DB level เหมือน SQL)
+::: code-group
+```js [populate-basic.js]
+const Submission = require('./models/Submission');
 
-**Q: Relation ลึกได้แค่ไหน?**
-A: ไม่จำกัด แต่ยิ่งลึกยิ่งช้า ถ้าต้อง populate เกิน 3 ชั้น... ให้ทบทวน Schema Design ใหม่ (อาจจะกลับไปใช้ Embedding บางส่วน)
+// ── ระดับที่ 1: Basic Populate ────────────────────────────
+// แทนที่ candidateId: ObjectId("...") ด้วย object ของ User ทั้งหมด
+const getWithCandidate = async () => {
+  const submissions = await Submission.find().populate('candidateId');
+  // ผลลัพธ์:
+  // {
+  //   candidateId: {
+  //     _id: "65c...",
+  //     name: "Somchai",
+  //     country: "Thailand",
+  //     role: "candidate",
+  //     ...all fields
+  //   },
+  //   score: 87,
+  //   ...
+  // }
+  return submissions;
+};
 
+// ── ระดับที่ 2: Populate + Select Fields ─────────────────
+// เอาแค่บาง field เพื่อลด payload
+const getWithCandidateInfo = async () => {
+  const submissions = await Submission.find()
+    .populate('candidateId', 'name country role') // เอาแค่ 3 field นี้
+    .populate('taskId', 'title maxScore');         // เอาแค่ 2 field นี้
+  // ผลลัพธ์:
+  // {
+  //   candidateId: { name: "Somchai", country: "Thailand", role: "candidate" },
+  //   taskId: { title: "Module A - Web Tech", maxScore: 100 },
+  //   score: 87,
+  //   status: "scored"
+  // }
+  return submissions;
+};
+```
 
-👉 **[ไปต่อ: Project 7 - Blog API](/node/07-project-blog-api)**
+```js [populate-nested.js]
+const Submission = require('./models/Submission');
+
+// ── ระดับที่ 3: Nested Populate ───────────────────────────
+// ถ้า Submission มี field ที่ซ้อนกัน เช่น judgeId ใน scoreDetail
+// ที่ judgeId ก็เป็น ref ไปหา User อีกที
+// ต้องใช้ nested populate:
+const getFullSubmission = async (id) => {
+  const submission = await Submission.findById(id)
+    .populate('candidateId', 'name country region')
+    .populate('taskId', 'title description timeLimitMinutes maxScore');
+
+  return submission;
+};
+
+// ── ระดับที่ 4: Populate ด้วย Object Options ──────────────
+// ใช้เมื่อต้องการ options เพิ่มเติม เช่น match, sort, limit
+const getTopSubmissions = async (taskId) => {
+  const submissions = await Submission.find({ taskId, status: 'scored' })
+    .populate({
+      path: 'candidateId',
+      select: 'name country',
+      // match: กรองเฉพาะ candidate จาก region เดียว (ถ้าต้องการ)
+      // match: { region: 'Asia-Pacific' }
+    })
+    .sort({ score: -1 })
+    .limit(10);
+
+  return submissions;
+};
+```
+
+```js [populate-virtual.js]
+const Task = require('./models/Task');
+
+// ── Virtual Populate: ดึง submissions จากฝั่ง Task ──────────
+// Task ไม่มี submissions[] จริงๆ แต่ใช้ virtual populate ได้
+const getTaskWithSubmissions = async (taskId) => {
+  const task = await Task.findById(taskId).populate({
+    path: 'submissions',             // virtual field ใน taskSchema
+    select: 'candidateId score status submittedAt',
+    populate: {                      // nested: populate candidateId ใน submission
+      path: 'candidateId',
+      select: 'name country',
+    },
+  });
+
+  // ผลลัพธ์:
+  // {
+  //   _id: "t1",
+  //   title: "Module A - Web Tech",
+  //   submissions: [                    ← virtual field
+  //     {
+  //       score: 87,
+  //       status: "scored",
+  //       candidateId: { name: "Somchai", country: "Thailand" }
+  //     },
+  //     ...
+  //   ]
+  // }
+  return task;
+};
+```
+
+```js [full-submission-api.js]
+const Submission = require('./models/Submission');
+const User = require('./models/User');
+const Task = require('./models/Task');
+
+// สร้างข้อมูลตัวอย่าง TP2026
+const seedData = async () => {
+  // 1. สร้าง candidate
+  const candidate = await User.create({
+    username: 'somchai_th',
+    passwordHash: 'plaintext_will_be_hashed_by_hook',
+    name: 'Somchai Jaidee',
+    role: 'candidate',
+    country: 'Thailand',
+    region: 'Asia-Pacific',
+  });
+
+  // 2. สร้าง task
+  const task = await Task.create({
+    title: 'Module A — Web Technologies',
+    description: 'Build a responsive frontend with accessibility',
+    timeLimitMinutes: 240,
+    maxScore: 100,
+  });
+
+  // 3. สร้าง submission โดย reference ด้วย _id
+  const submission = await Submission.create({
+    candidateId: candidate._id,  // ObjectId reference
+    taskId: task._id,            // ObjectId reference
+    submissionUrl: 'https://github.com/somchai_th/wsa2026-moduleA',
+    status: 'pending',
+  });
+
+  console.log('[TP2026] Seed complete. Submission ID:', submission._id);
+};
+
+// ดึง submission พร้อม populated data ครบ
+const getFullSubmissionDetail = async (submissionId) => {
+  const sub = await Submission.findById(submissionId)
+    .populate('candidateId', 'name country region role')
+    .populate('taskId', 'title timeLimitMinutes maxScore');
+
+  if (!sub) return null;
+  return sub;
+};
+```
+:::
+
+---
+
+## 🎯 โจทย์ฝึกปฏิบัติเสริมความเข้าใจ
+
+- **โจทย์:** เขียน function `getCandidateResults(candidateId)` ที่ดึง submissions ทั้งหมดของ candidate คนนั้น
+  โดย populate ข้อมูล task มาด้วย (เฉพาะ title และ maxScore)
+  แล้วเรียงตาม `submittedAt` จากใหม่ไปเก่า พร้อม return เฉพาะ submission ที่ `status: 'scored'`
+
+::: details 💡 คำใบ้
+```js
+const getCandidateResults = async (candidateId) => {
+  return Submission.find({ candidateId, status: 'scored' })
+    .populate('taskId', 'title maxScore')
+    .sort({ submittedAt: -1 });
+};
+```
+
+ทดสอบ:
+```js
+const results = await getCandidateResults('65c123abc...');
+results.forEach(r => {
+  console.log(`${r.taskId.title}: ${r.score}/${r.taskId.maxScore}`);
+});
+```
+:::
+
+---
+
+## 🔥 Challenge
+
+- **โจทย์:** สร้างระบบ "Leaderboard per Task" โดย:
+  1. รับ `taskId` เป็น input
+  2. ดึง submissions ทั้งหมดของ task นั้นที่ `status: 'scored'`
+  3. populate candidate ข้อมูล (name, country)
+  4. เรียง score จากมากไปน้อย
+  5. คืนค่า array พร้อม rank (1, 2, 3, ...)
+
+  Bonus: ถ้า score เท่ากัน ให้ดู `submittedAt` (ใครส่งก่อนได้ rank ดีกว่า)
+
+::: details 💡 คำใบ้
+```js
+const getLeaderboard = async (taskId) => {
+  const submissions = await Submission.find({ taskId, status: 'scored' })
+    .populate('candidateId', 'name country')
+    .sort({ score: -1, submittedAt: 1 }); // score DESC, time ASC
+
+  return submissions.map((sub, index) => ({
+    rank: index + 1,
+    name: sub.candidateId.name,
+    country: sub.candidateId.country,
+    score: sub.score,
+    submittedAt: sub.submittedAt,
+  }));
+};
+```
+:::
+
+---
+
+## 🗣️ ทบทวน
+
+::: details ❓ คำถามทบทวน
+
+**คำถาม 1:** ในระบบ TP2026 ทำไม Submission ถึงใช้ Reference (ObjectId) ไปหา User และ Task แทนที่จะ Embed ข้อมูลไว้เลย?
+**แนวคำตอบ:** เพราะ User และ Task ถูกใช้ร่วมกันโดย Submission หลายตัว (one candidate มีหลาย submissions, one task มีหลาย submissions) ถ้า embed ข้อมูล User ไว้ใน Submission ทุกตัว เมื่อแก้ชื่อ User จะต้องอัปเดตหลายที่พร้อมกัน การ Reference จึงป้องกัน Data Inconsistency
+
+**คำถาม 2:** `populate('candidateId', 'name country')` ต่างจาก `populate('candidateId')` อย่างไร และเราควรเลือกใช้แบบไหน?
+**แนวคำตอบ:** การ populate โดยไม่ select จะดึง **ทุก field** ของ User มารวมถึง passwordHash ซึ่งเป็น security risk ที่ไม่ควรส่งออก API นอกจากนี้ยังเปลือง bandwidth โดยไม่จำเป็น ควรเสมอ select เฉพาะ field ที่ใช้จริงเท่านั้น
+
+**คำถาม 3:** Virtual Populate ต่างจาก Regular Populate อย่างไร และต้องทำอะไรพิเศษเพื่อให้มันทำงาน?
+**แนวคำตอบ:** Regular Populate ดึงข้อมูลจาก field ที่เก็บ ObjectId จริงๆ ใน document ส่วน Virtual Populate ทำงานในทิศทางตรงกันข้าม (reverse reference) โดยไม่ต้องเก็บ array ของ IDs ใน parent document สิ่งที่ต้องทำคือ: (1) ตั้ง `toJSON: { virtuals: true }` ใน schema options (2) ระบุ `ref`, `localField`, `foreignField` อย่างถูกต้อง (3) เรียก `.populate('virtualFieldName')` ตอน query
+
+:::
+
+---
+
+> 👉 **ไปต่อ: [Project 7 — Submission API](/node/07-project-blog-api)**

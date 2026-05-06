@@ -1,363 +1,506 @@
-# Module 1.2: npm & Packages 📦
+# npm & Packages 📦
 
-> **"npm is the world's largest software registry."**
-> — *npmjs.com*
+> 💡 **เป้าหมาย:** เรียนรู้ npm (Node Package Manager) ตั้งแต่การสร้าง `package.json` ไปจนถึงการจัดการ dependencies และ npm scripts เพราะระบบ WSA2026 Test Submission Management System ต้องพึ่งพา packages หลายตัว เช่น `express`, `mysql2`, `bcryptjs`, `jsonwebtoken` — การเข้าใจ npm อย่างถ่องแท้คือพื้นฐานที่ขาดไม่ได้ก่อนเริ่มสร้าง API
 
-**npm** (Node Package Manager) คือ**ตัวจัดการ Library** ของ Node.js — มี Package มากกว่า **2.1 ล้านตัว!** ไม่ว่าจะสร้าง Server, ส่ง Email, เชื่อม Database → มี Package สำเร็จรูปให้เรียกใช้ ไม่ต้องเขียนเองทั้งหมด
+## 📖 ทฤษฎีและแนวคิด (Theory & Concepts)
 
-> **💡 Analogy (เปรียบเทียบ):**
-> npm เหมือน **"App Store สำหรับโค้ด"** 📱:
-> - **npm Registry** = App Store (ที่เก็บ Package ทั้งหมด)
-> - **`npm install`** = กดดาวน์โหลด App
-> - **`package.json`** = รายการ App ที่ติดตั้งไว้
-> - **`node_modules/`** = โฟลเดอร์ที่เก็บ App (โค้ดจริง)
+### npm คืออะไร?
 
+**npm** (Node Package Manager) คือ **ตัวจัดการ Package** ของ Node.js ที่มาพร้อมกับ Node.js ทุก version — ไม่ต้องติดตั้งแยก!
 
-## 1. npm คืออะไร? 🤔
-
-ตาม [npm Docs](https://docs.npmjs.com/about-npm): npm ทำ 3 อย่าง:
+npm ทำ 3 หน้าที่หลัก:
 
 | หน้าที่ | คำสั่ง | อธิบาย |
 |:--------|:-------|:-------|
-| **ติดตั้ง Package** | `npm install express` | ดาวน์โหลด Package มาใช้ |
-| **จัดการ Dependencies** | `package.json` | บันทึกว่าโปรเจกต์ใช้ Package อะไรบ้าง |
-| **รัน Scripts** | `npm run dev` | รันคำสั่งที่ตั้งไว้ |
+| ติดตั้ง Package | `npm install express` | ดาวน์โหลด Package จาก Registry มาใช้ |
+| จัดการ Dependencies | `package.json` | บันทึกรายชื่อ Package ที่โปรเจกต์ต้องการ |
+| รัน Scripts | `npm run dev` | รันคำสั่งที่ตั้งชื่อไว้ใน package.json |
 
-npm มาพร้อม Node.js — **ไม่ต้องติดตั้งแยก!**
-
-
-## 2. package.json — หัวใจของโปรเจกต์ 💚
-
-**package.json** คือ **"บัตรประจำตัว"** ของโปรเจกต์ Node.js ทุกโปรเจกต์ต้องมีไฟล์นี้!
-
-### สร้าง package.json
-
-```bash
-# สร้างโฟลเดอร์โปรเจกต์
-mkdir my-first-node
-cd my-first-node
-
-# สร้าง package.json (ตอบคำถาม)
-npm init
-
-# หรือสร้างแบบเร็ว (ใช้ค่า Default ทั้งหมด)
-npm init -y
+```
+  +-----------------+         +------------------+
+  |   Developer     |         |  npm Registry    |
+  |                 |         |  (npmjs.com)     |
+  |  npm install    +-------->|  2.1M+ Packages  |
+  |  express        |         |                  |
+  |                 |<--------+  express v4.x    |
+  +-----------------+         +------------------+
+           |
+           v
+  +-----------------+
+  |  node_modules/  |  <-- โค้ดจริงของ Package
+  |  package.json   |  <-- บันทึก dependency
+  |  package-lock   |  <-- lock version แน่นอน
+  +-----------------+
 ```
 
-### ตัวอย่าง package.json
+### package.json — ทุก Field อธิบาย
+
+**package.json** คือ "บัตรประจำตัว" ของโปรเจกต์ Node.js ทุกโปรเจกต์ต้องมี!
+
+สร้างด้วยคำสั่ง:
+```bash
+npm init        # ตอบคำถามทีละข้อ
+npm init -y     # ใช้ค่า default ทั้งหมด (เร็วกว่า)
+```
+
+ตัวอย่าง `package.json` ที่สมบูรณ์พร้อมคำอธิบาย:
 
 ```json
 {
-    "name": "my-first-node",
-    "version": "1.0.0",
-    "description": "โปรเจกต์แรกของฉัน",
-    "main": "index.js",
-    "scripts": {
-        "start": "node index.js",
-        "dev": "node --watch index.js"
-    },
-    "keywords": ["nodejs", "beginner"],
-    "author": "Dolar",
-    "license": "MIT",
-    "dependencies": {
-        "express": "^4.18.2"
-    },
-    "devDependencies": {
-        "nodemon": "^3.0.0"
-    }
+  "name": "wsa2026-submission-api",
+  "version": "1.0.0",
+  "description": "WSA2026 Test Submission Management System API",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": ["wsa2026", "nodejs", "api"],
+  "author": "WSA2026 Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.6.0",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
 ```
 
-### อธิบายแต่ละ Field:
+คำอธิบายทุก Field:
 
-| Field | คืออะไร | ตัวอย่าง |
-|:------|:-------|:--------|
-| `name` | ชื่อโปรเจกต์ (ตัวเล็ก, ห้ามเว้นวรรค) | `"my-app"` |
-| `version` | เวอร์ชันตาม [SemVer](https://semver.org/) | `"1.0.0"` |
-| `main` | ไฟล์หลักของโปรเจกต์ | `"index.js"` |
-| `scripts` | คำสั่งที่ตั้งไว้ (รันด้วย `npm run`) | `"start": "node index.js"` |
-| `dependencies` | Package ที่ต้องใช้ตอน Production | `express`, `mongoose` |
-| `devDependencies` | Package ที่ใช้ตอน Dev เท่านั้น | `nodemon`, `jest` |
+| Field | คืออะไร | ตัวอย่างใน WSA2026 |
+|:------|:--------|:------------------|
+| `name` | ชื่อโปรเจกต์ (ตัวเล็ก ห้ามเว้นวรรค) | `"wsa2026-submission-api"` |
+| `version` | เวอร์ชันตาม SemVer (Major.Minor.Patch) | `"1.0.0"` |
+| `description` | คำอธิบายโปรเจกต์ | `"WSA2026 API"` |
+| `main` | ไฟล์ entry point หลักของโปรเจกต์ | `"src/index.js"` |
+| `scripts` | คำสั่งลัดที่รันด้วย `npm run` | `"dev": "node --watch ..."` |
+| `keywords` | keywords สำหรับค้นหาใน npm Registry | `["nodejs", "api"]` |
+| `author` | ชื่อผู้สร้าง | `"WSA2026 Team"` |
+| `license` | สัญญาอนุญาตการใช้งาน | `"MIT"` |
+| `dependencies` | Package ที่ต้องใช้ตอน Production | `express`, `mysql2` |
+| `devDependencies` | Package ที่ใช้แค่ตอน Development | `nodemon` |
+| `engines` | กำหนด Node.js version ขั้นต่ำ | `">=18.0.0"` |
 
-
-## 3. ติดตั้ง Package 📥
-
-### Install vs DevInstall
+### npm install — ทุกรูปแบบ
 
 ```bash
-# ✅ ติดตั้ง Package สำหรับ Production
+# ติดตั้ง Package เดียว (เพิ่มใน dependencies)
 npm install express
-npm i express          # ย่อ: i = install
+npm i express           # ย่อ: i = install
 
-# ✅ ติดตั้ง Package สำหรับ Development เท่านั้น
+# ติดตั้งหลาย Package พร้อมกัน
+npm install express mysql2 dotenv cors bcryptjs jsonwebtoken
+
+# ติดตั้ง DevDependency (ใช้แค่ตอน development)
 npm install --save-dev nodemon
-npm i -D nodemon       # ย่อ: -D = --save-dev
+npm i -D nodemon        # ย่อ: -D = --save-dev
 
-# ✅ ติดตั้งทุก Package ที่อยู่ใน package.json
+# ติดตั้ง Global (ใช้ได้ทุก Terminal ทุกโปรเจกต์)
+npm install -g nodemon
+npm i -g nodemon        # ย่อ
+
+# ติดตั้งทุก Package จาก package.json (ใช้เมื่อ clone โปรเจกต์มาใหม่)
 npm install
-npm i                  # ย่อ
+npm i                   # ย่อ
+
+# ติดตั้ง version เฉพาะ
+npm install express@4.18.2
 ```
 
-**ติดตั้งแล้วเกิดอะไร?**
+### node_modules และ package-lock.json
 
 ```
-my-first-node/
-├── node_modules/        ← 📂 โค้ดจริงของ Package ทั้งหมด (ห้าม Commit!)
-│   ├── express/
-│   └── ...
-├── package.json         ← 📝 อัปเดต dependencies
-└── package-lock.json    ← 🔒 Lock เวอร์ชันที่แน่นอน (ต้อง Commit!)
+wsa2026-api/
+├── node_modules/           <-- โค้ดจริงของ Package (ห้าม Commit!)
+│   ├── express/            <-- express package
+│   │   ├── index.js
+│   │   └── package.json
+│   ├── mysql2/             <-- mysql2 package
+│   ├── bcryptjs/
+│   ├── jsonwebtoken/
+│   └── ... (อีกหลายร้อย Package ที่ express ต้องการ)
+├── src/
+│   └── index.js
+├── .env                    <-- ตัวแปร Environment (ห้าม Commit!)
+├── .gitignore              <-- ซ่อน node_modules และ .env
+├── package.json            <-- บันทึก dependencies
+└── package-lock.json       <-- Lock version แน่นอน (ต้อง Commit!)
 ```
 
-> ⚠️ **สำคัญ!** `node_modules/` **ห้าม commit ขึ้น Git!** ใหญ่มาก — ใช้ `.gitignore` ซ่อนแทน:
-> ```
-> # .gitignore
-> node_modules/
-> ```
-> คนอื่นที่ Clone มาแค่รัน `npm install` → ได้ `node_modules/` เหมือนกันทุกประการ!
+**ทำไม node_modules ห้าม Commit?**
+- มีขนาดใหญ่มาก (อาจเป็น 100MB+ สำหรับโปรเจกต์ขนาดกลาง)
+- คนอื่นที่ clone โปรเจกต์มา รัน `npm install` แล้วได้ package เหมือนกัน 100%
 
-### 📊 dependencies vs devDependencies
-
-| | **dependencies** | **devDependencies** |
-|:--|:----------------|:-------------------|
-| **ใช้เมื่อ** | Production + Development | Development เท่านั้น |
-| **ติดตั้ง** | `npm i <package>` | `npm i -D <package>` |
-| **ตัวอย่าง** | express, mongoose, bcrypt | nodemon, jest, eslint |
-| **Deploy** | ✅ ติดตั้งบน Server | ❌ ไม่ติดตั้งบน Server |
-
-
-## 4. Semantic Versioning (SemVer) — เข้าใจเลขเวอร์ชัน 🏷️
-
-ตาม [SemVer](https://semver.org/): เลข Version มี 3 ส่วน:
-
+สร้าง `.gitignore`:
 ```
-  4.18.2
-  │ │  │
-  │ │  └── PATCH (แก้ Bug — ปลอดภัย)
-  │ └───── MINOR (เพิ่ม Feature ใหม่ — Compatible)
-  └─────── MAJOR (เปลี่ยนแปลงใหญ่ — อาจ Break!)
+node_modules/
+.env
+*.log
 ```
 
-### สัญลักษณ์ใน package.json
+**package-lock.json คืออะไร?**
 
-| สัญลักษณ์ | ความหมาย | ตัวอย่าง | อัปเดตได้ถึง |
-|:---------|:---------|:--------|:-----------|
-| `^` (Caret) | อัปเดต Minor + Patch | `^4.18.2` | `4.99.99` (ห้ามข้าม Major) |
-| `~` (Tilde) | อัปเดต Patch เท่านั้น | `~4.18.2` | `4.18.99` (ห้ามข้าม Minor) |
-| ไม่มี | ล็อคเวอร์ชันเป๊ะ | `4.18.2` | `4.18.2` เท่านั้น |
+package-lock.json บันทึก **version แน่นอน** ของทุก Package (รวมถึง sub-dependencies ด้วย) เพื่อให้ทุกคนในทีมติดตั้ง package version เดียวกัน
 
-> 💡 **ค่า Default** ของ npm คือ `^` (Caret) — ปลอดภัยในการอัปเดต Minor/Patch โดยไม่ Break
+```
+package.json        -->  "express": "^4.18.2"  (อนุญาตให้ 4.18.2 - 4.99.99)
+package-lock.json   -->  "express": "4.18.2"   (lock ไว้ที่ version นี้จริงๆ)
+```
 
+### Semantic Versioning (SemVer)
 
-## 5. npm Scripts — คำสั่งสำเร็จรูป 📜
+ตาม [semver.org](https://semver.org): เลข Version มี 3 ส่วน:
 
-แทนที่จะพิมพ์คำสั่งยาวๆ ทุกครั้ง → ตั้งเป็น Script ใน package.json!
+```
+         4  .  18  .  2
+         |    |     |
+         |    |     +-- PATCH : แก้ Bug เล็กน้อย (ปลอดภัยอัปเดต)
+         |    +-------- MINOR : เพิ่ม Feature ใหม่ (backward compatible)
+         +------------- MAJOR : เปลี่ยนแปลงใหญ่ (อาจ break โค้ดเก่า!)
+```
+
+สัญลักษณ์ใน package.json:
+
+```
+สัญลักษณ์    ความหมาย                  ตัวอย่าง        อัปเดตได้ถึง
+---------    ---------                  --------        -----------
+^4.18.2      Caret: Minor + Patch       ^4.18.2   -->   4.x.x (ห้ามข้าม Major)
+~4.18.2      Tilde: Patch เท่านั้น      ~4.18.2   -->   4.18.x (ห้ามข้าม Minor)
+4.18.2       ไม่มีสัญลักษณ์ = ล็อคเป๊ะ  4.18.2    -->   4.18.2 เท่านั้น
+*            ใดๆก็ได้ (อันตราย!)        *         -->   ล่าสุดเสมอ
+>=4.0.0      เท่ากับหรือมากกว่า         >=4.0.0   -->   ทุก version >= 4.0.0
+```
+
+**ค่า Default** ของ `npm install` คือ `^` (Caret) — ปลอดภัย อัปเดต Minor/Patch ได้
+
+### npm scripts — คำสั่งสำเร็จรูป
+
+แทนที่จะพิมพ์คำสั่งยาวๆ ทุกครั้ง ตั้งเป็น Script ใน package.json ได้เลย!
 
 ```json
 {
-    "scripts": {
-        "start": "node index.js",
-        "dev": "node --watch index.js",
-        "test": "echo 'No tests yet'"
-    }
+  "scripts": {
+    "start":  "node src/index.js",
+    "dev":    "node --watch src/index.js",
+    "test":   "echo 'No tests yet'",
+    "lint":   "eslint src/",
+    "build":  "echo 'Building...' && node scripts/build.js"
+  }
 }
 ```
 
-### รัน Scripts
-
+การรัน Script:
 ```bash
-# Script พิเศษ: start, test → ไม่ต้องใส่ "run"
-npm start       # = npm run start
-npm test        # = npm run test
+# Script พิเศษ: start, test --> ไม่ต้องใส่ "run"
+npm start         # = npm run start
+npm test          # = npm run test
 
-# Script อื่นๆ: ต้องใส่ "run"
+# Script อื่นๆ ต้องใส่ "run"
 npm run dev
+npm run lint
+npm run build
 ```
 
-> 💡 **`node --watch`** (Node.js v18+) = รันใหม่อัตโนมัติเมื่อแก้ไฟล์! เหมือน `nodemon` แต่ built-in
+```
++----------------------------+
+|  npm run dev               |
++----------------------------+
+          |
+          v
+  อ่าน package.json
+  --> "dev": "node --watch src/index.js"
+          |
+          v
+  รัน: node --watch src/index.js
+          |
+          v
+  Node.js รีสตาร์ตอัตโนมัติ
+  ทุกครั้งที่แก้ไขไฟล์ .js
++----------------------------+
+```
 
+> 💡 **`node --watch`** (Node.js v18+) = รันใหม่อัตโนมัติเมื่อแก้ไฟล์ เหมือน `nodemon` แต่ built-in ไม่ต้องติดตั้งเพิ่ม!
 
-## 6. คำสั่ง npm ที่ใช้บ่อย 🔧
+### dependencies vs devDependencies
+
+```
++--------------------+---------------------------+---------------------------+
+| Package            | dependencies              | devDependencies           |
++--------------------+---------------------------+---------------------------+
+| ใช้เมื่อ           | Production + Development   | Development เท่านั้น      |
+| ติดตั้งด้วย        | npm i <package>           | npm i -D <package>        |
+| ติดตั้งบน Server   | ✓ ใช่                     | ✗ ไม่                     |
++--------------------+---------------------------+---------------------------+
+| ตัวอย่าง WSA2026   | express, mysql2, dotenv   | nodemon, jest, eslint     |
+|                    | cors, bcryptjs, jwt       |                           |
++--------------------+---------------------------+---------------------------+
+```
+
+### คำสั่ง npm ที่ใช้บ่อย
 
 | คำสั่ง | ใช้ทำอะไร |
 |:-------|:---------|
-| `npm init -y` | สร้าง package.json |
-| `npm install` / `npm i` | ติดตั้งทุก Package จาก package.json |
-| `npm i <package>` | ติดตั้ง Package ใหม่ |
-| `npm i -D <package>` | ติดตั้ง DevDependency |
-| `npm uninstall <package>` | ลบ Package |
-| `npm update` | อัปเดตทุก Package |
-| `npm list` | ดู Package ที่ติดตั้ง |
-| `npm outdated` | ดูว่ามี Package ไหนเก่าแล้ว |
-| `npm run <script>` | รัน Script ที่ตั้งไว้ |
+| `npm init -y` | สร้าง package.json ด้วยค่า default |
+| `npm install` / `npm i` | ติดตั้งทุก package จาก package.json |
+| `npm i <pkg>` | ติดตั้ง package ใหม่ (dependencies) |
+| `npm i -D <pkg>` | ติดตั้ง package ใหม่ (devDependencies) |
+| `npm i -g <pkg>` | ติดตั้ง package แบบ global |
+| `npm uninstall <pkg>` | ลบ package |
+| `npm update` | อัปเดตทุก package |
+| `npm list --depth=0` | ดู package ที่ติดตั้งชั้นแรก |
+| `npm outdated` | ดูว่า package ไหนมีเวอร์ชันใหม่ |
+| `npm run <script>` | รัน script ที่ตั้งไว้ |
+| `npm audit` | ตรวจหา security vulnerability |
+| `npm audit fix` | แก้ไข vulnerability อัตโนมัติ |
 
+---
 
-## 7. require() — นำ Package มาใช้งาน 📥
+## 💻 ตัวอย่างโค้ด (Code Implementation)
 
-เมื่อติดตั้ง Package แล้ว ต้อง **"นำเข้า"** มาใช้ในโค้ดด้วย `require()`:
+สร้าง package.json สมบูรณ์สำหรับโปรเจกต์ WSA2026 พร้อม dependencies ทั้งหมดและ script ที่ใช้งานจริง
 
-```javascript
-// ✅ นำ Package ที่ติดตั้งแล้วมาใช้
-const express = require("express"); // นำเข้า Package express
-const dayjs = require("dayjs");     // นำเข้า Package dayjs
+::: code-group
+```js [setup-project.js]
+// setup-project.js
+// Script ช่วยตรวจสอบว่า Project Setup ถูกต้องหรือไม่
+// ใช้: node setup-project.js
 
-console.log(dayjs().format("DD/MM/YYYY")); // ใช้งาน dayjs!
-```
+const fs   = require("fs");
+const path = require("path");
 
-> 💡 **`require("ชื่อ Package")`** = บอก Node.js ว่า "เอา Package ที่ `npm install` ไว้มาใช้" — เราจะเรียนเรื่อง Module System ลึกขึ้นใน **Module 2** แต่ตอนนี้จำแค่: **ติดตั้ง → require → ใช้งาน!**
+// ==========================================
+// 1. รายชื่อ dependencies ที่ WSA2026 ต้องการ
+// ==========================================
+const REQUIRED_DEPS = {
+  // Production dependencies
+  dependencies: [
+    "express",      // Web framework
+    "mysql2",       // MySQL driver (รองรับ Promise)
+    "dotenv",       // โหลด .env file
+    "cors",         // Cross-Origin Resource Sharing
+    "bcryptjs",     // Hash password สำหรับ users table
+    "jsonwebtoken"  // JWT token สำหรับ authentication
+  ],
+  // Development dependencies
+  devDependencies: [
+    "nodemon"       // Auto-restart (หรือใช้ node --watch ก็ได้)
+  ]
+};
 
+// ==========================================
+// 2. ตรวจสอบไฟล์ package.json
+// ==========================================
+function checkPackageJson() {
+  const pkgPath = path.join(process.cwd(), "package.json");
 
-## 8. Challenges 🏆
+  if (!fs.existsSync(pkgPath)) {
+    console.log("[MISSING] package.json not found");
+    console.log("         Run: npm init -y");
+    return false;
+  }
 
-### 🎯 Challenge 1: npm คืออะไร? (หัวข้อ 1)
-ตอบคำถาม: npm ทำหน้าที่ 3 อย่าง — บอกมาว่าคืออะไร พร้อมยกคำสั่งตัวอย่าง:
-
-::: details ✨ ดูเฉลย
-1. **ติดตั้ง Package** → `npm install express`
-2. **จัดการ Dependencies** → บันทึกใน `package.json`
-3. **รัน Scripts** → `npm run dev`
-
-npm มาพร้อม Node.js — ไม่ต้องติดตั้งแยก!
-:::
-
-### 🎯 Challenge 2: สร้าง package.json (หัวข้อ 2)
-สร้างโฟลเดอร์โปรเจกต์ใหม่ แล้วสร้าง `package.json` ด้วย `npm init -y` จากนั้นลองแก้ไข `name`, `description`, `author`:
-
-::: details ✨ ดูเฉลย
-รันคำสั่งนี้ใน Terminal:
-```bash
-mkdir my-app
-cd my-app
-npm init -y
-```
-
-เปิด `package.json` แล้วแก้ไข:
-```json
-{
-    "name": "my-app",
-    "version": "1.0.0",
-    "description": "โปรเจกต์แรกของฉัน",
-    "main": "index.js",
-    "author": "ชื่อของคุณ",
-    "license": "MIT"
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+  console.log(`[OK]     package.json found: ${pkg.name} v${pkg.version}`);
+  return pkg;
 }
-```
-:::
 
-### 🎯 Challenge 3: ติดตั้ง Package (หัวข้อ 3)
-ในโปรเจกต์เดิม — ติดตั้ง 1 dependency + 1 devDependency แล้วสร้าง `.gitignore`:
+// ==========================================
+// 3. ตรวจสอบว่า node_modules มีครบ
+// ==========================================
+function checkDependencies(pkg) {
+  const nodeModules = path.join(process.cwd(), "node_modules");
 
-::: details ✨ ดูเฉลย
-รันคำสั่งนี้ใน Terminal:
-```bash
-npm install chalk@4
-npm install -D nodemon
-```
+  if (!fs.existsSync(nodeModules)) {
+    console.log("[MISSING] node_modules/ not found");
+    console.log("         Run: npm install");
+    return;
+  }
 
-สร้างไฟล์ `.gitignore`:
-```
-node_modules/
-```
+  console.log("\n--- Checking Dependencies ---");
 
-ตรวจสอบโครงสร้างโปรเจกต์:
-```
-my-app/
-├── node_modules/        ← 📂 โค้ดจริงของ Package (ห้าม Commit!)
-├── .gitignore           ← 🛡️ ซ่อน node_modules จาก Git
-├── package.json         ← 📝 มี dependencies + devDependencies
-└── package-lock.json    ← 🔒 Lock เวอร์ชันแน่นอน
-```
-:::
+  // ตรวจ production dependencies
+  REQUIRED_DEPS.dependencies.forEach((dep) => {
+    const depPath = path.join(nodeModules, dep);
+    const installed = fs.existsSync(depPath);
+    const inPkg     = pkg.dependencies && pkg.dependencies[dep];
 
-### 🎯 Challenge 4: Semantic Versioning (หัวข้อ 4)
-ตอบคำถาม: ถ้า `package.json` มีเวอร์ชันเหล่านี้ npm จะอัปเดตได้ถึงเวอร์ชันไหน?
-1. `"express": "^4.18.2"`
-2. `"express": "~4.18.2"`
-3. `"express": "4.18.2"`
-
-::: details ✨ ดูเฉลย
-1. `^4.18.2` → อัปเดตได้ถึง **4.99.99** (ห้ามข้าม Major 4 → 5)
-2. `~4.18.2` → อัปเดตได้ถึง **4.18.99** (ห้ามข้าม Minor 18 → 19)
-3. `4.18.2` → ล็อคเป๊ะ **4.18.2 เท่านั้น** (ไม่อัปเดต)
-
-ค่า Default ของ npm คือ `^` (Caret) — ปลอดภัยในการอัปเดต Minor/Patch
-:::
-
-### 🎯 Challenge 5: npm Scripts (หัวข้อ 5)
-เพิ่ม Scripts ใน `package.json`: `start` (รัน index.js) และ `dev` (รัน index.js ด้วย --watch) แล้วทดสอบ:
-
-::: details ✨ ดูเฉลย
-สร้างไฟล์ `index.js`:
-```javascript
-console.log("✅ App is running!");
-```
-
-เพิ่ม scripts ใน `package.json`:
-```json
-{
-    "scripts": {
-        "start": "node index.js",
-        "dev": "node --watch index.js"
+    if (installed && inPkg) {
+      console.log(`[OK]     ${dep} (${pkg.dependencies[dep]})`);
+    } else if (!inPkg) {
+      console.log(`[MISSING] ${dep} -- Run: npm install ${dep}`);
+    } else {
+      console.log(`[WARN]   ${dep} in package.json but not in node_modules`);
     }
+  });
+
+  // ตรวจ devDependencies
+  console.log("\n--- Dev Dependencies ---");
+  REQUIRED_DEPS.devDependencies.forEach((dep) => {
+    const depPath = path.join(nodeModules, dep);
+    const installed = fs.existsSync(depPath);
+    const inPkg     = pkg.devDependencies && pkg.devDependencies[dep];
+
+    if (installed && inPkg) {
+      console.log(`[OK]     ${dep} (${pkg.devDependencies[dep]})`);
+    } else {
+      console.log(`[MISSING] ${dep} -- Run: npm install -D ${dep}`);
+    }
+  });
+}
+
+// ==========================================
+// 4. แสดง npm scripts ที่ควรมี
+// ==========================================
+function checkScripts(pkg) {
+  console.log("\n--- npm Scripts ---");
+
+  const requiredScripts = ["start", "dev"];
+  requiredScripts.forEach((script) => {
+    if (pkg.scripts && pkg.scripts[script]) {
+      console.log(`[OK]     npm run ${script}: "${pkg.scripts[script]}"`);
+    } else {
+      console.log(`[MISSING] script "${script}" not found in package.json`);
+    }
+  });
+}
+
+// ==========================================
+// 5. Main
+// ==========================================
+console.log("===========================================");
+console.log("  WSA2026 Project Setup Checker");
+console.log("===========================================");
+console.log(`  Node.js : ${process.version}`);
+console.log(`  Project : ${process.cwd()}`);
+console.log("===========================================\n");
+
+const pkg = checkPackageJson();
+if (pkg) {
+  checkDependencies(pkg);
+  checkScripts(pkg);
+}
+
+console.log("\n===========================================");
+console.log("  Setup check complete!");
+console.log("===========================================");
+```
+
+```json [package.json]
+{
+  "name": "wsa2026-submission-api",
+  "version": "1.0.0",
+  "description": "WSA2026 Test Submission Management System — REST API",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "echo \"No tests configured\" && exit 0",
+    "setup-check": "node setup-project.js"
+  },
+  "keywords": [
+    "wsa2026",
+    "nodejs",
+    "express",
+    "api",
+    "competition"
+  ],
+  "author": "WSA2026 Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.6.0",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
 }
 ```
 
-ทดสอบด้วยคำสั่ง:
-```bash
-npm start       # → ✅ App is running!
-npm run dev     # → รันแบบ watch (รีสตาร์ตอัตโนมัติเมื่อแก้ไฟล์)
+```bash [install-commands.sh]
+# ขั้นตอนการ setup โปรเจกต์ WSA2026 ตั้งแต่ต้น
+
+# 1. สร้างโฟลเดอร์โปรเจกต์
+mkdir wsa2026-api
+cd wsa2026-api
+
+# 2. สร้าง package.json
+npm init -y
+
+# 3. ติดตั้ง Production Dependencies
+npm install express mysql2 dotenv cors bcryptjs jsonwebtoken
+
+# 4. ติดตั้ง Dev Dependency
+npm install --save-dev nodemon
+
+# 5. สร้าง .gitignore
+echo "node_modules/" > .gitignore
+echo ".env" >> .gitignore
+
+# 6. สร้าง .env สำหรับ WSA2026
+echo "PORT=3000" > .env
+echo "DB_HOST=localhost" >> .env
+echo "DB_USER=root" >> .env
+echo "DB_PASSWORD=secret" >> .env
+echo "DB_NAME=wsa2026_db" >> .env
+echo "JWT_SECRET=wsa2026-super-secret-key" >> .env
+
+# 7. ตรวจสอบว่า setup ถูกต้อง
+node setup-project.js
 ```
 :::
 
-### 🎯 Challenge 6: คำสั่ง npm ที่ใช้บ่อย (หัวข้อ 6)
-ทดลองใช้คำสั่ง npm 3 คำสั่งในโปรเจกต์ของคุณ: ดู Package ที่ติดตั้ง, เช็ควว่าตัวไหนเก่า, ลบ Package:
+---
 
-::: details ✨ ดูเฉลย
-รันคำสั่งนี้ใน Terminal:
-```bash
-npm list --depth=0     # ดู Package ที่ติดตั้ง
-npm outdated           # ดูว่าตัวไหนมีเวอร์ชันใหม่
-npm uninstall nodemon  # ลบ Package
-npm list --depth=0     # ดูอีกที — nodemon หายไปแล้ว!
-```
+## 🎯 โจทย์ฝึกปฏิบัติเสริมความเข้าใจ (Mini Exercise)
+
+- **โจทย์:** สร้างโปรเจกต์ใหม่ชื่อ `wsa-score-service` สำหรับระบบให้คะแนน Submission ของ WSA2026 โดยต้องมี `package.json` ที่ถูกต้อง ติดตั้ง `express` และ `mysql2` เป็น dependencies และ `nodemon` เป็น devDependency จากนั้นตั้ง npm script `dev` ที่ใช้ `node --watch` และเขียนไฟล์ `index.js` ที่แค่พิมพ์ข้อความ "WSA2026 Score Service running..." แล้วทดสอบด้วย `npm run dev`
+
+::: details 💡 คำใบ้ (Hint)
+- ใช้ `npm init -y` สร้าง package.json เริ่มต้น แล้วแก้ `name` และ `description` ด้วยมือ
+- ติดตั้ง package หลายตัวพร้อมกันได้ด้วย `npm install express mysql2` (เว้นวรรคคั่น)
+- script `dev` ต้องเขียนใน `scripts` object ของ package.json ในรูปแบบ `"dev": "node --watch index.js"`
 :::
 
-### 🎯 Challenge 7: require() (หัวข้อ 7)
-ติดตั้ง `chalk@4` แล้วใช้ `require()` นำเข้ามาใช้งานในไฟล์ `index.js`:
+## 🔥 Challenge (โจทย์ท้าทาย!)
 
-::: details ✨ ดูเฉลย
-ติดตั้ง Package:
-```bash
-npm install chalk@4
-```
+- **โจทย์:** สร้างไฟล์ `check-versions.js` ที่อ่าน `package.json` ของโปรเจกต์ปัจจุบันด้วย `fs.readFileSync` (ใช้ require("fs")) แล้วแสดงรายชื่อ package ทุกตัวใน `dependencies` และ `devDependencies` พร้อม version และ prefix (`^`, `~`, หรือไม่มี) โดยแสดงคำอธิบายว่า prefix นั้นหมายความว่าอะไร (เช่น "^ = อัปเดต Minor+Patch ได้") และนับจำนวน package ทั้งหมดสรุปท้าย
 
-สร้างไฟล์ `index.js`:
-```javascript
-const chalk = require("chalk");
+---
 
-console.log(chalk.green("✅ require() สำเร็จ!"));
-console.log(chalk.red("❌ ข้อความสีแดง"));
-console.log(chalk.blue.bold("💙 ข้อความสีน้ำเงินตัวหนา"));
-```
+## 🗣️ ทบทวน (Review)
 
-ทดสอบด้วยคำสั่ง:
-```bash
-node index.js
-```
+::: details ❓ คำถามทบทวนความเข้าใจ
+
+**คำถาม 1:** `dependencies` กับ `devDependencies` ต่างกันอย่างไร และใน WSA2026 project package ไหนควรอยู่ใน dependencies และ package ไหนควรอยู่ใน devDependencies?
+
+**แนวคำตอบ:** `dependencies` คือ package ที่จำเป็นต้องใช้ใน Production (Server จริง) ส่วน `devDependencies` ใช้แค่ตอน Development เท่านั้น ใน WSA2026: `express`, `mysql2`, `dotenv`, `cors`, `bcryptjs`, `jsonwebtoken` ควรอยู่ใน `dependencies` เพราะ Server ต้องใช้จริง ส่วน `nodemon` ควรอยู่ใน `devDependencies` เพราะใช้แค่ตอนพัฒนา ไม่ได้รันบน Server จริง
+
+**คำถาม 2:** `package-lock.json` คืออะไร และทำไมถึงควร commit ขึ้น Git ในขณะที่ `node_modules/` ไม่ควร commit?
+
+**แนวคำตอบ:** `package-lock.json` บันทึก version แน่นอนของทุก package รวมถึง sub-dependencies ด้วย ทำให้ทุกคนในทีมที่รัน `npm install` ได้ package version เดียวกัน 100% จึงควร commit ส่วน `node_modules/` มีขนาดใหญ่มาก (100MB+) และสร้างใหม่ได้ทุกเมื่อด้วย `npm install` จึงไม่ควร commit
+
+**คำถาม 3:** ใน `package.json` ถ้าเขียน `"express": "^4.18.2"` กับ `"express": "~4.18.2"` กับ `"express": "4.18.2"` ต่างกันอย่างไรในทางปฏิบัติ?
+
+**แนวคำตอบ:** `^4.18.2` (Caret) = npm update ได้ถึง `4.x.x` เช่น `4.19.0`, `4.20.1` แต่ห้ามข้าม Major 5.x.x / `~4.18.2` (Tilde) = update ได้แค่ `4.18.x` เช่น `4.18.3`, `4.18.9` ห้ามข้าม Minor 4.19.x / `4.18.2` (ไม่มี prefix) = ล็อคที่ version นี้เท่านั้น ไม่อัปเดต — ค่า default ของ `npm install` คือ `^` ซึ่งปลอดภัยที่สุดสำหรับใช้งานทั่วไป
+
 :::
 
-
-> **📖 คำศัพท์เทคนิค (Glossary):**
-> *   **npm:** Node Package Manager — ตัวจัดการ Library/Package
-> *   **package.json:** ไฟล์ที่บอกรายละเอียดและ Dependencies ของโปรเจกต์
-> *   **package-lock.json:** ไฟล์ที่ล็อคเวอร์ชัน Package ที่แน่นอน
-> *   **node_modules/:** โฟลเดอร์ที่เก็บโค้ดจริงของ Package ทั้งหมด
-> *   **dependencies:** Package ที่ต้องใช้ตอน Production
-> *   **devDependencies:** Package ที่ใช้ตอน Development เท่านั้น
-> *   **SemVer:** Semantic Versioning — ระบบเลขเวอร์ชัน (Major.Minor.Patch)
-> *   **`npm init`:** คำสั่งสร้าง package.json ใหม่
-> *   **`npm install`:** คำสั่งติดตั้ง Package
-> *   **npm Scripts:** คำสั่งสำเร็จรูปที่ตั้งไว้ใน package.json
-> *   **Registry:** ที่เก็บ Package ทั้งหมดของ npm (npmjs.com)
-
-👉 **[ไปทำโปรเจกต์: Project — CLI Tool App](/node/01-project-cli-tool)**
+👉 **[ไปทำโปรเจกต์: Project 1 — CLI Tool](/node/01-project-cli-tool)**

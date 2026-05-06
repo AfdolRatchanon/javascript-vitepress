@@ -125,10 +125,14 @@ console.log(`
 
 
 
-## 🏆 Challenges
+## Challenges 🏆
+
+ทดสอบทักษะที่ได้เรียนมาแต่ละหัวข้อในบทนี้:
 
 ### 🎯 Challenge 1: Improve It!
-ปรับปรุง Bio ให้สวยขึ้น:
+**หัวข้อ:** 2. ลงมือโค้ด
+
+**โจทย์:** ปรับปรุง Bio ให้สวยขึ้น:
 1.  เพิ่มหัวข้อ **"Favorite Foods"**
 2.  ลองใช้สัญลักษณ์แปลกๆ เช่น `=`, `#`, `~` แทน `*` หรือ `-`
 3.  ลองจัดย่อหน้าให้ตรงกันเป๊ะๆ (Alignment)
@@ -150,7 +154,9 @@ console.log("=============================");
 :::
 
 ### 🎯 Challenge 2: Tab Master
-ใช้ `\t` จัดข้อมูลเพื่อน 3 คนให้เป็นตารางสวยๆ (ชื่อ, อายุ, เมือง)
+**หัวข้อ:** 3. Escape Characters
+
+**โจทย์:** ใช้ `\t` จัดข้อมูลเพื่อน 3 คนให้เป็นตารางสวยๆ (ชื่อ, อายุ, เมือง)
 
 ::: details ✨ ดูเฉลย
 ```javascript
@@ -163,7 +169,9 @@ console.log("Malee\t22\tPhuket");
 :::
 
 ### 🎯 Challenge 3: Ultimate Bio Card
-ใช้ Template Literal สร้าง Bio Card ที่มีทั้ง Header, ข้อมูลส่วนตัว, Skills พร้อม Progress Bar, และ Footer ใน `console.log` เดียว
+**หัวข้อ:** 4. Template Literals
+
+**โจทย์:** ใช้ Template Literal สร้าง Bio Card ที่มีทั้ง Header, ข้อมูลส่วนตัว, Skills พร้อม Progress Bar, และ Footer ใน `console.log` เดียว
 
 ::: details ✨ ดูเฉลย
 ```javascript

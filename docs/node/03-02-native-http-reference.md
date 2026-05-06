@@ -3,476 +3,538 @@
 > **"The HTTP protocol is the foundation of the World Wide Web."**
 > — *MDN Web Docs*
 
-ยินดีต้อนรับสู่บทใหม่! ที่ผ่านมาเราเขียนโค้ดรันบนเครื่องตัวเอง (Local) จัดการไฟล์ในเครื่องตัวเอง แต่ตอนนี้... เราจะเริ่ม **"คุยกับชาวบ้าน"** แล้วครับ! 🚀
+ในบทนี้เราจะเปลี่ยน Node.js จากโปรแกรมธรรมดา ให้กลายเป็น **Web Server** ที่รับคำสั่งจาก Browser หรือ Client ที่ไหนก็ได้! เราจะเรียนรู้ตั้งแต่พื้นฐาน HTTP จนถึงสร้าง API สำหรับระบบ WSA2026 โดยใช้แค่ `http` module ติดตัว Node.js
 
-ในบทนี้เราจะเปลี่ยน Node.js จากโปรแกรมธรรมดา ให้กลายเป็น **Web Server** ที่สามารถรับคำสั่งจาก Browser หรือมือถือที่ไหนก็ได้ในโลก!
-
+---
 
 ## 1. Web Server คืออะไร? (The Big Picture) 🖼️
 
-ก่อนเขียนโค้ด ต้องเข้าใจภาพรวมก่อนว่า "Web" ทำงานยังไง?
-
 ### The Client-Server Model
-การทำงานของเว็บ เป็นการสื่อสารระหว่าง 2 ฝั่งเสมอ:
 
-1.  **Client (ผู้ขอ):** คือ Browser (Chrome, Edge), Mobile App ที่เราใช้เปิดเว็บ
-2.  **Server (ผู้ให้):** คือ คอมพิวเตอร์ที่เปิดทิ้งไว้ 24 ชม. เพื่อรอรับคำขอและส่งข้อมูลกลับ
+```
+  WSA2026 System — HTTP Flow
+  ==========================
+
+  [Browser / Postman]           [Node.js Server]
+        |                              |
+        |-- GET /api/candidates -----> |
+        |                              |-- อ่าน database/JSON
+        |                              |-- ประมวลผล
+        | <-- 200 OK {JSON data} ----- |
+        |                              |
+        |-- POST /api/submissions ---> |
+        |   { candidate_id, task_id } |-- บันทึกข้อมูล
+        | <-- 201 Created {id: 6} ---- |
+```
 
 > **💡 Analogy (เปรียบเทียบ): ร้านอาหาร** 🍽️
->
-> ลองนึกภาพการเข้าเว็บ `google.com` เหมือนการสั่งอาหาร:
->
-> 1.  **Client (คุณ):** ดูเมนูแล้วสั่ง "ขอกะเพรารวมมิตร" (ส่ง **Request**) 🗣️
-> 2.  **Waiter (Network):** จดออเดอร์ เดินไปส่งที่ครัว 📝
-> 3.  **Server (ห้องครัว):** ได้รับทำออเดอร์ ปรุงอาหาร (Process) 🍳
-> 4.  **Waiter (Network):** ยกจานมาเสิร์ฟ (ส่ง **Response**) 🍲
-> 5.  **Client (คุณ):** ได้กินอาหาร (Browser แสดงผลหน้าเว็บ) 😋
->
-> **Node.js** คือ **"เซฟในห้องครัว"** ที่คอยรอรับออเดอร์และปรุงอาหารนั่นเอง!
+> 1. **Client (คุณ):** ดูเมนูแล้วสั่ง (ส่ง **Request**)
+> 2. **Waiter (Network):** จดออเดอร์ เดินไปส่งที่ครัว
+> 3. **Server (Node.js):** รับออเดอร์ ปรุงอาหาร (Process)
+> 4. **Waiter (Network):** ยกจานมาเสิร์ฟ (ส่ง **Response**)
 
+---
 
 ## 2. HTTP Protocol: ภาษากลางของการสื่อสาร 🗣️
 
-ถ้า Client พูดภาษาไทย แต่ Server พูดภาษาญี่ปุ่น คงคุยกันไม่รู้เรื่อง ใช่ไหมครับ?
-คอมพิวเตอร์ก็เหมือนกัน ต้องมี "ภาษากลาง" ที่ตกลงกันไว้ ซึ่งก็คือ **HTTP (HyperText Transfer Protocol)**
-
-ทุกครั้งที่มีการคุยกัน จะประกอบด้วย 2 ส่วนเสมอ:
-
 ### 2.1 Request (คำขอจาก Client) 📤
-ซองจดหมายที่ Client ส่งมา บอก Server ว่า "อยากได้อะไร":
-- **Method:** ท่าทางที่จะทำ (GET=ขอ, POST=ส่ง, DELETE=ลบ)
-- **URL:** ที่อยู่ของของที่อยากได้ (เช่น `/products`)
-- **Headers:** ข้อมูลเสริม (เช่น `User-Agent: Chrome`, `Accept-Language: th`)
-- **Body:** เนื้อหาที่แนบมา (เช่น ข้อมูลล็อกอิน)
+
+- **Method:** ท่าทางที่จะทำ (`GET`=ขอ, `POST`=ส่ง, `PUT`=แก้, `DELETE`=ลบ)
+- **URL:** ที่อยู่ของข้อมูล (เช่น `/api/candidates`)
+- **Headers:** ข้อมูลเสริม (เช่น `Authorization: Bearer <token>`)
+- **Body:** เนื้อหาที่แนบมา (เช่น JSON ของ submission ใหม่)
 
 ### 2.2 Response (คำตอบจาก Server) 📥
-กล่องพัสดุที่ Server ส่งกลับไป:
-- **Status Code:** ผลลัพธ์ (200=OK, 404=Not Found)
-- **Headers:** ข้อมูลเสริม (เช่น `Content-Type: text/html`)
-- **Body:** เนื้อหาจริงๆ (HTML, JSON, รูปภาพ)
 
+- **Status Code:** ผลลัพธ์ (200=OK, 201=Created, 404=Not Found)
+- **Headers:** ข้อมูลเสริม (เช่น `Content-Type: application/json`)
+- **Body:** เนื้อหาจริงๆ (JSON data)
+
+---
 
 ## 3. สร้าง Web Server แรกด้วย Node.js 🛠️
 
-Node.js มี Module ติดตัวชื่อ **`http`** ที่เก่งมาก ใช้สร้าง Server ได้ทันทีโดยไม่ต้องลงอะไรเพิ่ม
+Node.js มี Module ติดตัวชื่อ **`http`** ใช้สร้าง Server ได้ทันที ไม่ต้องลงอะไรเพิ่ม
 
-สร้างไฟล์ `server.js`:
+::: code-group
+```js [server.js]
+const http = require("http");
 
-```javascript
-// server.js
-const http = require('http'); // 1. เรียกใช้ module http
-
-// 2. สร้าง Server
-// callback นี้จะทำงาน "ทุกครั้ง" ที่มี Request เข้ามา
 const server = http.createServer((req, res) => {
-    console.log('📨 มีคนส่ง Request เข้ามา!');
+  console.log(`📨 ${req.method} ${req.url}`);
 
-    // 3. ส่ง Response กลับไป
-    res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' }); // info
-    res.end('สวัสดีชาวโลก! 🌍 Hello World!'); // เนื้อหา
+  res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+  res.end("ยินดีต้อนรับสู่ WSA2026 API! 🏆");
 });
 
-// 4. เริ่มเปิด Server รอรับ connection (Listen)
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`🚀 Server กำลังทำงานที่ http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
 ```
+:::
 
 ### ทดสอบรัน
-1. เปิด Terminal พิมพ์ `node server.js`
-2. จะเห็นข้อความ `🚀 Server กำลังทำงานที่ http://localhost:3000`
-3. เปิด Browser (Chrome) ไปที่ `http://localhost:3000`
-4. จะเห็นข้อความ **"สวัสดีชาวโลก! 🌍 Hello World!"** บนหน้าเว็บ 🎉
-5. กลับมาดู Terminal จะเห็น `📨 มีคนส่ง Request เข้ามา!` (อาจจะขึ้น 2 รอบ เพราะ Browser ชอบขอ `favicon.ico` แถมมาด้วย)
+1. รัน `node server.js`
+2. เปิด Browser ไปที่ `http://localhost:3000`
+3. จะเห็น "ยินดีต้อนรับสู่ WSA2026 API!"
 
-> **💡 คำอธิบายโค้ด:**
-> *   `http.createServer()`: สร้าง "พนักงานต้อนรับ" คอยยืนรอ
-> *   `(req, res) => { ... }`: คือสิ่งที่พนักงานจะทำเมื่อลูกค้าเดินเข้ามา
-> *   `req` (Request): ข้อมูลลูกค้า (เขาอยากได้อะไร)
-> *   `res` (Response): เครื่องมือส่งของกลับ (เราจะให้อะไร)
-> *   `server.listen(3000)`: เปิดร้าน! (Bind port 3000 รอรับลูกค้า)
-
+---
 
 ## 4. เจาะลึก `req` และ `res` 🔍
 
 `req` และ `res` เป็น Object พิเศษ (จริงๆ คือ **Streams**) ที่ Node.js สร้างให้เรา:
 
 ### `req` (IncomingMessage)
-เก็บข้อมูลทุกอย่างที่ Client ส่งมา
-*   `req.url`: ลูกค้าเข้าลิงก์ไหน? (เช่น `/`, `/about`, `/users`)
-*   `req.method`: ลูกค้าใช้วิธีไหน? (`GET`, `POST`)
-*   `req.headers`: ข้อมูลลับๆ ที่แนบมา
+- `req.url` — URL ที่ลูกค้าเรียก (เช่น `/api/candidates`)
+- `req.method` — HTTP Method (`GET`, `POST`, ...)
+- `req.headers` — Headers ทั้งหมด (Object)
 
 ### `res` (ServerResponse)
-เครื่องมือสำหรับตอบกลับ
-*   `res.writeHead(status, headers)`: เขียนหัวจดหมาย (บอกสถานะและชนิดข้อมูล)
-*   `res.write(data)`: เขียนเนื้อหา (ส่งได้หลายรอบ เพราะเป็น Stream)
-*   `res.end(data)`: จบการส่ง (ต้องเรียกเสมอ ไม่งั้น Browser จะหมุนติ้วๆ ไม่หยุด!)
+- `res.writeHead(status, headers)` — เขียน response headers
+- `res.write(data)` — เขียนเนื้อหา (หลายรอบได้)
+- `res.end(data)` — ปิด response (ต้องเรียกเสมอ!)
 
-ลองแก้ `server.js` เพื่อดูข้อมูล `req`:
-
-```javascript
-const http = require('http');
+::: code-group
+```js [inspect-req.js]
+const http = require("http");
 
 const server = http.createServer((req, res) => {
-    // ดูซิว่าใครมาขออะไร
-    console.log('--- New Request ---');
-    console.log('Method:', req.method);
-    console.log('URL:   ', req.url);
-    
-    // ตอบกลับ
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.write('<h1>Info Received</h1>');
-    res.write(`<p>You requested: <b>${req.url}</b></p>`);
-    res.write(`<p>With method: <b>${req.method}</b></p>`);
-    res.end(); // จบข่าว
+  console.log("--- New Request ---");
+  console.log("Method  :", req.method);
+  console.log("URL     :", req.url);
+  console.log("User-Agent:", req.headers["user-agent"]);
+
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({
+    method: req.method,
+    url:    req.url,
+    time:   new Date().toISOString()
+  }));
 });
 
-server.listen(3000, () => console.log('Server running...'));
+server.listen(3000, () => console.log("Server running on port 3000"));
 ```
+:::
 
+---
 
 ## 5. HTTP Status Codes: รหัสลับบอกสถานะ 🔢
 
-เวลา Server ทำงานเสร็จ ต้องบอกด้วยว่า "สำเร็จ" หรือ "พัง" ผ่านตัวเลข 3 หลัก
-
-| กลุ่ม (Range) | ความหมาย | ตัวอย่างที่เจอบ่อย |
+| กลุ่ม | ความหมาย | ตัวอย่าง |
 |:---:|:---|:---|
-| **2xx** | ✅ สำเร็จ (Success) | **200 OK** (ปกติ), **201 Created** (สร้างเสร็จแล้ว) |
-| **3xx** | ↩️ ย้ายที่ (Redirect) | **301 Moved Permanently** (ย้ายถาวร), **304 Not Modified** (ใช้ Cache เดิมเถอะ) |
-| **4xx** | ❌ ลูกค้าผิด (Client Error) | **400 Bad Request** (ส่งอะไรมา?), **404 Not Found** (หาไม่เจอ), **403 Forbidden** (ห้ามเข้า) |
-| **5xx** | 💥 ร้านผิด (Server Error) | **500 Internal Server Error** (เซิร์ฟเวอร์บึ้ม), **503 Service Unavailable** (รับแขกไม่ไหวแล้ว) |
+| **2xx** | ✅ สำเร็จ | `200 OK`, `201 Created`, `204 No Content` |
+| **3xx** | ↩️ Redirect | `301 Moved`, `304 Not Modified` |
+| **4xx** | ❌ Client Error | `400 Bad Request`, `401 Unauthorized`, `403 Forbidden`, `404 Not Found` |
+| **5xx** | 💥 Server Error | `500 Internal Server Error`, `503 Unavailable` |
 
-> **💡 Trick:**
-> *   **2xx** = ยิ้มแฉ่ง (Good) 😁
-> *   **4xx** = เอ็งผิด (You messed up) 🫵
-> *   **5xx** = ข้าผิด (I messed up) 🤕
+> 💡 **Trick:**
+> - **2xx** = ยิ้มแฉ่ง 😁
+> - **4xx** = เอ็งผิด 🫵
+> - **5xx** = ข้าผิด 🤕
 
+---
 
 ## 6. Content-Type (MIME Types) 📦
 
-Server ต้องบอก Browser ด้วยว่าข้อมูลที่ส่งไปคืออะไร เพื่อให้ Browser แสดงผลถูก:
-
-| Content-Type | คืออะไร | Browser ทำยังไง |
+| Content-Type | คืออะไร | ใช้เมื่อ |
 |:---|:---|:---|
-| `text/plain` | ข้อความล้วน | แสดงเป็นตัวหนังสือธรรมดา (ไม่เรนเดอร์ HTML) |
-| `text/html` | HTML | เรนเดอร์เป็นหน้าเว็บสวยงาม |
-| `application/json` | JSON Data | แสดงเป็น Text (หรือสวยงามถ้ามี Extension) **ใช้บ่อยใน API** |
-| `image/jpeg` | รูปภาพ | แสดงรูป |
+| `text/plain` | ข้อความล้วน | Debug message |
+| `text/html` | HTML | หน้าเว็บ |
+| `application/json` | JSON | **API response** (ใช้มากที่สุด!) |
+| `multipart/form-data` | Form + File upload | อัปโหลดรูปภาพ |
 
-**ตัวอย่างการส่ง JSON (สำหรับทำ API):**
-
-```javascript
-// api-server.js
-const http = require('http');
+::: code-group
+```js [api-server.js]
+const http = require("http");
 
 const server = http.createServer((req, res) => {
-    const data = {
-        name: "Dolar",
-        role: "Developer",
-        skills: ["Node.js", "React", "SQL"]
-    };
+  // WSA2026: ส่งข้อมูล candidate กลับเป็น JSON
+  const candidate = {
+    id:       101,
+    username: "somchai_th",
+    name:     "สมชาย ใจดี",
+    role:     "candidate",
+    country:  "Thailand"
+  };
 
-    // บอก Browser ว่า "นี่คือ JSON นะ"
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    
-    // ต้องแปลง Object เป็น String ก่อนส่ง (เพราะ HTTP ส่งได้แค่ Text/Binary)
-    res.end(JSON.stringify(data));
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify(candidate));
 });
 
 server.listen(3000);
 ```
+:::
 
-
+---
 
 ## 7. Anatomy of an HTTP Transaction: ผ่าตัดคำขอ 🏥
 
-จริงๆ แล้ว `req` และ `res` ไม่ใช่แค่ Object ธรรมดา แต่มันคือ **Stream** ที่สืบทอดมาจาก `net.Socket` (TCP Layer)
+`req` และ `res` ไม่ใช่แค่ Object ธรรมดา แต่มันคือ **Stream** ที่สืบทอดมาจาก `net.Socket`
 
 ### 7.1 `req` คือ Readable Stream 📤
-เมื่อข้อมูลจาก Client ไหลเข้ามา (เช่น Upload ไฟล์) มันไม่ได้มาตูมเดียว แต่มาเป็น **Chunk** (ชิ้นเล็กๆ)
-*   เราต้องใช้ event `data` เพื่อรับข้อมูล
-*   ใช้ event `end` เพื่อรู้ว่าจบแล้ว
+เมื่อข้อมูลจาก Client ไหลเข้ามา (เช่น JSON body) มาเป็น **Chunk** ไม่ใช่ทีเดียว:
+
+::: code-group
+```js [read-body.js]
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+  if (req.method !== "POST") {
+    res.writeHead(405);
+    res.end("Method Not Allowed");
+    return;
+  }
+
+  // อ่าน body จาก Stream
+  let rawData = "";
+
+  req.on("data", (chunk) => {
+    rawData += chunk.toString();
+  });
+
+  req.on("end", () => {
+    try {
+      const body = JSON.parse(rawData);
+      console.log("Body received:", body);
+
+      // WSA2026: บันทึก submission ใหม่
+      const response = {
+        id:           6,
+        candidate_id: body.candidate_id,
+        task_id:      body.task_id,
+        status:       "pending",
+        submitted_at: new Date().toISOString()
+      };
+
+      res.writeHead(201, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(response));
+    } catch (e) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Invalid JSON body" }));
+    }
+  });
+});
+
+server.listen(3000);
+```
+:::
 
 ### 7.2 `res` คือ Writable Stream 📥
-เราสามารถใช้ `res.write()` ส่งข้อมูลเป็นก้อนๆ ได้ (Chunk Transfer Encoding) ทำให้ Browser เริ่มแสดงผลได้ทันทีโดยไม่ต้องรอโหลดเสร็จทั้งหน้า!
+เราสามารถ `res.write()` หลายรอบได้ก่อน `res.end()` เพื่อ streaming response
 
+---
 
 ## 8. Security: ป้องกันการโจมตี (DoS) 🛡️
 
-Web Server ที่ดีต้องไม่เปราะบาง! มาดูภัยคุกคามยอดฮิต:
-
 ### 8.1 Slowloris Attack (เต่าคลาน) 🐢
-**วิธีโจมตี:** Hacker เชื่อมต่อมาหา Server แต่ส่งข้อมูลช้ามาก... (1 byte ทุก 10 วินาที)
-**ผลลัพธ์:** Server รอ... รอ... จน Connection เต็ม! คนอื่นเข้าไม่ได้ (Denial of Service)
+Hacker เชื่อมต่อมาแต่ส่งข้อมูลช้ามากๆ ทำให้ Connection เต็ม
 
-**วิธีแก้:** ตั้ง Timeout ให้ Server ตัดสายคนที่รอนานเกินไป
 ```javascript
 server.timeout = 5000; // ตัดสายถ้าเงียบเกิน 5 วินาที
 ```
 
-### 8.2 Payload too large (ระเบิดถัง) 💣
-**วิธีโจมตี:** ส่ง JSON ขนาด 10GB มาให้ Server parse
-**ผลลัพธ์:** RAM Server หมด -> Server Crash!
+### 8.2 Payload Too Large (ระเบิดถัง) 💣
+ส่ง JSON ขนาด 10GB ทำให้ RAM เต็ม:
 
-**วิธีแก้:** เช็คขนาด Data ที่เข้ามาเสมอ
-```javascript
-let body = [];
-let size = 0;
+::: code-group
+```js [security.js]
+const http = require("http");
+const MAX_BODY_SIZE = 1 * 1024 * 1024; // 1MB
 
-req.on('data', chunk => {
+const server = http.createServer((req, res) => {
+  let body  = [];
+  let size  = 0;
+
+  req.on("data", (chunk) => {
     body.push(chunk);
     size += chunk.length;
-    
-    if (size > 1e6) { // เกิน 1MB
-        console.warn("Flood attack detected!");
-        req.destroy(); // ✂️ ตัดสายทันที!
-    }
-});
-```
 
+    if (size > MAX_BODY_SIZE) {
+      console.warn("⚠️  Payload too large — dropping connection");
+      req.destroy(); // ตัดสายทันที
+      res.writeHead(413, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Payload too large" }));
+    }
+  });
+
+  req.on("end", () => {
+    const rawData = Buffer.concat(body).toString();
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ received: rawData.length + " bytes" }));
+  });
+});
+
+server.timeout = 5000;
+server.listen(3000);
+```
+:::
+
+---
 
 ## 9. Performance Tuning: จูนให้แรง 🏎️
 
 ### 9.1 Keep-Alive (อย่าเพิ่งวางสาย)
-ปกติ HTTP/1.0 ส่งของเสร็จจะตัดสายทันที (`Connection: close`)
-แต่ HTTP/1.1 ใช้ **Keep-Alive** (เปิดสายค้างไว้) เพื่อส่ง Request ต่อไปได้เลยโดยไม่ต้องเริ่ม Handshake ใหม่ (ประหยัดเวลาไปได้เยอะ!)
-
+HTTP/1.1 ใช้ **Keep-Alive** เปิดสายค้างไว้เพื่อส่ง Request ต่อไปได้เลย
 Node.js เปิด Keep-Alive ให้โดย Default (5 วินาที)
 
 ### 9.2 Max Connections (จำกัดคนเข้า)
-ถ้า Server รับไหวแค่ 1,000 คน ก็ควรจำกัดไว้แค่นั้น เพื่อกัน Server ตาย
-
 ```javascript
-server.maxConnections = 1000; // รับได้แค่นี้ เกินกว่านี้รอคิว/ตัดทิ้ง
+server.maxConnections = 1000; // รับได้แค่ 1,000 connections พร้อมกัน
 ```
 
-
+---
 
 ## 10. Handling Query Parameters (URL Search) 🔍
 
-เวลาเข้าเว็บเช่น `search?q=nodejs&page=2` เราจะดึงค่า `q` และ `page` ยังไง?
-สมัยก่อนใช้ `url.parse` (Deprecated) ตอนนี้เราใช้ **`new URL()`** มาตรฐานเดียวกับ Browser!
+เวลาเข้า `/api/submissions?status=pending&task_id=1` ดึงค่า query string ด้วย `URL` API:
 
-```javascript
+::: code-group
+```js [query-params.js]
+const http = require("http");
+
+// Mock submissions
+const submissions = [
+  { id: 1, candidate_id: 101, task_id: 1, score: 92,   status: "scored"  },
+  { id: 2, candidate_id: 102, task_id: 1, score: 85,   status: "scored"  },
+  { id: 3, candidate_id: 103, task_id: 2, score: null, status: "pending" },
+  { id: 4, candidate_id: 104, task_id: 2, score: 78,   status: "scored"  }
+];
+
 const server = http.createServer((req, res) => {
-    // 1. สร้าง URL Object (ต้องใส่ base url หลอกๆ ไปก่อน เพราะ req.url มีแค่ path)
-    const myUrl = new URL(req.url, `http://${req.headers.host}`);
-    
-    // 2. ดึงค่า (searchParams)
-    const keyword = myUrl.searchParams.get('q');
-    const page = myUrl.searchParams.get('page') || 1;
+  const url    = new URL(req.url, `http://${req.headers.host}`);
+  const status = url.searchParams.get("status");  // "pending" | "scored"
+  const taskId = url.searchParams.get("task_id"); // "1" | "2" | null
 
-    console.log(`🔎 Searching for: ${keyword} on page ${page}`);
-    
-    res.end(`Results for ${keyword}`);
+  let result = submissions;
+
+  if (status)  result = result.filter(s => s.status  === status);
+  if (taskId)  result = result.filter(s => s.task_id === parseInt(taskId));
+
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ data: result, total: result.length }));
+});
+
+server.listen(3000, () => {
+  console.log("Server on :3000");
+  console.log("Try: GET /api/submissions?status=scored&task_id=1");
 });
 ```
+:::
 
+---
 
 ## 11. Environment Variables (ความลับสวรรค์) 🤫
 
-เวลา Deploy จริง เราห้าม Hardcode Port หรือ API Key! เราต้องใช้ **Environment Variables**
-ค่าพวกนี้จะถูกฉีดเข้ามาตอนรัน Process (ผ่าน `process.env`)
+ห้าม Hardcode Port, API Key, DB URL ในโค้ด! ใช้ `.env` แทน
 
-### 11.1 การใช้ `process.env`
+::: code-group
+```js [server-env.js]
+require("dotenv").config(); // โหลดจาก .env
 
-```javascript
-// server.js
-const PORT = process.env.PORT || 3000; // ถ้ามี ENV ให้ใช้ ถ้าไม่มีใช้ 3000
+const PORT      = process.env.PORT      || 3000;
+const NODE_ENV  = process.env.NODE_ENV  || "development";
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("❌ JWT_SECRET is required in environment variables");
+  process.exit(1);
+}
+
+const http = require("http");
+const server = http.createServer((req, res) => {
+  res.end(`WSA2026 API running in ${NODE_ENV} mode`);
+});
 
 server.listen(PORT, () => {
-    console.log(`Server on port ${PORT}`);
+  console.log(`🚀 WSA2026 API on port ${PORT} [${NODE_ENV}]`);
 });
 ```
 
-### 11.2 ใช้ `dotenv` (สำหรับ Local)
-สร้างไฟล์ `.env`:
+```ini [.env]
+PORT=3000
+NODE_ENV=development
+JWT_SECRET=wsa2026-super-secret-key-change-in-production
+DB_HOST=localhost
+DB_NAME=wsa2026
 ```
-PORT=5555
-API_KEY=secret123
-```
+:::
 
-ติดตั้งและใช้:
-```bash
-npm install dotenv
-```
-```javascript
-require('dotenv').config(); // โหลดค่าจาก .env เข้า process.env
-console.log(process.env.PORT); // 5555
-```
-
+---
 
 ## 12. CORS: ทำไม Frontend ยิง API ไม่ได้? 🚧
 
-เคยไหม? เขียน React ยิงไป Node.js แล้วเจอ Error แดงเถือก:
-`Access to fetch at ... has been blocked by CORS policy`
+**CORS (Cross-Origin Resource Sharing)** คือระบบความปลอดภัยของ Browser ที่ห้าม `localhost:5173` (Vite) ยิง API ไปที่ `localhost:3000` โดยตรง
 
-### 12.1 คืออะไร?
-**CORS (Cross-Origin Resource Sharing)** คือระบบความปลอดภัยของ Browser ที่ **"ห้าม"** เว็บ A (`localhost:3000`) ยิง Request ไปหาเว็บ B (`api.myserver.com`) ดูข้อมูล เว้นแต่เว็บ B จะอนุญาต
+::: code-group
+```js [cors-server.js]
+const http = require("http");
 
-### 12.2 วิธีแก้ (Server Side)
-ต้องส่ง Header `Access-Control-Allow-Origin` กลับไปบอก Browser ว่า "ยอมให้เข้ามาได้นะ"
+const ALLOWED_ORIGINS = [
+  "http://localhost:5173",  // Vite dev server
+  "https://wsa2026.com"     // production frontend
+];
 
-```javascript
 const server = http.createServer((req, res) => {
-    // อนุญาตทุกเว็บ (*) หรือระบุเว็บเฉพาะ
-    res.setHeader('Access-Control-Allow-Origin', '*'); 
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    
-    if (req.method === 'OPTIONS') {
-        res.writeHead(204); // ตอบ Pre-flight request
-        res.end();
-        return;
-    }
-    
-    res.end('Hello CORS!');
-});
-```
+  const origin = req.headers.origin;
 
+  // ตั้งค่า CORS headers
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Pre-flight request
+  if (req.method === "OPTIONS") {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+
+  // Main handler
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ message: "CORS OK for WSA2026 API" }));
+});
+
+server.listen(3000);
+```
+:::
+
+---
 
 ## 13. HTTPS: ความปลอดภัยบนโลกไซเบอร์ 🔒
 
-HTTP ธรรมดา ข้อมูลวิ่งเป็น **Plain Text** (ใครดักจับก็อ่านรู้เรื่อง)
-HTTPS ใช้ **TLS/SSL** เข้ารหัสข้อมูล (อ่านไม่รู้เรื่องถ้าไม่มีกุญแจ)
-
-การทำ HTTPS ใน Node.js ต้องมี Cert (ใบรับรอง) และ Key:
+HTTP ธรรมดา ข้อมูลวิ่งเป็น Plain Text — ใครดักได้ก็อ่านรู้เรื่อง
+HTTPS ใช้ **TLS/SSL** เข้ารหัสข้อมูล
 
 ```javascript
-const https = require('https');
-const fs = require('fs');
+const https = require("https");
+const fs    = require("fs");
 
 const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
+  key:  fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem")
 };
 
 https.createServer(options, (req, res) => {
   res.writeHead(200);
-  res.end('This is Secure Server! 🔒');
+  res.end("WSA2026 Secure API 🔒");
 }).listen(443);
 ```
 
-> **Note:** ในบทนี้เราใช้ HTTP ธรรมดาไปก่อน เพราะ HTTPS ต้องมีการสร้าง Cert ยุ่งยาก (ปกติเราให้ Cloud Provider จัดการให้)
+> **Note:** ในระบบจริง เราให้ Cloud Provider (Nginx, Cloudflare) จัดการ SSL ให้แทน
 
+---
 
+## 🎯 โจทย์ฝึกปฏิบัติเสริมความเข้าใจ (Mini Exercise)
 
+- **โจทย์:** สร้าง Server ที่รับ `GET /api/submissions/:id` แล้วส่งกลับ submission ที่มี id ตรงกัน (ใช้ URL pattern matching แบบ Manual)
+
+::: details 💡 คำใบ้ (Hint)
+```javascript
+// ดึง id จาก URL เช่น /api/submissions/3 -> id = "3"
+const parts = req.url.split("/"); // ["", "api", "submissions", "3"]
+const id    = parseInt(parts[3]);
+
+const submission = submissions.find(s => s.id === id);
+if (!submission) {
+  res.writeHead(404, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ error: "Submission not found" }));
+  return;
+}
+```
+:::
+
+---
+
+## 🔥 Challenge (โจทย์ท้าทาย!)
+
+### Challenge: WSA2026 Raw HTTP Server (Full API)
+
+สร้าง HTTP Server **โดยไม่ใช้ Express** ที่รองรับ **ทุก endpoint** ของระบบ WSA2026:
+
+| Method | Path | รายละเอียด |
+|:---|:---|:---|
+| `GET` | `/api/candidates` | รายชื่อผู้สมัครทั้งหมด |
+| `GET` | `/api/tasks` | รายการ tasks |
+| `GET` | `/api/submissions` | submissions ทั้งหมด (รองรับ `?status=pending`) |
+| `POST` | `/api/submissions` | สร้าง submission ใหม่ |
+| `PUT` | `/api/submissions/:id/score` | ตั้งคะแนน |
+| `GET` | `/api/leaderboard` | คะแนนรวม top 5 |
+| `GET` | `/*` | 404 Not Found |
+
+**Requirements:**
+1. ใช้ `switch` หรือ Router table (Object ที่ map `"METHOD /path"` → handler function)
+2. อ่าน/เขียน JSON body จาก `req` stream อย่างถูกต้อง
+3. ส่ง proper status code ทุก endpoint
+4. เพิ่ม request log: `[TIME] METHOD /path STATUS ms`
+
+::: details 💡 คำใบ้ (Hint)
+```javascript
+// Router table pattern
+const routes = {
+  "GET /api/candidates":   handleGetCandidates,
+  "GET /api/tasks":        handleGetTasks,
+  "GET /api/submissions":  handleGetSubmissions,
+  "POST /api/submissions": handlePostSubmission,
+  "GET /api/leaderboard":  handleGetLeaderboard
+};
+
+// ใน createServer callback:
+const url      = new URL(req.url, `http://${req.headers.host}`);
+const pathname = url.pathname;
+
+// จัดการ dynamic route เช่น /api/submissions/3/score
+let handler = routes[`${req.method} ${pathname}`];
+if (!handler) {
+  // ลอง match dynamic pattern
+  const match = pathname.match(/^\/api\/submissions\/(\d+)\/score$/);
+  if (match && req.method === "PUT") {
+    handler = (req, res) => handlePutScore(req, res, match[1]);
+  }
+}
+
+if (!handler) {
+  res.writeHead(404, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ error: "Route not found" }));
+  return;
+}
+
+handler(req, res, url);
+```
+:::
+
+---
+
+## 🗣️ ทบทวน (Review)
+
+::: details ❓ คำถามทบทวน
+
+**คำถาม 1:** `req.url` และ `req.method` เก็บข้อมูลอะไร? ยกตัวอย่าง
+**แนวคำตอบ:** `req.url` เก็บ path และ query string เช่น `/api/submissions?status=pending` ส่วน `req.method` เก็บ HTTP method เช่น `"GET"`, `"POST"`, `"PUT"`, `"DELETE"` เราใช้ทั้งสองค่าร่วมกันเพื่อ route request ไปยัง handler ที่ถูกต้อง
+
+**คำถาม 2:** ทำไมต้องเรียก `res.end()` เสมอ? จะเกิดอะไรขึ้นถ้าไม่เรียก?
+**แนวคำตอบ:** `res.end()` ส่งสัญญาณให้ Browser รู้ว่า response สิ้นสุดแล้ว ถ้าไม่เรียก Browser จะหมุน loading ไปเรื่อยๆ รอข้อมูลที่ไม่มาวันมา และในที่สุด request จะ timeout
+
+**คำถาม 3:** CORS error เกิดจากอะไร และแก้ที่ฝั่งไหน?
+**แนวคำตอบ:** CORS error เกิดจาก Browser บล็อก JavaScript ของ Frontend (origin A) ไม่ให้เรียก API ที่ origin B ต่างกัน แก้ที่ฝั่ง Server โดยส่ง Header `Access-Control-Allow-Origin` กลับไป ไม่ใช่แก้ที่ Frontend
+
+**คำถาม 4:** ทำไมต้องอ่าน request body ด้วย event `data` และ `end` ไม่ใช่แค่ `req.body`?
+**แนวคำตอบ:** เพราะ `req` เป็น Readable Stream ข้อมูลมาเป็น chunk ไม่ใช่ทีเดียว `req.body` ไม่มีใน Native HTTP Module — มีแค่ใน Express (ซึ่งก็ทำงานโดยเก็บ chunk สะสมไว้ให้นั่นเอง) เราต้องฟัง event `data` สะสม chunks แล้วรอ event `end` จึงค่อย parse JSON
+
+:::
+
+---
 
 > **📖 คำศัพท์เทคนิค (Glossary):**
-> *   **Client:** ผู้ขอใช้บริการ (Browser, App)
-> *   **Server:** ผู้ให้บริการ (Computer ที่รัน Node.js)
-> *   **Request:** คำขอที่ส่งจาก Client ไปหา Server
-> *   **Response:** สิ่งที่ Server ตอบกลับหา Client
-> *   **HTTP:** HyperText Transfer Protocol — กฎการสื่อสารบนเว็บ
-> *   **Port:** ช่องทางเข้า-ออกของข้อมูล (เช่น 3000, 80, 443)
-> *   **Status Code:** ตัวเลข 3 หลักบอกสถานะการทำงาน (200, 404, 500)
-> *   **MIME Type:** ชนิดของไฟล์/เนื้อหา (เช่น `text/html`, `application/json`)
-> *   **Headers:** ข้อมูลแนบ (Metadata) ของ Request/Response
-> *   **Payload/Body:** เนื้อหาหลักของข้อมูลที่ส่งไป-มา
-> *   **DoS (Denial of Service):** การโจมตีเพื่อทำให้ Server ให้บริการไม่ได้
-> *   **Keep-Alive:** การเปิด Connection ค้างไว้เพื่อส่งข้อมูลต่อเนื่อง
-
-## 15. Challenges 🏆
-
-### 🎯 Challenge 1: The Detective (หัวข้อ 4)
-สร้างไฟล์ `spy.js` เป็น Server ที่:
-1. เมื่อใครเข้ามา ให้ log ข้อมูล "Time | Method | URL"
-2. ส่ง Response กลับไปเป็น HTML `<h1>I saw you!</h1>`
-
-::: details ✨ ดูเฉลย
-```javascript
-const http = require('http');
-
-const server = http.createServer((req, res) => {
-    const now = new Date().toLocaleTimeString();
-    console.log(`[${now}] Method: ${req.method} | Target: ${req.url}`);
-
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end('<h1>I saw you!</h1>');
-});
-
-server.listen(3000);
-```
-:::
-
-### 🎯 Challenge 2: JSON Response (หัวข้อ 6)
-สร้างไฟล์ `profile.js` ส่งข้อมูล JSON (ชื่อ, อายุ) กลับไป:
-
-::: details ✨ ดูเฉลย
-```javascript
-const http = require('http');
-
-const server = http.createServer((req, res) => {
-    const profile = { name: "Dev", level: 99 };
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(profile));
-});
-server.listen(3000);
-```
-:::
-
-### 🎯 Challenge 3: Status 404 (หัวข้อ 5)
-สร้างไฟล์ `checker.js`:
-*   URL `/` → 200 OK
-*   URL อื่น → 404 Not Found
-
-::: details ✨ ดูเฉลย
-```javascript
-const http = require('http');
-// ... (code เหมือนเดิม)
-```
-:::
-
-### 🎯 Challenge 4: Query Params (หัวข้อ 10)
-สร้าง Server ที่รับ Query String `?name=...` แล้วตอบกลับว่า "Hello, [name]!":
-
-::: details ✨ ดูเฉลย
-```javascript
-const http = require('http');
-
-const server = http.createServer((req, res) => {
-    const myUrl = new URL(req.url, `http://${req.headers.host}`);
-    const name = myUrl.searchParams.get('name') || "Guest";
-    
-    res.end(`Hello, ${name}!`);
-});
-server.listen(3000);
-```
-:::
-
-### 🎯 Challenge 5: Environment Variables (หัวข้อ 11)
-จงแก้โค้ด Server ให้รับ Port จาก `process.env.MY_PORT` ถ้าไม่มีให้ใช้ `8080`:
-
-::: details ✨ ดูเฉลย
-```javascript
-const http = require('http');
-// ...
-const PORT = process.env.MY_PORT || 8080;
-server.listen(PORT, () => console.log(`On port ${PORT}`));
-```
-:::
-
-### 🎯 Challenge 6: CORS Fix (หัวข้อ 12)
-Header ตัวไหนที่ต้องส่งกลับไปเพื่อให้ Frontend ต่างโดเมนยิง API เราได้?
-A. `Access-Front-End: *`
-B. `Access-Control-Allow-Origin: *`
-C. `Allow-All: true`
-
-::: details ✨ ดูเฉลย
-**ตอบ: B. Access-Control-Allow-Origin**
-:::
-
-### 🎯 Challenge 7: Security Bouncer (หัวข้อ 8)
-(โจทย์เดิม: Blacklist IP แล้ว destroy socket)
-
-::: details ✨ ดูเฉลย
-(ดูเฉลยเดิม)
-:::
-
-### 🎯 Challenge 8: Performance (หัวข้อ 9)
-Keep-Alive ช่วยอะไร? (คำถามเดิม)
-
-::: details ✨ ดูเฉลย
-(ดูเฉลยเดิม)
-:::
+> - **Client:** ผู้ขอใช้บริการ (Browser, App, Postman)
+> - **Server:** ผู้ให้บริการ (Computer ที่รัน Node.js)
+> - **Request:** คำขอที่ส่งจาก Client ไปหา Server
+> - **Response:** สิ่งที่ Server ตอบกลับหา Client
+> - **HTTP Method:** ประเภทของ action (GET/POST/PUT/DELETE)
+> - **Status Code:** ตัวเลข 3 หลักบอกสถานะ (200, 404, 500)
+> - **MIME Type / Content-Type:** ชนิดของข้อมูลที่ส่งไป (เช่น `application/json`)
+> - **CORS:** Cross-Origin Resource Sharing — ระบบควบคุมการเข้าถึง API ข้าม origin
+> - **Keep-Alive:** เปิด TCP connection ค้างไว้เพื่อส่ง request ต่อเนื่อง
+> - **DoS (Denial of Service):** การโจมตีเพื่อทำให้ Server ให้บริการไม่ได้

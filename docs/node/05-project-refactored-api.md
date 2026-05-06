@@ -1,275 +1,553 @@
-# Project 5: Refactored REST API (Masterclass) 🛠️
+# Project 5: Refactored API — WSA2026 Candidate Management 🛠️
 
-> **"Code is like humor. When you have to explain it, it’s bad."**
-> — *Cory House*
+> 💡 **เป้าหมาย:** นำความรู้จาก Module 5 ทั้งหมด (Layered Architecture + CORS) มาสร้าง API สำหรับจัดการข้อมูล Candidate ในระบบ WSA2026 Test Submission Management System โดยใช้โครงสร้าง Routes → Controllers → Services อย่างถูกต้อง
 
-ในโปรเจกต์นี้ เราจะอัปเกรดจาก "Basic API" ในบทที่แล้ว มาเป็น **"User Management System"** ที่สมบูรณ์แบบด้วย **Layered Architecture**
-เราจะใช้ทุกวิชาที่เรียนมาใน Module 5: **Custom Middleware**, **Error Handling**, **Router**, และ **Validation**
+---
 
+## ก่อนและหลัง Refactor (Before vs After)
 
-## 🎯 The Goal (เป้าหมาย)
+ก่อนอื่นเลย มาดูความแตกต่างระหว่างโค้ดแบบ "Monolithic" กับ "3-Layer" กัน:
 
-สร้าง API จัดการผู้ใช้ (`/api/users`) ที่ทำ CRUD ได้ครบ:
-1.  **Create:** สมัครสมาชิกใหม่ (POST) พร้อม Validataion
-2.  **Read:** ดูรายชื่อและข้อมูลส่วนตัว (GET) พร้อม Pagination/Filter
-3.  **Update:** แก้ไขข้อมูล (PUT)
-4.  **Delete:** ลบผู้ใช้ (DELETE)
+```
+╔══════════════════════════════════════════════════════════════════╗
+║         BEFORE: MONOLITHIC (1 ไฟล์ทำทุกอย่าง)                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  server.js (500+ บรรทัด)                                        ║
+║  ├── SQL queries รวมกับ req/res                                  ║
+║  ├── Business Logic กระจายอยู่ทั่ว                              ║
+║  ├── ทดสอบไม่ได้                                                ║
+║  └── แก้ตรงนึง พังทั้งระบบ                                     ║
+║                                                                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║         AFTER: 3-LAYER ARCHITECTURE                             ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  routes/candidateRoutes.js    ← กำหนด URL path                  ║
+║       ↓                                                          ║
+║  controllers/candidateController.js  ← รับ req, ส่ง res        ║
+║       ↓                                                          ║
+║  services/candidateService.js ← Business Logic เท่านั้น        ║
+║       ↓                                                          ║
+║  config/db.js                 ← DB Connection                    ║
+║       ↓                                                          ║
+║  DATABASE (users table — candidates)                             ║
+║                                                                  ║
+║  ผล: แต่ละไฟล์ 30-50 บรรทัด, ทดสอบได้, แก้ได้ปลอดภัย         ║
+╚══════════════════════════════════════════════════════════════════╝
+```
 
-**Architecture: "Separation of Concerns"**
-เราจะแยกโค้ดเป็น 3 ชั้น (Layers) ตามมาตรฐานบริษัท:
-1.  **Controller:** รับ Request / ส่ง Response
-2.  **Service:** Business Logic (คำนวณ, ตรวจสอบ Business Rules)
-3.  **Model/Data:** ติดต่อ Database (ในที่นี้ใช้ Mock Data ไปก่อน)
+---
 
+## 🎯 เป้าหมายของโปรเจกต์
+
+สร้าง **Candidate API** สำหรับระบบ WSA2026 ที่:
+- `GET /api/candidates` — ดูรายชื่อ candidates ทั้งหมด (Judge/Manager)
+- `GET /api/candidates/:id` — ดูข้อมูล candidate คนเดียว
+- `POST /api/candidates` — สร้าง candidate ใหม่ (Manager)
+- `PUT /api/candidates/:id` — แก้ไขข้อมูล candidate (Manager)
+- `DELETE /api/candidates/:id` — ลบ candidate (Manager)
+
+**Database Table ที่ใช้:** `users` (role = `'candidate'`)
+
+---
 
 ## 🛠️ Step 1: Setup & Project Structure
 
 ```bash
-mkdir express-user-api
-cd express-user-api
+mkdir wsa2026-candidate-api
+cd wsa2026-candidate-api
 npm init -y
-npm install express cors morgan uuid joi dotenv
+npm install express cors morgan dotenv mysql2
 ```
 
-โครงสร้างโฟลเดอร์:
+โครงสร้างโฟลเดอร์ที่สมบูรณ์:
+
 ```
-express-user-api/
-├── controllers/    ← Traffic Police (รับ Req -> เรียก Service -> ส่ง Res)
-│   └── userController.js
-├── services/       ← The Brain (Logic หลัก)
-│   └── userService.js
-├── routes/         ← Maps URL to Controller
-│   └── userRoutes.js
-├── middlewares/    ← Error Handler, Validation
-│   └── errorHandler.js
-│   └── validator.js
-├── app.js          ← App Setup
-├── server.js       ← Server Entry
+wsa2026-candidate-api/
+├── config/
+│   └── db.js               ← Database Connection
+├── controllers/
+│   └── candidateController.js   ← HTTP Handlers
+├── services/
+│   └── candidateService.js      ← Business Logic
+├── routes/
+│   └── candidateRoutes.js       ← URL Definitions
+├── middleware/
+│   └── errorHandler.js          ← Global Error Handler
+├── app.js                  ← Express Setup
+├── server.js               ← Entry Point
+├── .env                    ← Environment Variables
 └── package.json
 ```
 
-[... Rest of the content from original 05-project-rest-api.md ...]
-(Assumed copied fully, I will not repeat the 300 lines here to save tokens, but in real execution I would write the full content.)
-(Wait, I should write the full content to ensure the user gets the completed file. I will paste the content I read previously.)
+---
 
-[... Pasting Content ...]
+## ⚙️ Step 2: Config & Setup Files
 
+::: code-group
 
-## 📂 Step 2: The Service Layer (The Brain) 🧠
+```js [config/db.js]
+// WSA2026: Database Connection Pool
+const mysql = require('mysql2/promise');
+require('dotenv').config();
 
-สร้าง `services/userService.js`:
-หน้านี้คือ "คนทำงานจริง" เราจะเขียน Logic ทุกอย่างที่นี่ (และจำลองว่ามันเป็น Async เหมือนดึง DB)
+const pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASS || '',
+    database: process.env.DB_NAME || 'wsa2026',
+    waitForConnections: true,
+    connectionLimit: 10
+});
 
-```javascript
-const { v4: uuidv4 } = require('uuid');
-
-// Mock Database
-let users = [
-    { id: '1', name: 'John Doe', email: 'john@example.com', role: 'admin' },
-    { id: '2', name: 'Jane Smith', email: 'jane@example.com', role: 'user' }
-];
-
-exports.getAllUsers = async (page = 1, limit = 10, role) => {
-    // 1. Filtering
-    let result = users;
-    if (role) {
-        result = result.filter(u => u.role === role);
-    }
-
-    // 2. Pagination
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    
-    return {
-        total: result.length,
-        page: Number(page),
-        data: result.slice(startIndex, endIndex)
-    };
-};
-
-exports.getUserById = async (id) => {
-    const user = users.find(u => u.id === id);
-    if (!user) throw new Error('USER_NOT_FOUND'); // โยน Error ให้ Controller จัดการ
-    return user;
-};
-
-exports.createUser = async (userData) => {
-    // Check Email Duplicate
-    const exist = users.find(u => u.email === userData.email);
-    if (exist) throw new Error('EMAIL_ALREADY_EXISTS');
-
-    const newUser = {
-        id: uuidv4(),
-        ...userData,
-        role: userData.role || 'user'
-    };
-    users.push(newUser);
-    return newUser;
-};
-
-exports.updateUser = async (id, updateData) => {
-    const index = users.findIndex(u => u.id === id);
-    if (index === -1) throw new Error('USER_NOT_FOUND');
-
-    // Merge Data
-    users[index] = { ...users[index], ...updateData };
-    return users[index];
-};
-
-exports.deleteUser = async (id) => {
-    const index = users.findIndex(u => u.id === id);
-    if (index === -1) throw new Error('USER_NOT_FOUND');
-    
-    users.splice(index, 1);
-    return true;
-};
+module.exports = pool;
 ```
 
+```.env [.env]
+PORT=3000
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=yourpassword
+DB_NAME=wsa2026
 
-## 👮 Step 3: The Controller Layer (Traffic Police)
-
-สร้าง `controllers/userController.js`:
-หน้าที่คือรับ Request, แกะข้อมูล, เรียก Service, และส่ง Response (ห้ามมี Logic ซับซ้อน!)
-
-```javascript
-const userService = require('../services/userService');
-
-// Helper function to handle async errors (แทน try-catch ทุกตัว)
-const asyncHandler = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
-
-exports.getUsers = asyncHandler(async (req, res) => {
-    const { page, limit, role } = req.query;
-    const result = await userService.getAllUsers(page, limit, role);
-    res.json(result);
-});
-
-exports.getUserById = asyncHandler(async (req, res) => {
-    const user = await userService.getUserById(req.params.id);
-    res.json(user);
-});
-
-exports.createUser = asyncHandler(async (req, res) => {
-    const newUser = await userService.createUser(req.body);
-    res.status(201).json(newUser);
-});
-
-exports.updateUser = asyncHandler(async (req, res) => {
-    const updatedUser = await userService.updateUser(req.params.id, req.body);
-    res.json(updatedUser);
-});
-
-exports.deleteUser = asyncHandler(async (req, res) => {
-    await userService.deleteUser(req.params.id);
-    res.status(204).send();
-});
+# WSA2026 Competition Frontend URL
+CLIENT_URL=http://localhost:5173
 ```
 
-
-## 🛡️ Step 4: Middleware (Validation & Error Handling)
-
-### 4.1 Input Validation (`middlewares/validator.js`)
-เราจะใช้ **Joi** เพื่อตรวจสอบข้อมูลขาเข้าอย่างมืออาชีพ
-
-```javascript
-const Joi = require('joi');
-
-const userSchema = Joi.object({
-    name: Joi.string().min(3).required(),
-    email: Joi.string().email().required(),
-    role: Joi.string().valid('admin', 'user')
-});
-
-exports.validateUser = (req, res, next) => {
-    const { error } = userSchema.validate(req.body);
-    if (error) {
-        // 400 Bad Request
-        return res.status(400).json({ error: error.details[0].message });
-    }
-    next();
-};
-```
-
-### 4.2 Centralized Error Handler (`middlewares/errorHandler.js`)
-จัดการ Error ที่ถูกโยนมาจาก Service (เช่น `USER_NOT_FOUND`)
-
-```javascript
-module.exports = (err, req, res, next) => {
-    console.error(err.stack);
-
-    if (err.message === 'USER_NOT_FOUND') {
-        return res.status(404).json({ error: 'User not found' });
-    }
-    if (err.message === 'EMAIL_ALREADY_EXISTS') {
-        return res.status(409).json({ error: 'Email already exists' });
-    }
-
-    res.status(500).json({ error: 'Something went wrong!' });
-};
-```
-
-
-## 🛣️ Step 5: The Router
-
-สร้าง `routes/userRoutes.js`: เชื่อม URL → Middleware → Controller
-
-```javascript
+```js [app.js]
+require('dotenv').config();
 const express = require('express');
-const router = express.Router();
-const userController = require('../controllers/userController');
-const { validateUser } = require('../middlewares/validator');
-
-router.route('/')
-    .get(userController.getUsers)        // GET /api/users?page=1&role=admin
-    .post(validateUser, userController.createUser); // มี Validation กั้นก่อน
-
-router.route('/:id')
-    .get(userController.getUserById)
-    .put(userController.updateUser)
-    .delete(userController.deleteUser);
-
-module.exports = router;
-```
-
-
-## 🚀 Step 6: Main Entry (`app.js`)
-
-```javascript
-const express = require('express');
-const morgan = require('morgan');
 const cors = require('cors');
-const userRoutes = require('./routes/userRoutes');
-const errorHandler = require('./middlewares/errorHandler');
+const morgan = require('morgan');
+
+const candidateRoutes = require('./routes/candidateRoutes');
+const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
-// 1. Global Middleware
-app.use(express.json());
-app.use(cors());
+// ─── Middleware Stack ───────────────────────────────────────────
+// 1. CORS — ต้องมาก่อนสุด
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    // Authorization header สำหรับ JWT ใน WSA2026
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
+
+// 2. Request Logger
 app.use(morgan('dev'));
 
-// 2. Mounting Routes
-app.use('/api/users', userRoutes);
+// 3. JSON Body Parser
+app.use(express.json());
 
-// 3. 404 Handler
-app.all('*', (req, res, next) => {
+// ─── Routes ────────────────────────────────────────────────────
+app.use('/api/candidates', candidateRoutes);
+
+// Health Check
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', system: 'WSA2026 Candidate API' });
+});
+
+// 4. 404 Handler
+app.use((req, res) => {
     res.status(404).json({ error: `Not Found: ${req.originalUrl}` });
 });
 
-// 4. Global Error Handler (ต้องอยู่ล่างสุด!)
+// 5. Global Error Handler (ต้องอยู่ล่างสุด!)
 app.use(errorHandler);
 
 module.exports = app;
 ```
 
-สร้าง `server.js` แยกมาเพื่อรัน (Good Practice):
-```javascript
+```js [server.js]
 const app = require('./app');
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(`🚀 API running on port ${PORT}`);
+    console.log(`WSA2026 Candidate API running on port ${PORT}`);
 });
 ```
 
+:::
 
-👉 **[ไปต่อ: Module 6 - SQL & Databases](/node/06-01-sql-fundamentals)**
+---
+
+## 🛣️ Step 3: Route Layer
+
+::: code-group
+
+```js [routes/candidateRoutes.js]
+// =========================================
+// LAYER 1: ROUTE LAYER
+// หน้าที่: กำหนด URL path เท่านั้น
+// =========================================
+const express = require('express');
+const router = express.Router();
+const candidateController = require('../controllers/candidateController');
+
+// GET /api/candidates        — ดูรายชื่อ candidates ทั้งหมด
+// POST /api/candidates       — เพิ่ม candidate ใหม่
+router
+    .route('/')
+    .get(candidateController.getAllCandidates)
+    .post(candidateController.createCandidate);
+
+// GET /api/candidates/:id    — ดูข้อมูล candidate รายคน
+// PUT /api/candidates/:id    — แก้ไขข้อมูล
+// DELETE /api/candidates/:id — ลบ candidate
+router
+    .route('/:id')
+    .get(candidateController.getCandidateById)
+    .put(candidateController.updateCandidate)
+    .delete(candidateController.deleteCandidate);
+
+module.exports = router;
+```
+
+:::
+
+---
+
+## 👮 Step 4: Controller Layer
+
+::: code-group
+
+```js [controllers/candidateController.js]
+// =========================================
+// LAYER 2: CONTROLLER LAYER
+// หน้าที่: รับ req/res, ตรวจ Input, เรียก Service
+// ห้ามมี: SQL, Business Logic ซับซ้อน
+// =========================================
+const candidateService = require('../services/candidateService');
+
+// GET /api/candidates
+exports.getAllCandidates = async (req, res, next) => {
+    try {
+        const { country, region, page = 1, limit = 20 } = req.query;
+
+        const result = await candidateService.getAllCandidates({
+            country,
+            region,
+            page: Number(page),
+            limit: Number(limit)
+        });
+
+        res.json({
+            total: result.total,
+            page: result.page,
+            data: result.data
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// GET /api/candidates/:id
+exports.getCandidateById = async (req, res, next) => {
+    try {
+        const candidate = await candidateService.getCandidateById(req.params.id);
+        res.json({ data: candidate });
+    } catch (err) {
+        if (err.message === 'CANDIDATE_NOT_FOUND') {
+            return res.status(404).json({ error: 'Candidate not found' });
+        }
+        next(err);
+    }
+};
+
+// POST /api/candidates
+exports.createCandidate = async (req, res, next) => {
+    try {
+        const { username, name, country, region } = req.body;
+
+        // ตรวจ Input เบื้องต้น
+        if (!username || !name || !country) {
+            return res.status(400).json({
+                error: 'username, name, and country are required'
+            });
+        }
+
+        const candidate = await candidateService.createCandidate({
+            username,
+            name,
+            country,
+            region
+        });
+
+        res.status(201).json({
+            message: 'Candidate created successfully',
+            data: candidate
+        });
+    } catch (err) {
+        if (err.message === 'USERNAME_EXISTS') {
+            return res.status(409).json({ error: 'Username already exists' });
+        }
+        next(err);
+    }
+};
+
+// PUT /api/candidates/:id
+exports.updateCandidate = async (req, res, next) => {
+    try {
+        const updated = await candidateService.updateCandidate(
+            req.params.id,
+            req.body
+        );
+        res.json({ message: 'Candidate updated', data: updated });
+    } catch (err) {
+        if (err.message === 'CANDIDATE_NOT_FOUND') {
+            return res.status(404).json({ error: 'Candidate not found' });
+        }
+        next(err);
+    }
+};
+
+// DELETE /api/candidates/:id
+exports.deleteCandidate = async (req, res, next) => {
+    try {
+        await candidateService.deleteCandidate(req.params.id);
+        res.status(204).send();
+    } catch (err) {
+        if (err.message === 'CANDIDATE_NOT_FOUND') {
+            return res.status(404).json({ error: 'Candidate not found' });
+        }
+        next(err);
+    }
+};
+```
+
+:::
+
+---
+
+## 🧠 Step 5: Service Layer
+
+::: code-group
+
+```js [services/candidateService.js]
+// =========================================
+// LAYER 3: SERVICE LAYER
+// หน้าที่: Business Logic ล้วนๆ
+// ห้ามมี: req, res, HTTP status codes
+// =========================================
+const db = require('../config/db');
+
+// Business Function: ดู candidates ทั้งหมด (พร้อม filter + pagination)
+exports.getAllCandidates = async ({ country, region, page, limit }) => {
+    let query = `
+        SELECT id, username, name, country, region
+        FROM users
+        WHERE role = 'candidate'
+    `;
+    const params = [];
+
+    // Business Rule: filter ตาม country/region ถ้ามีการส่งมา
+    if (country) {
+        query += ' AND country = ?';
+        params.push(country);
+    }
+    if (region) {
+        query += ' AND region = ?';
+        params.push(region);
+    }
+
+    // Count ก่อน Paginate
+    const [countResult] = await db.query(
+        `SELECT COUNT(*) AS total FROM (${query}) AS sub`,
+        params
+    );
+    const total = countResult[0].total;
+
+    // Pagination
+    const offset = (page - 1) * limit;
+    query += ' ORDER BY name ASC LIMIT ? OFFSET ?';
+    params.push(limit, offset);
+
+    const [rows] = await db.query(query, params);
+    return { total, page, data: rows };
+};
+
+// Business Function: ดู candidate รายคน
+exports.getCandidateById = async (id) => {
+    const [rows] = await db.query(
+        `SELECT id, username, name, country, region
+         FROM users
+         WHERE id = ? AND role = 'candidate'`,
+        [id]
+    );
+    if (rows.length === 0) throw new Error('CANDIDATE_NOT_FOUND');
+    return rows[0];
+};
+
+// Business Function: สร้าง candidate ใหม่
+exports.createCandidate = async ({ username, name, country, region }) => {
+    // Business Rule: ตรวจ username ซ้ำ
+    const [existing] = await db.query(
+        'SELECT id FROM users WHERE username = ?',
+        [username]
+    );
+    if (existing.length > 0) throw new Error('USERNAME_EXISTS');
+
+    // Business Rule: ตั้ง role = 'candidate' เสมอ (ป้องกัน privilege escalation)
+    const [result] = await db.query(
+        `INSERT INTO users (username, name, country, region, role)
+         VALUES (?, ?, ?, ?, 'candidate')`,
+        [username, name, country, region || null]
+    );
+
+    const [rows] = await db.query(
+        'SELECT id, username, name, country, region FROM users WHERE id = ?',
+        [result.insertId]
+    );
+    return rows[0];
+};
+
+// Business Function: แก้ไขข้อมูล candidate
+exports.updateCandidate = async (id, updateData) => {
+    // ตรวจว่ามีอยู่จริงก่อน
+    await exports.getCandidateById(id);
+
+    // Business Rule: ไม่อนุญาตให้เปลี่ยน role หรือ password_hash ผ่าน endpoint นี้
+    const { name, country, region } = updateData;
+    await db.query(
+        'UPDATE users SET name = COALESCE(?, name), country = COALESCE(?, country), region = COALESCE(?, region) WHERE id = ?',
+        [name, country, region, id]
+    );
+
+    return exports.getCandidateById(id);
+};
+
+// Business Function: ลบ candidate
+exports.deleteCandidate = async (id) => {
+    await exports.getCandidateById(id); // throw CANDIDATE_NOT_FOUND ถ้าไม่มี
+    await db.query('DELETE FROM users WHERE id = ? AND role = ?', [id, 'candidate']);
+    return true;
+};
+```
+
+:::
+
+---
+
+## 🛡️ Step 6: Global Error Handler
+
+::: code-group
+
+```js [middleware/errorHandler.js]
+// Global Error Handler — รับ Error ทุกตัวที่ผ่านมาจาก next(err)
+module.exports = (err, req, res, next) => {
+    console.error(`[WSA2026 Error] ${err.message}`);
+
+    // HTTP Errors ที่รู้จัก
+    const errorMap = {
+        'CANDIDATE_NOT_FOUND': { status: 404, message: 'Candidate not found' },
+        'USERNAME_EXISTS':     { status: 409, message: 'Username already exists' },
+        'ALREADY_SUBMITTED':   { status: 409, message: 'Already submitted' },
+        'TASK_NOT_FOUND':      { status: 404, message: 'Task not found' },
+    };
+
+    const known = errorMap[err.message];
+    if (known) {
+        return res.status(known.status).json({ error: known.message });
+    }
+
+    // Unexpected Error
+    res.status(500).json({ error: 'Internal Server Error' });
+};
+```
+
+:::
+
+---
+
+## 📤 ผลลัพธ์ที่คาดหวัง (Expected Output)
+
+รันด้วย `node server.js` แล้วทดสอบ:
+
+```bash
+# ดู candidates ทั้งหมด
+curl http://localhost:3000/api/candidates
+
+# Response:
+{
+  "total": 3,
+  "page": 1,
+  "data": [
+    { "id": 1, "username": "somchai_th", "name": "Somchai Jaidee", "country": "Thailand", "region": "Asia" },
+    { "id": 2, "username": "nguyen_vn", "name": "Nguyen Van A", "country": "Vietnam", "region": "Asia" },
+    { "id": 3, "username": "kim_kr", "name": "Kim Minjun", "country": "Korea", "region": "Asia" }
+  ]
+}
+
+# ดู candidate รายคน
+curl http://localhost:3000/api/candidates/1
+
+# Response:
+{
+  "data": {
+    "id": 1,
+    "username": "somchai_th",
+    "name": "Somchai Jaidee",
+    "country": "Thailand",
+    "region": "Asia"
+  }
+}
+
+# สร้าง candidate ใหม่
+curl -X POST http://localhost:3000/api/candidates \
+     -H "Content-Type: application/json" \
+     -d '{"username":"new_candidate","name":"New Person","country":"Japan","region":"Asia"}'
+
+# Response: 201 Created
+{
+  "message": "Candidate created successfully",
+  "data": { "id": 4, "username": "new_candidate", ... }
+}
+```
+
+---
+
+## 🔥 Challenge (โจทย์ท้าทาย!)
+
+- **โจทย์:** เพิ่ม **Tasks Module** โดยใช้ 3-layer pattern เดียวกัน:
+
+  1. สร้าง `routes/taskRoutes.js` สำหรับ:
+     - `GET /api/tasks` — ดูรายการ tasks ทั้งหมด
+     - `GET /api/tasks/:id` — ดูรายละเอียด task รวมถึง `max_score` และ `time_limit_minutes`
+     - `POST /api/tasks` — manager สร้าง task ใหม่
+
+  2. สร้าง `controllers/taskController.js` — handler ครบทุก route
+
+  3. สร้าง `services/taskService.js` — business logic เช่น:
+     - validate `time_limit_minutes > 0`
+     - validate `max_score > 0`
+     - throw `TASK_NOT_FOUND` ถ้าไม่มี task นั้น
+
+  4. Mount route ใน `app.js`:
+     ```javascript
+     app.use('/api/tasks', require('./routes/taskRoutes'));
+     ```
+
+  **เป้าหมาย:** เมื่อเสร็จแล้ว API ควรรองรับทั้ง `/api/candidates` และ `/api/tasks` แบบ 3-layer เหมือนกัน
+
+---
+
+## 🗣️ ทบทวน (Review)
+
+::: details ❓ คำถามทบทวนความเข้าใจ
+
+**คำถาม 1:** ในโปรเจกต์นี้ `morgan` ทำหน้าที่อะไร และทำไมต้องวางหลัง `cors()` แต่ก่อน Routes?
+
+**แนวคำตอบ:** `morgan` เป็น Logging Middleware ที่บันทึก Request ทุกตัว เช่น `GET /api/candidates 200 12ms` ต้องวางหลัง `cors()` เพราะ CORS ต้องจัดการ Preflight ก่อน และวางก่อน Routes เพราะต้องการ log ทุก Request ที่เข้ามา ถ้าวางหลัง Routes จะ log ได้แค่ Request ที่มี Route รองรับ
+
+**คำถาม 2:** ทำไม `candidateService.js` จึง throw `Error('CANDIDATE_NOT_FOUND')` เป็น string แทนที่จะ return `null`?
+
+**แนวคำตอบ:** การ throw Error ทำให้ Controller สามารถจัดการกรณีนี้แยกออกจาก "ไม่มีข้อมูล" กับ "ข้อมูล empty array" ได้ชัดเจน ถ้า return `null` Controller ต้องตรวจ `if (result === null)` ทุกที่ แต่ถ้า throw Error ด้วย code ที่ชัดเจน Controller แค่ `catch` แล้วดู `err.message` เพื่อแปลงเป็น HTTP Status ได้ทันที ทำให้โค้ดอ่านง่ายและ consistent ทั่วทั้ง codebase
+
+**คำถาม 3:** ทำไมใน `updateCandidate` ถึงไม่อนุญาตให้แก้ `role` และ `password_hash`?
+
+**แนวคำตอบ:** นี่คือ Business Rule ด้าน Security — ถ้าอนุญาตให้แก้ `role` ผ่าน endpoint นี้ ผู้ใช้อาจ เปลี่ยน role ตัวเองจาก `candidate` เป็น `judge` หรือ `manager` ได้ (Privilege Escalation) การจำกัดว่า endpoint นี้แก้ได้แค่ `name`, `country`, `region` เป็น Business Rule ที่ Service Layer ต้องบังคับ ไม่ใช่ Controller หรือ Route
+
+:::

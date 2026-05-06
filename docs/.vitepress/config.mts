@@ -190,6 +190,7 @@ export default defineConfig({
                     items: [
                         { text: '5.1 - Middleware Concept', link: '/node/05-01-middleware-concept' },
                         { text: '5.2 - Layered Architecture', link: '/node/05-02-layered-architecture' },
+                        { text: '5.3 - CORS', link: '/node/05-03-cors' },
                         { text: '🏗️ Project: Refactored API', link: '/node/05-project-refactored-api' }
                     ]
                 },
@@ -285,87 +286,156 @@ export default defineConfig({
                     ]
                 },
                 {
-                    text: 'Module 1: Introduction',
+                    text: 'Module 1: Modern React & JSX',
                     items: [
-                        { text: '1.1 - Intro to React & JSX', link: '/react/01-01-intro-jsx' },
+                        { text: '1.1 - Modern Setup', link: '/react/01-01-modern-setup' },
+                        { text: '1.2 - JSX Deep Dive', link: '/react/01-02-jsx-deep-dive' },
                         { text: '🎨 Project: JSX Art Gallery', link: '/react/01-project-jsx-art' }
                     ]
                 },
                 {
                     text: 'Module 2: Components & Props',
                     items: [
-                        { text: '2.1 - Components & Props', link: '/react/02-01-components-props' },
+                        { text: '2.1 - Thinking in React', link: '/react/02-01-thinking-in-react' },
+                        { text: '2.2 - Props System', link: '/react/02-02-props-system' },
                         { text: '👤 Project: User Profile Card', link: '/react/02-project-user-profile' }
                     ]
                 },
                 {
-                    text: 'Module 3: State & Events',
+                    text: 'Module 3: Interactivity & State',
                     items: [
-                        { text: '3.1 - State & Events', link: '/react/03-01-state-events' },
-                        { text: '🔢 Project: Counter & Toggler', link: '/react/03-project-counter-toggler' }
+                        { text: '3.1 - Event Handling', link: '/react/03-01-event-handling' },
+                        { text: '3.2 - useState Basics', link: '/react/03-02-usestate-basics' },
+                        { text: '🔢 Project: Interactive Counter', link: '/react/03-project-interactive-counter' }
                     ]
                 },
                 {
-                    text: 'Module 4: Lists & Keys',
+                    text: 'Module 4: Rendering Lists & Complex State',
                     items: [
-                        { text: '4.1 - Lists & Keys', link: '/react/04-01-lists-keys' },
-                        { text: '📝 Project: Simple Todo List', link: '/react/04-project-simple-todo' }
+                        { text: '4.1 - Lists and Keys', link: '/react/04-01-lists-and-keys' },
+                        { text: '4.2 - Complex State', link: '/react/04-02-complex-state' },
+                        { text: '📝 Project: Todo List', link: '/react/04-project-todo-list' }
                     ]
                 },
                 {
-                    text: 'Module 5: Forms',
+                    text: 'Module 5: Forms & Validation (The Hard Way)',
                     items: [
-                        { text: '5.1 - Forms & Controlled Components', link: '/react/05-01-forms' },
-                        { text: '📋 Project: Registration Form', link: '/react/05-project-registration-form' }
+                        { text: '5.1 - Controlled Components', link: '/react/05-01-controlled-components' },
+                        { text: '5.2 - Manual Validation', link: '/react/05-02-manual-validation' },
+                        { text: '📋 Project: Registration Form', link: '/react/05-project-register-form' }
                     ]
                 },
                 {
-                    text: 'Module 6: Effects & Lifecycle',
+                    text: 'Module 6: Side Effects, Refs & Data Fetching',
                     items: [
-                        { text: '6.1 - Effects & Lifecycle', link: '/react/06-01-effects-lifecycle' },
-                        { text: '⏱️ Project: Digital Clock', link: '/react/06-project-digital-clock' }
+                        { text: '6.1 - useEffect & Lifecycle', link: '/react/06-01-useeffect-lifecycle' },
+                        { text: '6.2 - useRef Hook', link: '/react/06-02-useref-hook' },
+                        { text: '6.3 - Manual Fetching', link: '/react/06-03-manual-fetching' },
+                        { text: '📉 Project: Crypto Tracker', link: '/react/06-project-crypto-tracker' }
                     ]
                 },
                 {
-                    text: 'Module 7: API Integration',
+                    text: 'Module 7: Custom Hooks',
                     items: [
-                        { text: '7.1 - API Integration', link: '/react/07-01-api-integration' },
-                        { text: '📉 Project: Crypto Price Tracker', link: '/react/07-project-crypto-tracker' }
+                        { text: '7.1 - Custom Hooks', link: '/react/07-01-custom-hooks' },
+                        { text: '7.2 - Hooks Patterns', link: '/react/07-02-hooks-patterns' },
+                        { text: '🪝 Project: Hooks Collection', link: '/react/07-project-hooks-collection' }
                     ]
                 },
                 {
-                    text: 'Module 8: Context API',
+                    text: 'Module 8: Styling Evolution & UI Libraries',
                     items: [
-                        { text: '8.1 - Context API', link: '/react/08-01-context-api' },
-                        { text: '🌗 Project: Theme Switcher', link: '/react/08-project-theme-context' }
+                        { text: '8.1 - CSS Modules', link: '/react/08-01-css-modules' },
+                        { text: '8.2 - Tailwind CSS', link: '/react/08-02-tailwind-css' },
+                        { text: '8.3 - UI Libraries', link: '/react/08-03-ui-libraries' },
+                        { text: '🎨 Project: Modern Dashboard', link: '/react/08-project-modern-dashboard' }
                     ]
                 },
                 {
-                    text: 'Module 9: React Router',
+                    text: 'Module 9: Modern Forms (The Smart Way)',
                     items: [
-                        { text: '9.1 - React Router', link: '/react/09-01-react-router' },
-                        { text: '🌏 Project: Multi-page Portfolio', link: '/react/09-project-portfolio' }
+                        { text: '9.1 - React Hook Form', link: '/react/09-01-react-hook-form' },
+                        { text: '9.2 - Zod Validation', link: '/react/09-02-zod-validation' },
+                        { text: '🛒 Project: Checkout Form', link: '/react/09-project-checkout-form' }
                     ]
                 },
                 {
-                    text: 'Module 10: Deployment',
+                    text: 'Module 10: Modern Data Fetching (The Smart Way)',
                     items: [
-                        { text: '10.1 - Deployment Guide', link: '/react/10-01-deployment' },
-                        { text: '🚀 Project: Hosting on Vercel', link: '/react/10-project-hosting' }
+                        { text: '10.1 - TanStack Query Basics', link: '/react/10-01-tanstack-query-basics' },
+                        { text: '10.2 - Mutations & Cache', link: '/react/10-02-mutations-and-cache' },
+                        { text: '🎬 Project: Movie App', link: '/react/10-project-movie-app' }
                     ]
                 },
                 {
-                    text: 'Module 11: Optimization',
+                    text: 'Module 11: Routing & Navigation',
                     items: [
-                        { text: '11.1 - Performance Optimization', link: '/react/11-01-performance' },
-                        { text: '⚡ Project: Optimization Challenge', link: '/react/11-project-optimization' }
+                        { text: '11.1 - React Router Setup', link: '/react/11-01-react-router-setup' },
+                        { text: '11.2 - Dynamic Routing', link: '/react/11-02-dynamic-routing' },
+                        { text: '🌏 Project: Portfolio', link: '/react/11-project-portfolio' }
                     ]
                 },
                 {
-                    text: 'Module 12: Capstone Project',
+                    text: 'Module 12: Global State (Context & Reducers)',
                     items: [
-                        { text: '12.1 - Capstone Overview', link: '/react/12-01-capstone' },
-                        { text: '🛍️ Project: E-Commerce Shop', link: '/react/12-project-ecommerce' }
+                        { text: '12.1 - Context API', link: '/react/12-01-context-api' },
+                        { text: '12.2 - useReducer Hook', link: '/react/12-02-usereducer-hook' },
+                        { text: '🌙 Project: Theme Switcher', link: '/react/12-project-theme-switcher' }
+                    ]
+                },
+                {
+                    text: 'Module 13: Professional State Management (Redux)',
+                    items: [
+                        { text: '13.1 - Redux Toolkit Basics', link: '/react/13-01-redux-toolkit-basics' },
+                        { text: '13.2 - RTK Async Thunk', link: '/react/13-02-rtk-async-thunk' },
+                        { text: '🛍️ Project: Shopping Cart', link: '/react/13-project-shopping-cart' }
+                    ]
+                },
+                {
+                    text: 'Module 14: Authentication Integration',
+                    items: [
+                        { text: '14.1 - Auth Flow Frontend', link: '/react/14-01-auth-flow-frontend' },
+                        { text: '14.2 - Axios Interceptors', link: '/react/14-02-axios-interceptors' },
+                        { text: '🔐 Project: Auth Integration', link: '/react/14-project-auth-integration' }
+                    ]
+                },
+                {
+                    text: 'Module 15: Protected Routes & Security',
+                    items: [
+                        { text: '15.1 - Route Guards', link: '/react/15-01-route-guards' },
+                        { text: '15.2 - Role-based Access', link: '/react/15-02-role-based-access' },
+                        { text: '🛡️ Project: Admin Dashboard', link: '/react/15-project-admin-dashboard' }
+                    ]
+                },
+                {
+                    text: 'Module 16: Performance Optimization',
+                    items: [
+                        { text: '16.1 - Code Splitting', link: '/react/16-01-code-splitting' },
+                        { text: '16.2 - Memoization', link: '/react/16-02-memoization' },
+                        { text: '⚡ Project: Optimization Lab', link: '/react/16-project-optimization-lab' }
+                    ]
+                },
+                {
+                    text: 'Module 17: Automated Testing',
+                    items: [
+                        { text: '17.1 - Testing Setup', link: '/react/17-01-testing-setup' },
+                        { text: '17.2 - Writing Component Tests', link: '/react/17-02-writing-component-tests' },
+                        { text: '🧪 Project: Test Todo', link: '/react/17-project-test-todo' }
+                    ]
+                },
+                {
+                    text: 'Module 18: Deployment & CI/CD',
+                    items: [
+                        { text: '18.1 - Build Production', link: '/react/18-01-build-production' },
+                        { text: '18.2 - Hosting Platforms', link: '/react/18-02-hosting-platforms' },
+                        { text: '🚀 Project: Deployment Lab', link: '/react/18-project-deployment-lab' }
+                    ]
+                },
+                {
+                    text: 'Module 19: Capstone Project',
+                    items: [
+                        { text: '19.1 - Capstone Architecture', link: '/react/19-01-capstone-architecture' },
+                        { text: '🏆 Project: E-Commerce Frontend', link: '/react/19-project-ecommerce-frontend' }
                     ]
                 }
             ]

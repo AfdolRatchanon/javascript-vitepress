@@ -1,161 +1,361 @@
 # 🎨 Project 1: JSX Art Gallery
 
-ยินดีต้อนรับสู่โปรเจกต์แรกครับ! 🎉
-หลังจากเรียนทฤษฎีเรื่อง **JSX** และ **Virtual DOM** มาแล้ว ตอนนี้ถึงเวลาลงมือทำจริง
+> **โปรเจกต์นี้ฝึก:** JSX Expressions, Conditional Rendering, Dynamic Styles, Fragment, และ camelCase Attributes
 
-ในโปรเจกต์นี้ เราจะสวมบทบาทเป็น **"Curator" (ผู้ดูแลพิพิธภัณฑ์ศิลปะ)** 🖼️
-เราจะสร้างหน้าเว็บ **"JSX Art Gallery"** เพื่อจัดแสดงภาพวาดที่มีชื่อเสียง โดยใช้พลังของ React Component และ JSX
+## โจทย์
 
-> **Skills ที่จะได้ฝึก**:
-> - การสร้าง Functional Component
-> - การใช้ JSX แทรกตัวแปร (`{ }`)
-> - การใช้ Inline Style แบบ Dynamic
-> - การใช้ Conditional Rendering
+สร้างหน้า **Art Gallery** ที่แสดงผลงานศิลปะดิจิทัลทำจาก JSX ล้วนๆ (ไม่ใช้รูปภาพ) โดยประกอบด้วย:
 
+1. **Header** — ชื่อแกลเลอรีและชื่อศิลปิน (คุณเอง)
+2. **Artwork Grid** — แสดง Artwork อย่างน้อย 3 ชิ้น
+3. **Theme Toggle** — ปุ่มสลับ Light/Dark Mode (ใช้ CSS variable ง่ายๆ)
+4. **Stats Bar** — แสดงจำนวนผลงานทั้งหมดและ "Featured" ที่เลือก
 
-## 🎯 เป้าหมาย (Goal)
+## Artwork ที่ต้องสร้าง (อย่างน้อย 3 ชิ้น)
 
-เราจะสร้างหน้าเว็บที่มีองค์ประกอบดังนี้:
-1.  **Header**: ชื่อแกลเลอรี และคำอธิบาย
-2.  **Artwork Card**: การ์ดแสดงผลงานศิลปะ (ภาพ + ชื่อ + ศิลปิน)
-3.  **Frame Style**: กรอบรูปที่เปลี่ยนสีได้ตามยุคสมัย (Dynamic Style)
-4.  **Tag**: ป้ายกำกับที่แสดงเงื่อนไข (เช่น "Masterpiece")
+| ชิ้นที่ | ชื่อ | เทคนิค JSX ที่ใช้ |
+|:------:|:----|:----------------|
+| 1 | Sunset | Inline Style + Gradient + ตัวเลขคำนวณ |
+| 2 | Grid Pattern | `.map()` + `key` + Dynamic Color |
+| 3 | Typography Art | Expression + Conditional Style |
 
+## Starter Code
 
-## 🛠️ Step-by-Step Implementation
-
-### Step 1: เตรียมข้อมูล (Data Preparation)
-
-ปกติเราจะได้ข้อมูลมาจาก Database แต่ในโปรเจกต์แรก เราจะจำลองข้อมูล (Mock Data) เก็บไว้ในตัวแปรธรรมดาก่อนครับ
+สร้างไฟล์ `src/App.jsx` ใหม่และใส่โค้ดนี้เป็นจุดเริ่มต้น:
 
 ```jsx
-// สร้าง Component ชื่อ ArtGallery
-const ArtGallery = () => {
-    
-  // ข้อมูลภาพวาดที่ 1
-  const art1 = {
-    title: "The Starry Night",
-    artist: "Vincent van Gogh",
-    year: 1889,
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1200px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
-    isMasterpiece: true
-  };
+// src/App.jsx
+import { useState } from 'react'
 
-  // ข้อมูลภาพวาดที่ 2
-  const art2 = {
-    title: "Mona Lisa",
-    artist: "Leonardo da Vinci",
-    year: 1503,
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/800px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
-    isMasterpiece: true
-  };
+// ข้อมูล Artworks — เพิ่มชิ้นงานของคุณเองที่นี่!
+const artworks = [
+  {
+    id: 1,
+    title: 'Sunset Gradient',
+    artist: 'React Artist',
+    year: 2025,
+    featured: true,
+  },
+  {
+    id: 2,
+    title: 'Grid Symphony',
+    artist: 'React Artist',
+    year: 2025,
+    featured: false,
+  },
+  {
+    id: 3,
+    title: 'Typography Wave',
+    artist: 'React Artist',
+    year: 2025,
+    featured: true,
+  },
+]
 
-  // ... (เดี๋ยวเราจะเอาข้อมูลพวกนี้ไปแสดงผล)
-```
+export default function App() {
+  const [isDark, setIsDark] = useState(false)
 
-### Step 2: สร้างโครงสร้าง JSX (Structure)
+  const featuredCount = artworks.filter(art => art.featured).length
 
-เราจะเริ่มจากโครงสร้าง HTML ง่ายๆ ก่อน อย่าเพิ่งใส่ Style ครับ
-
-```jsx
   return (
-    <div className="gallery-container">
-      <h1>🎨 JSX Art Gallery</h1>
-      <p>Welcome to the world's most exclusive collection.</p>
-      
-      {/* พื้นที่แสดงงานศิลปะ */}
-      <div className="art-grid">
-        {/* การ์ดใบที่ 1 (เดี๋ยวเราจะ Refactor ส่วนนี้) */}
-        <div className="art-card">
-           <img src={art1.image} alt={art1.title} width="300" />
-           <h3>{art1.title}</h3>
-           <p>By {art1.artist} ({art1.year})</p>
-        </div>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: isDark ? '#1a1a2e' : '#f8f9fa',
+      color: isDark ? '#eee' : '#333',
+      padding: 24,
+      fontFamily: 'sans-serif',
+      transition: 'all 0.3s',
+    }}>
 
-        {/* การ์ดใบที่ 2 */}
-        <div className="art-card">
-           <img src={art2.image} alt={art2.title} width="300" />
-           <h3>{art2.title}</h3>
-           <p>By {art2.artist} ({art2.year})</p>
-        </div>
-      </div>
+      {/* TODO: สร้าง Header Component */}
+      {/* TODO: สร้าง StatsBar */}
+      {/* TODO: สร้าง Theme Toggle Button */}
+      {/* TODO: วน loop แสดง ArtCard ทุกชิ้น */}
+
     </div>
-  );
-}; // จบ Component
+  )
+}
 ```
 
-### Step 3: ใส่ Styling (Inline Style Object)
+## งานที่ต้องทำ
 
-ใน React เรามักจะใช้ CSS Class (ผ่าน `className`) สำหรับโครงสร้างหลัก
-แต่สำหรับ style ที่เปลี่ยนไปมาได้ หรือค่าเฉพาะเจาะจง เรานิยมใช้ **Inline Style**
+### Task 1: สร้าง Header
 
-มาลองแต่งกรอบรูปให้สวยงามกันครับ
+สร้าง Component `GalleryHeader` ที่รับ props `title` และ `artistName` แล้วแสดง:
+- ชื่อแกลเลอรีขนาดใหญ่ พร้อม Emoji 🖼️
+- ชื่อศิลปิน (ชื่อคุณ)
+- Tagline สั้นๆ
+
+### Task 2: สร้าง ArtCard Components
+
+สร้างอย่างน้อย 3 Component:
+
+**`<SunsetCard />`** — ใช้ Inline Style สร้าง Gradient:
+```jsx
+// Hint: ใช้ background: 'linear-gradient(...)'
+// และคำนวณ opacity จาก artwork.id
+```
+
+**`<GridCard />`** — ใช้ `.map()` สร้าง Grid ของ Square เล็กๆ:
+```jsx
+// Hint: สร้าง Array ขนาด 9 แล้ว .map() ออกมาเป็น div
+// เปลี่ยนสีตาม index: index % 2 === 0 ? 'blue' : 'orange'
+const squares = Array.from({ length: 9 }, (_, i) => i)
+```
+
+**`<TypographyCard />`** — แสดง Text ขนาดต่างๆ:
+```jsx
+// Hint: ใช้ fontSize ที่คำนวณจาก index
+// ['React', 'is', 'Cool!'].map((word, i) => ...)
+```
+
+### Task 3: StatsBar และ Toggle
+
+แสดงจำนวนผลงานทั้งหมดและจำนวน "Featured" พร้อมปุ่ม Dark Mode Toggle
+
+## ตัวอย่าง Solution
+
+::: details ดูเฉลยฉบับสมบูรณ์
 
 ```jsx
-// สร้าง Style Object แยกออกมา เพื่อความสะอาดของโค้ด
-const frameStyle = {
-  border: "10px solid gold",  // กรอบทองสุดหรู
-  padding: "20px",
-  borderRadius: "10px",
-  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-  backgroundColor: "#fff",
-  textAlign: "center",
-  margin: "20px"
-};
+// src/App.jsx
+import { useState } from 'react'
 
-// นำไปใช้ใน JSX
-<div style={frameStyle}>
-  ...
-</div>
+const artworks = [
+  { id: 1, title: 'Sunset Gradient', artist: 'React Artist', year: 2025, featured: true },
+  { id: 2, title: 'Grid Symphony', artist: 'React Artist', year: 2025, featured: false },
+  { id: 3, title: 'Typography Wave', artist: 'React Artist', year: 2025, featured: true },
+]
+
+// Component: Header
+function GalleryHeader({ title, artistName }) {
+  return (
+    <header style={{ textAlign: 'center', marginBottom: 32 }}>
+      <h1 style={{ fontSize: '2.5rem', margin: 0 }}>🖼️ {title}</h1>
+      <p style={{ color: 'gray', margin: '8px 0' }}>โดย {artistName}</p>
+      <p style={{ fontStyle: 'italic' }}>ผลงานศิลปะดิจิทัลจาก JSX ล้วนๆ</p>
+    </header>
+  )
+}
+
+// Component: Stats
+function StatsBar({ total, featured, isDark, onToggle }) {
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '12px 16px',
+      borderRadius: 8,
+      backgroundColor: isDark ? '#16213e' : '#e9ecef',
+      marginBottom: 24,
+    }}>
+      <span>ผลงานทั้งหมด: <strong>{total}</strong> ชิ้น</span>
+      <span>⭐ Featured: <strong>{featured}</strong> ชิ้น</span>
+      <button
+        onClick={onToggle}
+        style={{
+          padding: '6px 16px',
+          borderRadius: 20,
+          border: 'none',
+          cursor: 'pointer',
+          backgroundColor: isDark ? '#61DAFB' : '#333',
+          color: isDark ? '#333' : '#fff',
+        }}
+      >
+        {isDark ? '☀️ Light' : '🌙 Dark'}
+      </button>
+    </div>
+  )
+}
+
+// Artwork 1: Sunset Gradient
+function SunsetCard({ artwork, isDark }) {
+  return (
+    <article style={{
+      borderRadius: 12,
+      overflow: 'hidden',
+      boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.5)' : '0 4px 12px rgba(0,0,0,0.1)',
+      marginBottom: 24,
+    }}>
+      {/* ตัว Artwork */}
+      <div style={{
+        height: 200,
+        background: `linear-gradient(
+          135deg,
+          #ff6b6b ${artwork.id * 10}%,
+          #ffa94d 40%,
+          #ffd43b 60%,
+          #ff6b6b 100%
+        )`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '4rem',
+      }}>
+        🌅
+      </div>
+      <div style={{ padding: '12px 16px' }}>
+        <h3 style={{ margin: '0 0 4px' }}>
+          {artwork.title}
+          {artwork.featured && <span style={{ color: 'gold', marginLeft: 8 }}>⭐</span>}
+        </h3>
+        <p style={{ color: 'gray', margin: 0, fontSize: '0.85rem' }}>
+          {artwork.artist} · {artwork.year}
+        </p>
+      </div>
+    </article>
+  )
+}
+
+// Artwork 2: Grid Pattern
+function GridCard({ artwork, isDark }) {
+  const squares = Array.from({ length: 9 }, (_, i) => i)
+  const colors = ['#74c0fc', '#f783ac', '#69db7c', '#ffa94d', '#da77f2']
+
+  return (
+    <article style={{
+      borderRadius: 12,
+      overflow: 'hidden',
+      boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.5)' : '0 4px 12px rgba(0,0,0,0.1)',
+      marginBottom: 24,
+    }}>
+      <div style={{
+        height: 200,
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 4,
+        padding: 4,
+        backgroundColor: isDark ? '#222' : '#fff',
+      }}>
+        {squares.map(i => (
+          <div
+            key={i}
+            style={{
+              backgroundColor: colors[i % colors.length],
+              borderRadius: 4,
+              opacity: 0.6 + (i * 0.04),
+              transition: 'opacity 0.2s',
+            }}
+          />
+        ))}
+      </div>
+      <div style={{ padding: '12px 16px' }}>
+        <h3 style={{ margin: '0 0 4px' }}>
+          {artwork.title}
+          {artwork.featured && <span style={{ color: 'gold', marginLeft: 8 }}>⭐</span>}
+        </h3>
+        <p style={{ color: 'gray', margin: 0, fontSize: '0.85rem' }}>
+          {artwork.artist} · {artwork.year}
+        </p>
+      </div>
+    </article>
+  )
+}
+
+// Artwork 3: Typography
+function TypographyCard({ artwork, isDark }) {
+  const words = ['React', 'is', 'Amazing!']
+  const sizes = [48, 24, 36]
+  const colors = ['#61DAFB', '#aaa', '#ff6b6b']
+
+  return (
+    <article style={{
+      borderRadius: 12,
+      overflow: 'hidden',
+      boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.5)' : '0 4px 12px rgba(0,0,0,0.1)',
+      marginBottom: 24,
+    }}>
+      <div style={{
+        height: 200,
+        backgroundColor: isDark ? '#0d1117' : '#1a1a2e',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+      }}>
+        {words.map((word, i) => (
+          <span
+            key={word}
+            style={{
+              fontSize: sizes[i],
+              color: colors[i],
+              fontWeight: 'bold',
+              letterSpacing: i === 0 ? '0.2em' : 'normal',
+              fontFamily: 'monospace',
+            }}
+          >
+            {word}
+          </span>
+        ))}
+      </div>
+      <div style={{ padding: '12px 16px' }}>
+        <h3 style={{ margin: '0 0 4px' }}>
+          {artwork.title}
+          {artwork.featured && <span style={{ color: 'gold', marginLeft: 8 }}>⭐</span>}
+        </h3>
+        <p style={{ color: 'gray', margin: 0, fontSize: '0.85rem' }}>
+          {artwork.artist} · {artwork.year}
+        </p>
+      </div>
+    </article>
+  )
+}
+
+// Components array สำหรับ map
+const ArtComponents = [SunsetCard, GridCard, TypographyCard]
+
+export default function App() {
+  const [isDark, setIsDark] = useState(false)
+  const featuredCount = artworks.filter(art => art.featured).length
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: isDark ? '#1a1a2e' : '#f8f9fa',
+      color: isDark ? '#eee' : '#333',
+      padding: 24,
+      fontFamily: 'sans-serif',
+      transition: 'all 0.3s',
+      maxWidth: 600,
+      margin: '0 auto',
+    }}>
+      <GalleryHeader title="JSX Art Gallery" artistName="React Artist" />
+
+      <StatsBar
+        total={artworks.length}
+        featured={featuredCount}
+        isDark={isDark}
+        onToggle={() => setIsDark(!isDark)}
+      />
+
+      {artworks.map((artwork, index) => {
+        const ArtComponent = ArtComponents[index % ArtComponents.length]
+        return <ArtComponent key={artwork.id} artwork={artwork} isDark={isDark} />
+      })}
+    </div>
+  )
+}
 ```
-
-### Step 4: Logic และ Conditional Rendering
-
-สมมติเราอยากเพิ่มลูกเล่น:
-- ถ้าเป็นภาพระดับตำนาน (`isMasterpiece: true`) ให้โชว์ตราปั๊ม "🏆 Masterpiece"
-- ถ้าปีที่วาด (`year`) เก่ากว่า 1800 ให้สีกรอบเป็น "Wood" แต่ถ้าใหม่กว่าให้เป็น "Gold"
-
-```jsx
-/* Logic ในการเลือกสีกรอบ */
-const getFrameColor = (year) => {
-    return year < 1800 ? '#8B4513' : '#FFD700'; // Brown vs Gold
-};
-
-/* JSX */
-<div style={{ ...frameStyle, borderColor: getFrameColor(art1.year) }}>
-    
-    <img src={art1.image} width="300" />
-    <h3>{art1.title}</h3>
-    
-    {/* Conditional Rendering: โชว์เฉพาะถ้าเป็น Masterpiece */}
-    {art1.isMasterpiece && <span className="badge">🏆 PREMIERE</span>}
-    
-</div>
-```
-
-
-## 🧩 Challenge: Refactoring (งานท้าทาย)
-
-ตอนนี้โค้ดเราเริ่มซ้ำซ้อน (Duplicate Code) เพราะเราเขียน JSX ของ art1 และ art2 ซ้ำกัน
-ในความเป็นจริง แกลเลอรีอาจมีภาพเป็นร้อย!
-
-**โจทย์ระดับสูง:**
-จงสร้าง Function แยกที่ชื่อ `renderArtwork(art)`
-แล้วเรียกใช้ function นี้ใน return หลัก เพื่อลดการเขียนโค้ดซ้ำ
-
-::: details ✨ เฉลย Challenge
-(โค้ดตัวอย่างสำหรับการ Refactor จะใช้ Loop หรือ Function แยกก็ได้ครับ)
 :::
 
+## เกณฑ์การประเมิน
 
-## 🐞 Common Mistakes (จุดที่มักพลาด)
+| เกณฑ์ | คะแนน |
+|:------|:------:|
+| สร้างได้อย่างน้อย 3 Artwork Component | 30 |
+| ใช้ JSX Expression (`{}`) อย่างน้อย 5 จุด | 20 |
+| ใช้ Conditional Rendering อย่างน้อย 2 แบบ | 20 |
+| Dark/Light Toggle ทำงานได้ | 20 |
+| ไม่มี JSX Error (ปิด Tag ครบ, camelCase) | 10 |
+| **รวม** | **100** |
 
-1.  **ลืมใส่ `alt` ใน `img`**: React จะบ่น (Warning) เพราะมันสำคัญต่อ Accessibility (คนตาบอดใช้ Screen Reader)
-2.  **ลืมปิด Tag**: `<img src="...">` เฉยๆ ไม่ได้ ต้องมี `/>` ปิดท้ายเสมอ
-3.  **Style ผิด Syntax**: เผลอเขียน `background-color` (HTML) แทน `backgroundColor` (JSX camelCase)
-4.  **ลืม return**: ถ้าแยก Helper Function อย่าลืม `return` JSX ออกมาด้วย ไม่งั้นจะแสดงผลว่างเปล่า
+## Bonus Challenge
 
+เพิ่ม Artwork ชิ้นที่ 4 ของคุณเอง ซึ่งต้องมี:
+- ใช้ `Array.from()` หรือ `Array.fill()` สร้างรูปแบบซ้ำๆ
+- มี Animation ด้วย CSS Transition (Inline Style)
+- รับ prop `animationSpeed` ที่ควบคุมความเร็ว
 
-
-
-> 👉 **ไปต่อ: [Module 2 - Components & Props](/react/02-01-components-props)**
+👉 ไปต่อ: [Module 2: Components & Props](/react/02-01-thinking-in-react)

@@ -1,211 +1,478 @@
-# Module 8.1: Password Hashing & Security 🔐
+# Module 8.1: Password Hashing with bcryptjs 🔐
 
-> *"Secrets are never safe unless they are kept by the dead."* — **Game of Thrones** (แต่เราจะเก็บให้ปลอดภัยด้วย Tech!)
+> 💡 **เป้าหมาย:** เข้าใจหลักการเก็บรหัสผ่านอย่างปลอดภัยด้วย bcrypt ในระบบ WSA2026 Test Submission Management System และสามารถนำ bcryptjs ไปใช้ใน register/login flow ได้อย่างถูกต้อง
 
-การ Authentication คือด่านหน้าสุดของความปลอดภัยในระบบของเรา 🛡️
-หน้าที่ของเราในฐานะ Developer คือ "ปกป้อง User" จากการถูกขโมยบัญชี
-และหัวใจสำคัญคือ **การเก็บ Password**
+## 📖 ทฤษฎีและแนวคิด (Theory & Concepts)
 
-คุณรู้ไหมว่าการเก็บ Password ผิดวิธี อาจทำให้บริษัทล้มละลายได้เลยทีเดียว! 😱
+### ทำไมการเก็บ Password ถึงสำคัญมาก?
 
+ใน WSA2026 ระบบของเราเก็บข้อมูล `users` ซึ่งมีทั้ง candidate, judge, และ manager
+ถ้า Database โดน breach แล้ว password หลุดออกไปเป็น plain text — ผลกระทบร้ายแรงมาก
 
-## 🐣 Analogy: Locked Chest (หีบสมบัติ)
+```
+ตาราง users ใน WSA2026:
++----+----------+---------------+----------+------------------+
+| id | username | password_hash | role     | country          |
++----+----------+---------------+----------+------------------+
+| 1  | somchai  | $2a$10$abc... | candidate| Thailand         |
+| 2  | tanaka   | $2a$10$xyz... | judge    | Japan            |
+| 3  | admin01  | $2a$10$def... | manager  | WorldSkills Org  |
++----+----------+---------------+----------+------------------+
+         ^           ^
+         |           |
+      ชื่อ User    เก็บ Hash เท่านั้น! ไม่เคยเก็บ password จริง
+```
 
-จินตนาการว่า Database ของเราคือ **ห้องเก็บสมบัติ**
-User แต่ละคนเอา "ความลับ" (Password) มาฝากไว้
+---
 
-1.  **Plain Text (เก็บตรงๆ)**:
-    - เหมือนเขียนรหัสใส่กระดาษแปะไว้หน้ากล่อง
-    - ใครเดินเข้ามาในห้อง (Hacker / Admin ขี้สงสัย) ก็เห็นหมด -> **❌ อันตรายสุดขั้ว!**
+### 3 วิธีเก็บ Password (เปรียบกับห้องเก็บสมบัติ)
 
-2.  **Encryption (เข้ารหัสแบบถอดได้)**:
-    - เหมือนเอากุญแจล็อกกล่องไว้
-    - ถ้าโจรขโมย "แม่กุญแจ" (Secret Key) ไปได้... ไขได้ทุกกล่อง! -> **❌ ยังไม่ปลอดภัยพอ**
+```
+วิธีที่ 1: PLAIN TEXT ❌ (อันตรายสุดขีด!)
++-----------+          +------------------+
+| candidate |  "P@ss1" |  DB: "P@ss1"     |
+|  somchai  | -------> |  ใครเข้า DB ก็เห็น|
++-----------+          +------------------+
 
-3.  **Hashing (ย่อยข้อมูลแบบทางเดียว)**:
-    - เหมือนเอาPasswordใส่ **"เครื่องบดละเอียด"** (Hash Function)
-    - ออกมาเป็นผง (Hash String) ที่ไม่มีทางประกอบกลับเป็นรูปเดิมได้
-    - เวลา User จะ Login: เอา Password ที่พิมพ์ใหม่ -> เข้าเครื่องบด -> ดูว่าผงหน้าตาเหมือนเดิมไหม -> **✅ นี่คือวิธีที่ถูกต้อง!**
+วิธีที่ 2: ENCRYPTION ❌ (ยังไม่ปลอดภัยพอ)
++-----------+  encrypt  +------------------+   ถ้าขโมย Key ได้
+| candidate | --------> | DB: "X7#mQ9..."  | ----------> decrypt ได้หมด!
++-----------+  Key="abc" +------------------+
 
+วิธีที่ 3: BCRYPT HASHING ✅ (วิธีที่ถูกต้อง!)
++-----------+  password  +--------+  hash   +----------------------+
+| candidate | "P@ss1" -> | bcrypt | ------> | DB: "$2a$10$N9qo8u..." |
+|  somchai  |            | +salt  |         |  ย้อนกลับ ไม่ ได้!     |
++-----------+            +--------+         +----------------------+
+```
 
-## 🆚 Hashing vs Encryption
+---
 
-สิ่งที่คนมักเข้าใจผิดมากที่สุด!
+### Hash Process: Password + Salt → bcrypt → Hash ใน DB
 
-| Feature | Encryption (การเข้ารหัส) | Hashing (การแฮช) |
-|:---|:---|:---|
-| **ทิศทาง** | ↔️ Two-way (เข้ารหัส <-> ถอดรหัส) | ➡️ One-way (แฮชแล้ว แฮชเลย ถอดกลับไม่ได้) |
-| **สิ่งที่ต้องใช้** | Key (กุญแจ) | Algorithm (สูตรคณิตศาสตร์) |
-| **ความยาวผลลัพธ์** | แปรผันตามข้อมูลต้นฉบับ | คงที่เสมอ (เช่น 60 ตัวอักษร) |
-| **ตัวอย่าง** | ส่งข้อมูลบัตรเครดิต, HTTPS | เก็บ Password |
-| **จุดประสงค์** | "ปกปิด" ระหว่างทาง | "ตรวจสอบ" ความถูกต้อง |
+```
+ REGISTRATION FLOW (ตอนสมัครสมาชิก)
+ =====================================
 
+  INPUT                  PROCESS                   OUTPUT
+  -----                  -------                   ------
 
-## 🧂 Salting (เติมเกลือ)
+  "MyP@ss2026"           Step 1: Generate Salt      Salt = "$2a$10$N9qo8uLOickgx2ZM..."
+      |                  (ค่าสุ่ม 22 ตัวอักษร)          |
+      |                                               |
+      +----> [ bcrypt.genSalt(10) ] ----------------+
+      |                                               |
+      |       Step 2: Hash                            |
+      +----> [ bcrypt.hash(password, salt) ] -------> "$2a$10$N9qo8uLO...3GxzaQ5"
+                                                           |
+                                                           v
+                                                   บันทึกลง DB
+                                                   (password_hash column)
 
-**ปัญหา:** ถ้า User 2 คนใช้รหัส "123456" เหมือนกัน
-Hash ออกมาก็ได้ค่าเหมือนกัน: `8d969eef6ecad`
-Hacker แค่ทำตารางเทียบ (Rainbow Table) ก็รู้แล้วว่ารหัสคืออะไร!
+ LOGIN FLOW (ตอนเข้าสู่ระบบ)
+ ==============================
 
-**วิธีแก้:** เติม **Salt** (ค่าสุ่มมั่วๆ) เข้าไปก่อนแฮช
-- User A: "123456" + "S@ltA" -> `ab12...`
-- User B: "123456" + "XyZ99" -> `ef56...`
-- **ผลลัพธ์:** แม้รหัสเหมือนกัน แต่ Hash ไม่เหมือนกัน! 🎉
+  User กรอก              DB มี                      ผลลัพธ์
+  --------               ----                       --------
 
+  "MyP@ss2026"           "$2a$10$N9qo8uLO...3GxzaQ5"
+       |                         |
+       +---> [ bcrypt.compare() ]<--+
+                    |
+             true / false
+                    |
+            +-------+-------+
+            |               |
+          true             false
+         Login OK!       Wrong Password!
+```
 
-## 🛠️ Implementation with `bcryptjs`
+---
 
-เราจะใช้ไลบรารี **`bcryptjs`** ซึ่งเป็นมาตรฐานอุตสาหกรรม (ช้าโดยตั้งใจ เพื่อกัน Hacker สุ่มรหัสเร็วๆ)
+### Salting คืออะไร และทำไมต้องมี?
 
-### 1. Install
+**ปัญหา Rainbow Table Attack:**
+
+```
+ RAINBOW TABLE (ตารางที่ Hacker เตรียมไว้)
+ ==========================================
+ plain text  -->  MD5 Hash (ไม่มี Salt)
+ ----------       -------------------
+ "123456"    -->  e10adc3949ba59ab...
+ "password"  -->  5f4dcc3b5aa765d6...
+ "abc123"    -->  e99a18c428cb38d5...
+
+ Hacker ดู Hash ใน DB แล้วเทียบกับตาราง -> รู้ password ทันที! ❌
+```
+
+**วิธีแก้ด้วย Salt:**
+
+```
+ ถึงแม้ User 2 คนใช้ password เดียวกัน "123456"
+ แต่ Salt ต่างกัน -> Hash ต่างกันทั้งหมด!
+
+ User somchai:  "123456" + salt_A  --> "$2a$10$AAAA...abc123"
+ User tanaka:   "123456" + salt_B  --> "$2a$10$BBBB...xyz789"
+ User admin01:  "123456" + salt_C  --> "$2a$10$CCCC...def456"
+
+ Hacker ดู 3 Hash นี้ -> ไม่รู้เลยว่าเป็น password เดียวกัน ✅
+```
+
+---
+
+### bcrypt Cost Factor (Rounds)
+
+```
+ COST FACTOR vs ความปลอดภัย vs ความเร็ว
+ ========================================
+
+  Rounds  | Time (approx) | Security  | Recommendation
+  --------|---------------|-----------|---------------
+    8     | ~4ms          | Weak      | ❌ Too fast
+    10    | ~65ms         | Good      | ✅ Development
+    12    | ~250ms        | Strong    | ✅ Production
+    14    | ~1000ms       | Very Strong| ⚠️  Might be slow
+    16    | ~4000ms       | Extreme   | ❌ Too slow for UX
+
+  "ช้าโดยตั้งใจ" -> Hacker สุ่มรหัสได้ช้ามาก
+  ถ้า Hacker สุ่ม 1 ล้านครั้ง ที่ rounds=12 ใช้เวลา 250,000 วินาที = ~2.9 วัน!
+```
+
+---
+
+### เปรียบเทียบ Algorithm การเก็บ Password
+
+| Algorithm | One-way | Salt Built-in | ออกแบบมาสำหรับ Password | ใช้ใน WSA2026 |
+|:----------|:--------|:--------------|:------------------------|:--------------|
+| MD5       | ✅      | ❌            | ❌ (ออกแบบสำหรับ checksum) | ❌ ไม่ใช้ |
+| SHA-256   | ✅      | ❌            | ❌ (เร็วเกินไป)           | ❌ ไม่ใช้ |
+| bcrypt    | ✅      | ✅            | ✅ (ช้าโดยตั้งใจ)         | ✅ ใช้ |
+| argon2    | ✅      | ✅            | ✅ (ใหม่กว่า bcrypt)      | Optional |
+
+**ทำไมไม่ใช้ MD5?**
+- เร็วมาก: Hacker สุ่มได้ billions ครั้งต่อวินาที
+- ไม่มี salt built-in: เสี่ยง Rainbow Table
+- มี collision ที่ถูกพิสูจน์แล้ว
+
+---
+
+## 💻 ตัวอย่างโค้ด (Code Implementation)
+
+### Install Package
+
 ```bash
 npm install bcryptjs
 ```
 
-### 2. Hashing (ตอนสมัครสมาชิก)
+### TP2026: Candidate Registration — hashPassword
 
-```javascript
+::: code-group
+```js [auth.service.js]
 const bcrypt = require('bcryptjs');
 
-async function hashPassword(plainTextPassword) {
-  // 1. สร้าง Salt (ความเค็มระดับ 10)
-  // ยิ่งเลขเยอะ ยิ่งปลอดภัย แต่ยิ่งช้า (10-12 กำลังดี)
-  const salt = await bcrypt.genSalt(10);
-  
-  // 2. แฮช Password + Salt
-  const hashedPassword = await bcrypt.hash(plainTextPassword, salt);
-  
-  return hashedPassword; 
-  // เก็บค่านี้ลง DB! (หน้าตาประมาณ: $2a$10$N9qo8uLOickgx2ZMRZoMyeEj...)
+// ============================================================
+// WSA2026 - Password Hashing Service
+// ใช้สำหรับ: candidate registration + judge/manager login
+// ============================================================
+
+/**
+ * hashPassword - แฮช password ก่อนบันทึกลง DB
+ * เรียกใช้ตอน: POST /api/auth/register
+ * @param {string} plainPassword - รหัสผ่านที่ candidate กรอกมา
+ * @returns {string} hashedPassword - hash string สำหรับเก็บใน DB
+ */
+async function hashPassword(plainPassword) {
+  // Validate ก่อนแฮช
+  if (!plainPassword || plainPassword.length < 8) {
+    throw new Error('Password must be at least 8 characters');
+  }
+
+  // saltRounds = 10 เหมาะสำหรับ WSA2026 competition environment
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
+
+  // bcrypt.hash() รวม genSalt + hash ในขั้นตอนเดียว
+  // Output format: $2a$10$<22-char-salt><31-char-hash>
+  return hashedPassword;
 }
+
+/**
+ * comparePassword - ตรวจสอบ password ตอน login
+ * เรียกใช้ตอน: POST /api/auth/login (สำหรับทุก role)
+ * @param {string} plainPassword - รหัสผ่านที่ user กรอกใหม่
+ * @param {string} hashedPassword - hash string จาก DB
+ * @returns {boolean} true = ถูกต้อง, false = ผิด
+ */
+async function comparePassword(plainPassword, hashedPassword) {
+  const isMatch = await bcrypt.compare(plainPassword, hashedPassword);
+  return isMatch;
+}
+
+module.exports = { hashPassword, comparePassword };
 ```
 
-### 3. Comparing (ตอน Login)
+```js [authController.js]
+const bcrypt = require('bcryptjs');
+const db = require('../db'); // mysql2 connection pool
+const { hashPassword, comparePassword } = require('../services/auth.service');
 
-```javascript
-async function login(email, inputPassword) {
-  // 1. ดึง User จาก DB
-  const user = await User.findOne({ email });
-  if (!user) return false;
+// ============================================================
+// POST /api/auth/register
+// สมัครสมาชิกสำหรับ candidate ใหม่ (WSA2026)
+// ============================================================
+async function register(req, res) {
+  try {
+    const { username, password, name, country, region } = req.body;
 
-  // 2. เปรียบเทียบรหัสที่กรอก กับ รหัสลับใน DB
-  // ⚠️ ห้ามเอา string มา == กันนะ (เพราะอันนึง hash อันนึง plain)
-  // ต้องใช้ bcrypt.compare() เท่านั้น
-  const isMatch = await bcrypt.compare(inputPassword, user.password);
+    // 1. Validate input
+    if (!username || !password || !name || !country) {
+      return res.status(400).json({
+        success: false,
+        message: 'กรุณากรอก username, password, name และ country'
+      });
+    }
 
-  if (isMatch) {
-    console.log('Login Success! 🎉');
-    return true;
-  } else {
-    console.log('Wrong Password! ❌');
-    return false;
+    // 2. ตรวจสอบว่า username ซ้ำหรือไม่
+    const [existingUsers] = await db.query(
+      'SELECT id FROM users WHERE username = ?',
+      [username]
+    );
+    if (existingUsers.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: 'Username นี้ถูกใช้แล้ว'
+      });
+    }
+
+    // 3. Hash password ก่อนบันทึก (ขั้นตอนสำคัญที่สุด!)
+    const passwordHash = await hashPassword(password);
+
+    // 4. บันทึกลง DB — เก็บ passwordHash ไม่ใช่ password จริง
+    const [result] = await db.query(
+      `INSERT INTO users (username, password_hash, name, role, country, region)
+       VALUES (?, ?, ?, 'candidate', ?, ?)`,
+      [username, passwordHash, name, country, region || null]
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'ลงทะเบียน candidate สำเร็จ',
+      data: {
+        id: result.insertId,
+        username,
+        name,
+        role: 'candidate',
+        country
+      }
+    });
+
+  } catch (err) {
+    console.error('Register error:', err.message);
+    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดภายในระบบ' });
   }
 }
-```
 
-
-## 📜 Password Policy Best Practices
-
-นอกจาก Tech แล้ว Logic การตั้งกฎก็สำคัญ:
-
-1.  **Complexity**:
-    - ยาวอย่างน้อย 8 ตัวอักษร (NIST แนะนำ 12+)
-    - มีตัวเล็ก, ตัวใหญ่, ตัวเลข, อักขระพิเศษ
-2.  **No Breached Passwords**:
-    - เช็คว่ารหัสนี้เคยหลุดในข่าวไหม (ใช้บริการอย่าง Pwned Passwords API)
-3.  **No Expiration**:
-    - เดี๋ยวนี้ **ไม่แนะนำ** ให้บังคับเปลี่ยนรหัสทุก 90 วันแล้วครับ (เพราะคนจะตั้งรหัสง่ายๆ แทน เช่น `Pass1!`, `Pass2!`)
-    - ให้เปลี่ยนเฉพาะเมื่อ "สงสัยว่าโดนแฮก" เท่านั้น
-
-
-## 🌍 Real-World Use Case: Register Controller
-
-มาดูโค้ดจริงใน Express Route กันครับ:
-
-```javascript
-app.post('/register', async (req, res) => {
+// ============================================================
+// POST /api/auth/login
+// ใช้สำหรับทุก role: candidate, judge, manager
+// ============================================================
+async function login(req, res) {
   try {
     const { username, password } = req.body;
 
-    // 1. Validations
-    if (!password || password.length < 8) {
-      return res.status(400).json({ msg: 'รหัสผ่านต้องยาว 8 ตัวขึ้นไป' });
+    // 1. หา user จาก DB
+    const [users] = await db.query(
+      'SELECT id, username, password_hash, name, role, country FROM users WHERE username = ?',
+      [username]
+    );
+
+    if (users.length === 0) {
+      // ไม่บอกว่า "user ไม่มี" เพื่อป้องกัน user enumeration attack
+      return res.status(401).json({
+        success: false,
+        message: 'Username หรือ password ไม่ถูกต้อง'
+      });
     }
 
-    // 2. Check duplicate user
-    const existingUser = await User.findOne({ username });
-    if (existingUser) return res.status(400).json({ msg: 'มีชื่อนี้แล้ว' });
+    const user = users[0];
 
-    // 3. Hash Password (🔥 Critical Step)
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(password, salt);
+    // 2. เปรียบเทียบ password กับ hash ใน DB
+    // ⚠️ ห้าม user.password_hash === password เด็ดขาด!
+    const isPasswordValid = await comparePassword(password, user.password_hash);
 
-    // 4. Save to DB
-    const newUser = new User({
-      username,
-      password: passwordHash // เก็บตัวแฮช ไม่ใช่ตัวจริง
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Username หรือ password ไม่ถูกต้อง'
+      });
+    }
+
+    // 3. Login สำเร็จ — สร้าง JWT (ดูใน Module 8.2)
+    res.json({
+      success: true,
+      message: `ยินดีต้อนรับ ${user.name} (${user.role})`,
+      data: {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        role: user.role,
+        country: user.country
+        // JWT token จะอยู่ตรงนี้ (ดู Module 8.2)
+      }
     });
-    await newUser.save();
-
-    res.status(201).json({ msg: 'สมัครสมาชิกสำเร็จ' });
 
   } catch (err) {
-    res.status(500).json({ msg: err.message });
+    console.error('Login error:', err.message);
+    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดภายในระบบ' });
   }
-});
-```
-
-
-## 🥊 Challenges
-
-### Level 1: Weak Password Detector
-จงเขียนฟังก์ชัน `isStrongPassword(password)` ที่คืนค่า `true` ถ้า:
-- ยาวอย่างน้อย 8 ตัว
-- มีตัวเลขอย่างน้อย 1 ตัว
-- (ใบ้: ใช้ Regex)
-
-::: details ✨ เฉลย
-```javascript
-function isStrongPassword(password) {
-  // Regex: 
-  // (?=.*\d) = ต้องมีตัวเลขอย่างน้อย 1 ตัว
-  // .{8,}    = ยาว 8 ขึ้นไป
-  const regex = /^(?=.*\d).{8,}$/;
-  return regex.test(password);
 }
+
+module.exports = { register, login };
 ```
 :::
 
-### Level 2: Brute Force Protection (Concept)
-ถ้า Hacker พยายาม Login ผิดๆ รัวๆ 100 ครั้งต่อวินาที เราจะกันยังไง?
-จงอธิบายแนวคิด (Concept) ไม่ต้องเขียนโค้ด
+---
 
-::: details ✨ เฉลย
-นี่คือการโจมตีแบบ **Brute Force**
-**วิธีป้องกัน**:
-1.  **Rate Limiting**: จำกัดจำนวนครั้งการยิง API (เช่น 5 ครั้ง / นาที) จาก IP เดิม
-2.  **Account Lockout**: ผิดครบ 5 ครั้ง -> ล็อกบัญชี 15 นาที
-3.  **CAPTCHA**: ถ้าผิดบ่อยๆ ให้ยืนยันตัวตนว่าเป็นมนุษย์
+### ตัวอย่างการทดสอบ (Node.js script)
+
+::: code-group
+```js [test-bcrypt.js]
+const bcrypt = require('bcryptjs');
+
+// ทดสอบ: แฮช password ของ judge และเปรียบเทียบ
+async function demonstrateBcrypt() {
+  console.log('=== WSA2026 bcrypt Demo ===\n');
+
+  const judgePassword = 'Judge@WSA2026';
+
+  // ขั้นตอนที่ 1: Hash
+  console.log('Original password:', judgePassword);
+  const hashed = await bcrypt.hash(judgePassword, 10);
+  console.log('Hashed (stored in DB):', hashed);
+  console.log('Hash length:', hashed.length, 'chars\n');
+
+  // ขั้นตอนที่ 2: Compare (correct)
+  const correctResult = await bcrypt.compare(judgePassword, hashed);
+  console.log('Compare correct password:', correctResult); // true
+
+  // ขั้นตอนที่ 3: Compare (wrong)
+  const wrongResult = await bcrypt.compare('WrongPassword', hashed);
+  console.log('Compare wrong password:', wrongResult); // false
+
+  // ขั้นตอนที่ 4: Hash ซ้ำ -> Salt ต่างกัน -> Hash ต่างกัน
+  const hashed2 = await bcrypt.hash(judgePassword, 10);
+  console.log('\nSame password, hashed twice:');
+  console.log('Hash 1:', hashed);
+  console.log('Hash 2:', hashed2);
+  console.log('Are hashes identical?', hashed === hashed2); // false!
+}
+
+demonstrateBcrypt();
+```
 :::
 
+---
 
-## 📚 Glossary
+## 🎯 โจทย์ฝึกปฏิบัติเสริมความเข้าใจ (Mini Exercise)
 
-| คำศัพท์ | ความหมาย |
-|:--------|:---------|
-| **Authentication (AuthN)** | การพิสูจน์ตัวตน (คุณคือใคร? -> Login) |
-| **Authorization (AuthZ)** | การตรวจสอบสิทธิ์ (คุณทำอะไรได้บ้าง? -> Admin/User) |
-| **Hash Function** | ฟังก์ชันทางคณิตศาสตร์ที่แปลงข้อมูลเป็นรหัสลับแบบทางเดียว (ย้อนกลับไม่ได้) |
-| **Salt** | ค่าสุ่มที่เติมเข้าไปใน Password ก่อน Hash เพื่อป้องกัน Rainbow Table Attack |
-| **Rainbow Table** | ตารางฐานข้อมูล Hash ที่ Hacker เตรียมไว้เทียบ (ถ้าไม่ Salt ก็โดนแตกได้ง่ายๆ) |
-| **Brute Force** | การเดารหัสผ่านไปเรื่อยๆ จนกว่าจะถูก |
+- **โจทย์:** ใน WSA2026 มี manager 5 คนจาก 5 ประเทศ ต้องการ hash password ทั้งหมดพร้อมกัน แล้วตรวจสอบว่า hash ที่ได้ถูกต้องครบทุกคน
 
+จงเขียน Node.js script ที่:
+1. รับ array ของ manager objects `{ username, password, country }`
+2. Hash password ของทุกคนด้วย `Promise.all()` (ทำงานพร้อมกัน)
+3. Verify ว่า hash ที่ได้ทุกคนถูกต้อง (compare กับ password เดิม)
+4. Print ผลออกมาเป็นตาราง
 
-## 🔗 References
+::: details 💡 คำใบ้ (Hint)
+- ใช้ `Promise.all(managers.map(m => bcrypt.hash(m.password, 10)))` เพื่อ hash พร้อมกัน
+- Loop ผลด้วย `Promise.all(results.map((hash, i) => bcrypt.compare(managers[i].password, hash)))`
+- ใช้ `console.table()` เพื่อ print ตารางสวยงาม
+:::
 
-- [NIST Password Guidelines](https://pages.nist.gov/800-63-3/sp800-63b.html) - มาตรฐานความปลอดภัยระดับโลก
-- [bcryptjs npm](https://www.npmjs.com/package/bcryptjs)
-- [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
+::: details ✅ เฉลย
+```js
+const bcrypt = require('bcryptjs');
 
+const managers = [
+  { username: 'mgr_thailand',   password: 'TH@Manager2026', country: 'Thailand' },
+  { username: 'mgr_japan',      password: 'JP@Manager2026', country: 'Japan' },
+  { username: 'mgr_korea',      password: 'KR@Manager2026', country: 'South Korea' },
+  { username: 'mgr_germany',    password: 'DE@Manager2026', country: 'Germany' },
+  { username: 'mgr_australia',  password: 'AU@Manager2026', country: 'Australia' },
+];
 
-> 👉 **ไปต่อ: [JWT Fundamentals](/node/08-02-jwt-fundamentals)**
+async function batchHashAndVerify(managerList) {
+  console.log('=== WSA2026: Batch Hash Manager Passwords ===\n');
+
+  // Step 1: Hash ทั้งหมดพร้อมกัน
+  console.log('Hashing all passwords concurrently...');
+  const hashes = await Promise.all(
+    managerList.map(m => bcrypt.hash(m.password, 10))
+  );
+  console.log('All hashed!\n');
+
+  // Step 2: Verify ทั้งหมดพร้อมกัน
+  const verifyResults = await Promise.all(
+    hashes.map((hash, i) => bcrypt.compare(managerList[i].password, hash))
+  );
+
+  // Step 3: แสดงผลเป็นตาราง
+  const tableData = managerList.map((m, i) => ({
+    username: m.username,
+    country: m.country,
+    hash_preview: hashes[i].substring(0, 20) + '...',
+    verified: verifyResults[i] ? '✅ PASS' : '❌ FAIL'
+  }));
+
+  console.table(tableData);
+
+  const allPassed = verifyResults.every(r => r === true);
+  console.log(`\nAll verifications passed: ${allPassed}`);
+}
+
+batchHashAndVerify(managers);
+```
+:::
+
+---
+
+## 🔥 Challenge (โจทย์ท้าทาย!)
+
+- **โจทย์:** Implement "Forgot Password" Reset Flow สำหรับ WSA2026
+
+**Scenario:** judge ลืมรหัสผ่าน ต้องการ reset password ใหม่
+
+**ต้องทำ:**
+1. Route `POST /api/auth/forgot-password` — รับ username, ตรวจสอบว่ามีอยู่จริง สร้าง reset token (random string) และ expiry time บันทึกลง DB
+2. Route `POST /api/auth/reset-password` — รับ reset token + new password, ตรวจสอบ token ไม่หมดอายุ, hash password ใหม่ บันทึกลง DB, ลบ reset token ออก
+3. เพิ่ม columns `reset_token` และ `reset_token_expires` ใน table `users`
+
+**Hint สำคัญ:**
+- สร้าง reset token ด้วย `crypto.randomBytes(32).toString('hex')`
+- ตั้ง expiry 1 ชั่วโมง: `Date.now() + 3600000`
+- ตรวจสอบ: `reset_token_expires > NOW()` ใน SQL query
+- หลัง reset สำเร็จ ต้อง hash password ใหม่ด้วย bcrypt ก่อน UPDATE เสมอ
+
+---
+
+## 🗣️ ทบทวน (Review)
+
+::: details ❓ คำถามทบทวนความเข้าใจ
+
+**คำถาม 1:** ทำไม bcrypt ถึงออกแบบมาให้ "ช้า" โดยตั้งใจ และ cost factor (rounds) ส่งผลอย่างไร?
+
+**แนวคำตอบ:** bcrypt ช้าโดยตั้งใจเพื่อป้องกัน Brute Force Attack — ถ้า hash 1 ครั้งใช้เวลา 65ms (rounds=10) Hacker ที่ต้องสุ่ม password 1 ล้านครั้งต้องใช้เวลา ~18 ชั่วโมง เทียบกับ MD5 ที่เร็วมากจน Hacker สุ่มได้ billions ครั้งต่อวินาที cost factor แบบ exponential คือยิ่ง rounds มาก เวลา hash ยาวขึ้นทวีคูณ
+
+**คำถาม 2:** Rainbow Table Attack คืออะไร และ bcrypt ป้องกันได้อย่างไร?
+
+**แนวคำตอบ:** Rainbow Table คือตารางที่ Hacker สร้างไว้ล่วงหน้า โดย pre-compute hash ของ password ทั่วไปหลายล้านค่า แล้ว reverse lookup ได้ทันที bcrypt ป้องกันด้วย Salt ที่สุ่มใหม่ทุกครั้ง ทำให้ถึงแม้ password เหมือนกัน Hash ก็ต่างกัน จึง precomputed table ใช้ไม่ได้
+
+**คำถาม 3:** ทำไมเราไม่ควรใช้ MD5 หรือ SHA-256 เก็บ password และ bcrypt ต่างจาก encryption อย่างไร?
+
+**แนวคำตอบ:** MD5/SHA-256 เร็วเกินไปสำหรับ password hashing (ออกแบบมาสำหรับ checksum/data integrity ไม่ใช่ security) ไม่มี salt built-in และ MD5 มี collision ที่พิสูจน์แล้ว Encryption เป็น two-way (encrypt แล้ว decrypt กลับได้) ต้องการ key ถ้า key หลุด ข้อมูลทุกอย่างหลุดตาม bcrypt เป็น one-way hash ถอดกลับไม่ได้แม้รู้ algorithm ทำให้ปลอดภัยกว่าสำหรับการเก็บ password
+
+:::
+
+---
+
+> 👉 **ไปต่อ: [Module 8.2: JWT Fundamentals](/node/08-02-jwt-fundamentals)**

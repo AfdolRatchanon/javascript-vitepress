@@ -93,10 +93,14 @@ for (let i = 1; i <= 100; i++) {
 
 
 
-## 🏆 Challenges
+## Challenges 🏆
+
+ทดสอบทักษะที่ได้เรียนมาใน Module 3 ผ่านโปรเจกต์ FizzBuzz:
 
 ### 🎯 Challenge 1: FizzBuzz แบบไม่ใช้ `else if`
-ลองเขียน FizzBuzz โดยใช้วิธี **สร้าง String ทีละส่วน** แทน `if/else if`:
+**หัวข้อ:** Control Flow & Loop
+
+**โจทย์:** ลองเขียน FizzBuzz โดยใช้วิธี **สร้าง String ทีละส่วน** แทน `if/else if`:
 
 *   **Hint:** สร้างตัวแปร `output = ""` → ถ้าหาร 3 ลงตัวให้ `output += "Fizz"` → ถ้าหาร 5 ลงตัวให้ `output += "Buzz"`
 
@@ -113,7 +117,9 @@ for (let i = 1; i <= 100; i++) {
 :::
 
 ### 🎯 Challenge 2: Custom FizzBuzz
-แก้โจทย์ให้รับ **ตัวเลข 2 ตัว** และ **คำ 2 คำ** แทนที่จะฝัง 3/5/Fizz/Buzz ตายตัว:
+**หัวข้อ:** Functions & Parameters
+
+**โจทย์:** แก้โจทย์ให้รับ **ตัวเลข 2 ตัว** และ **คำ 2 คำ** แทนที่จะฝัง 3/5/Fizz/Buzz ตายตัว:
 
 ```javascript
 // ตัวอย่าง: ใช้ 4 กับ 7 แทน 3 กับ 5
@@ -137,7 +143,9 @@ customFizzBuzz(1, 30, 4, "Foo", 7, "Bar");
 :::
 
 ### 🎯 Challenge 3: FizzBuzz Summary
-หลังจากวนลูปเสร็จ ให้แสดงสรุป: มี Fizz กี่ครั้ง, Buzz กี่ครั้ง, FizzBuzz กี่ครั้ง
+**หัวข้อ:** Loop & Counter Variables
+
+**โจทย์:** หลังจากวนลูปเสร็จ ให้แสดงสรุป: มี Fizz กี่ครั้ง, Buzz กี่ครั้ง, FizzBuzz กี่ครั้ง
 
 ::: details ✨ ดูเฉลย
 ```javascript

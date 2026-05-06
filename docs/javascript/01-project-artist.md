@@ -96,10 +96,14 @@ console.log(`
 
 
 
-## 🏆 Challenges
+## Challenges 🏆
+
+ทดสอบทักษะการวาดรูปจาก Phase ต่างๆ ที่เรียนมาในบทนี้:
 
 ### 🎯 Challenge 1: Be Creative!
-จงวาดรูปอะไรก็ได้ที่คุณชอบ 1 รูป ลงในไฟล์ `my-art.js`
+**หัวข้อ:** Phase 1-2: Basic Shapes & The Face
+
+**โจทย์:** จงวาดรูปอะไรก็ได้ที่คุณชอบ 1 รูป ลงในไฟล์ `my-art.js`
 *   **Ideas:** ต้นคริสต์มาส 🎄, แมว 🐱, บ้าน 🏠, หรือชื่อเล่นตัวเอง
 *   **Rule:** ต้องมีอย่างน้อย 5 บรรทัด
 
@@ -114,7 +118,9 @@ console.log("    |    ");
 :::
 
 ### 🎯 Challenge 2: Styled Name Card
-ลองใช้ `%c` สร้าง "นามบัตร" สวยๆ ใน Browser Console ที่มีชื่อคุณ + สีพื้นหลัง + font ใหญ่
+**หัวข้อ:** Phase 3: Styled Console
+
+**โจทย์:** ลองใช้ `%c` สร้าง "นามบัตร" สวยๆ ใน Browser Console ที่มีชื่อคุณ + สีพื้นหลัง + font ใหญ่
 
 ::: details ✨ ดูเฉลย
 ```javascript
@@ -126,7 +132,9 @@ console.log(
 :::
 
 ### 🎯 Challenge 3: Template Art
-ใช้ Template Literals (backtick) วาดรูป **บ้าน** ให้มีหลังคา กำแพง ประตู และหน้าต่าง ใน `console.log` เดียว
+**หัวข้อ:** Phase 4: Template Literals
+
+**โจทย์:** ใช้ Template Literals (backtick) วาดรูป **บ้าน** ให้มีหลังคา กำแพง ประตู และหน้าต่าง ใน `console.log` เดียว
 
 ::: details ✨ ดูเฉลย
 ```javascript

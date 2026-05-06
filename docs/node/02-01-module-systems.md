@@ -1,453 +1,554 @@
-# Module 2.1: Module Systems 📦
+# Module Systems 📦
 
-> **"Modules are the building blocks of any large-scale application."**
-> — *Node.js Docs*
+> 💡 **เป้าหมาย:** เข้าใจระบบ Module ทั้ง CommonJS และ ESM รวมถึงการทำงานภายในของ `require()` และ `import` — นำไปใช้แยกโค้ดของ **WSA2026 Test Submission Management System** เป็น Helper Modules ที่ Reusable และดูแลรักษาง่าย
 
-ในโปรเจกต์จริง เราไม่ได้เขียนทุกอย่างไว้ในไฟล์เดียว! **Module System** ช่วยให้เรา **แยกโค้ดออกเป็นไฟล์ย่อยๆ** แต่ละไฟล์ทำหน้าที่เฉพาะ → นำไป**รวมกัน**ตอนใช้งาน
+## 📖 ทฤษฎีและแนวคิด (Theory & Concepts)
 
-> **💡 Analogy (เปรียบเทียบ):**
-> Module เหมือน **"ชิ้นส่วนเลโก้"** 🧱:
-> - แต่ละชิ้น (Module) มีหน้าที่เฉพาะ (ล้อ, ประตู, หลังคา)
-> - นำมาประกอบรวมกันเป็น **รถ** (แอปที่สมบูรณ์)
-> - เปลี่ยนเฉพาะชิ้นที่ต้องการได้ โดยไม่ต้องพังรถทั้งคัน!
+ในโปรเจกต์จริงอย่าง WSA2026 เราจะไม่เขียนโค้ดทุกอย่างไว้ในไฟล์เดียว เพราะระบบมีหลายส่วน เช่น การตรวจสอบ Submission, การคำนวณคะแนน, การจัดการข้อมูล Judge — แต่ละส่วนควรอยู่ใน Module แยก
 
-
-
-## 1. ทำไมต้องแยก Module? 🤔
-
-สมมติมีไฟล์เดียว 1,000 บรรทัด:
+### ทำไมต้องแยก Module?
 
 ```
-❌ ไม่ดี: ไฟล์เดียว 1,000 บรรทัด
+❌ ไม่ดี — ไฟล์เดียวยาว 1,000 บรรทัด
+─────────────────────────────────────────
 app.js (1,000 lines)
-├── Database connection code
-├── User authentication
-├── API routes
-├── Helper functions
-└── Business logic
+├── ตรวจสอบ submission URL
+├── ตรวจสอบ judge credentials
+├── คำนวณคะแนน
+├── บันทึกผลลงไฟล์
+└── แสดงผลสรุป
 
-✅ ดี: แยกเป็น Module
-app.js          ← หลัก (รวมทั้งหมด)
-├── db.js       ← Database
-├── auth.js     ← Authentication
-├── routes.js   ← API routes
-├── helpers.js  ← Helper functions
-└── services.js ← Business logic
+✅ ดี — แยกเป็น Module ตามหน้าที่
+─────────────────────────────────────────
+app.js                  ← ไฟล์หลัก (เรียกใช้ทุกอย่าง)
+├── submissionHelper.js ← ตรวจสอบ + จัดรูป submission
+├── scoreHelper.js      ← คำนวณและตรวจสอบคะแนน
+├── judgeHelper.js      ← จัดการข้อมูล judge
+└── taskHelper.js       ← ข้อมูล task และ time limit
 ```
 
 **ข้อดีของการแยก Module:**
 
 | ข้อดี | อธิบาย |
-|:------|:------|
+|:------|:-------|
 | **อ่านง่าย** | แต่ละไฟล์สั้น มีหน้าที่เดียว |
 | **แก้ง่าย** | แก้ไฟล์เดียว ไม่กระทบทั้งโปรเจกต์ |
-| **Reusable** | นำไปใช้ซ้ำในโปรเจกต์อื่นได้ |
-| **ทำงานเป็นทีม** | คนละคนแยกกันทำคนละไฟล์ |
-| **Test ง่าย** | Test ทีละ Module |
+| **Reusable** | นำ Helper Module ไปใช้ใน Module อื่นได้ |
+| **ทำงานเป็นทีม** | Judge UI และ Admin UI ใช้ Helper เดียวกัน |
+| **Test ง่าย** | Test `scoreHelper.js` แยกออกมาได้ทันที |
 
+---
 
+### CommonJS (CJS) — ระบบดั้งเดิมของ Node.js
 
-## 2. CommonJS (CJS) — ระบบเก่าของ Node.js 📜
+**CommonJS** คือระบบ Module **ดั้งเดิม** ที่ Node.js ใช้มาตั้งแต่แรก ใช้ `require()` และ `module.exports` เป็น Default ของ Node.js (ถ้าไม่ตั้งค่าอะไรเป็นพิเศษ)
 
-ตาม [Node.js Docs](https://nodejs.org/api/modules.html): **CommonJS** คือระบบ Module **ดั้งเดิม**ของ Node.js ใช้ `require()` และ `module.exports` — เป็น **Default** ของ Node.js (ถ้าไม่ตั้งค่าอะไรพิเศษ)
+**การทำงานภายในของ `require()`:**
 
-### Export (ส่งออก)
-
-```javascript
-// ==========================================
-// math.js — Module ที่เราสร้างเอง
-// ==========================================
-
-function add(a, b) {
-    return a + b;
-}
-
-function subtract(a, b) {
-    return a - b;
-}
-
-const PI = 3.14159;
-
-// ✅ Export ออกไป (ส่งให้ไฟล์อื่นใช้)
-module.exports = { add, subtract, PI };
+```
+require("./submissionHelper")
+        │
+        ▼
+┌─────────────────────────────────────────────┐
+│  Node.js Module Wrapper (เกิดอัตโนมัติ!)   │
+│                                             │
+│  (function(exports, require, module,        │
+│            __filename, __dirname) {         │
+│                                             │
+│      // โค้ดทั้งหมดของไฟล์ submissionHelper  │
+│      // ถูกห่อไว้ใน Function นี้            │
+│                                             │
+│  })                                         │
+└─────────────────────────────────────────────┘
+        │
+        ▼
+  ส่งคืน module.exports กลับมา
 ```
 
-### Import (นำเข้า)
+> 💡 **สิ่งที่ Node.js ทำอัตโนมัติ:** ทุกไฟล์ `.js` จะถูกห่อด้วย **Module Wrapper Function** ก่อนรัน — นั่นคือเหตุผลว่าทำไม `__dirname`, `__filename`, `require`, `module`, `exports` ถึงมีใช้ในทุกไฟล์โดยไม่ต้อง import
 
-```javascript
-// ==========================================
-// app.js — Import มาใช้
-// ==========================================
+---
 
-// ✅ require() — นำเข้า Module
-const math = require("./math"); // "./" = ไฟล์ในโฟลเดอร์เดียวกัน
+### ESM (ES Modules) — มาตรฐานสากล
 
-console.log(math.add(10, 5));     // 15
-console.log(math.subtract(20, 8)); // 12
-console.log(math.PI);             // 3.14159
+**ESM** คือ Module System ที่เป็น **มาตรฐานของ JavaScript** ทั้ง Browser และ Node.js ใช้ `import` / `export` รองรับ Tree Shaking (ตัดโค้ดที่ไม่ใช้ออกเมื่อ Build)
 
-// ✅ Destructuring ได้!
-const { add, PI } = require("./math");
-console.log(add(3, 7)); // 10
+**การทำงานของ ESM (Static Analysis):**
+
+```
+import { validateSubmission } from "./submissionHelper.mjs"
+         │
+         ▼
+┌────────────────────────────────────────────┐
+│  Static Analysis Phase (ก่อนรันโค้ด!)     │
+│                                            │
+│  1. อ่าน import/export ทั้งหมด            │
+│  2. สร้าง Dependency Graph                 │
+│  3. โหลด Module แบบ Async พร้อมกัน        │
+│  4. Link (ผูก) ค่าของ export เข้ากับ      │
+│     ตัวแปร import (Live Binding!)          │
+└────────────────────────────────────────────┘
+         │
+         ▼
+  สามารถใช้ Tree Shaking ได้!
+  (เพราะรู้ว่าใช้อะไรก่อนรัน)
 ```
 
-### Export แบบอื่นๆ
+---
 
-```javascript
-// ==========================================
-// แบบ 1: Export ทีละตัว
-// ==========================================
-// greet.js
-module.exports.hello = (name) => `Hello, ${name}!`;
-module.exports.bye = (name) => `Bye, ${name}!`;
+### Module Resolution — Node.js หา Module อย่างไร?
 
-// หรือใช้ exports ย่อ:
-exports.hello = (name) => `Hello, ${name}!`;
-exports.bye = (name) => `Bye, ${name}!`;
-
-// ==========================================
-// แบบ 2: Export ตัวเดียว (Default)
-// ==========================================
-// logger.js
-class Logger {
-    log(msg) { console.log(`[LOG] ${msg}`); }
-    error(msg) { console.error(`[ERROR] ${msg}`); }
-}
-module.exports = Logger; // Export Class เดียว
-
-// app.js
-const Logger = require("./logger");
-const log = new Logger();
-log.log("Hello!"); // [LOG] Hello!
+```
+require("xxx") หรือ import "xxx"
+         │
+         ▼
+┌────────────────────────────────────────────┐
+│  ขั้นที่ 1: Built-in Module?               │
+│  require("fs") → ✅ หยุดค้นหา             │
+└────────────────────────────────────────────┘
+         │ ไม่ใช่
+         ▼
+┌────────────────────────────────────────────┐
+│  ขั้นที่ 2: ขึ้นต้นด้วย "./" หรือ "../"? │
+│  require("./scoreHelper")                  │
+│    → ลอง ./scoreHelper.js                  │
+│    → ลอง ./scoreHelper.json                │
+│    → ลอง ./scoreHelper/index.js            │
+└────────────────────────────────────────────┘
+         │ ไม่ใช่
+         ▼
+┌────────────────────────────────────────────┐
+│  ขั้นที่ 3: npm Package?                   │
+│  require("express")                        │
+│    → ./node_modules/express/               │
+│    → ../node_modules/express/              │
+│    → ../../node_modules/express/ ...       │
+│    (ขึ้นไปเรื่อยๆ จนถึง root)             │
+└────────────────────────────────────────────┘
 ```
 
-> ⚠️ **`exports` vs `module.exports`:**
-> - `exports` เป็น**ตัวย่อ**ของ `module.exports` — ใช้ได้เฉพาะเพิ่ม Property
-> - ❌ `exports = { ... }` → **ไม่ทำงาน!** (เปลี่ยน reference)
-> - ✅ `module.exports = { ... }` → **ทำงาน!** (ใช้ตัวนี้เสมอถ้าไม่แน่ใจ)
+---
 
-
-
-## 3. ESM (ES Modules) — ระบบใหม่ (มาตรฐาน) ✨
-
-ตาม [Node.js ESM Docs](https://nodejs.org/api/esm.html): **ESM** คือ Module System ที่เป็น**มาตรฐานของ JavaScript** (ไม่ใช่แค่ Node.js!) — ใช้ `import` และ `export` ที่เราเรียนใน JS Course (08-03-modules)
-
-### เปิดใช้ ESM ใน Node.js
-
-**ต้องทำ 1 อย่าง** ก่อนใช้ `import/export`:
-
-```json
-// package.json — เพิ่ม "type": "module"
-{
-    "name": "my-project",
-    "type": "module"
-}
-```
-
-หรือเปลี่ยนนามสกุลไฟล์เป็น `.mjs` (ไม่ต้องแก้ package.json)
-
-### Export (ESM)
-
-```javascript
-// ==========================================
-// math.mjs (หรือ math.js ถ้าตั้ง type: module)
-// ==========================================
-
-// Named Export
-export function add(a, b) {
-    return a + b;
-}
-
-export function subtract(a, b) {
-    return a - b;
-}
-
-export const PI = 3.14159;
-
-// Default Export (ได้แค่ 1 ตัวต่อไฟล์)
-export default class Calculator {
-    static add(a, b) { return a + b; }
-    static sub(a, b) { return a - b; }
-}
-```
-
-### Import (ESM)
-
-```javascript
-// ==========================================
-// app.mjs — Import มาใช้
-// ==========================================
-
-// Named Import (ต้องใส่ { })
-import { add, subtract, PI } from "./math.mjs";
-
-console.log(add(10, 5));  // 15
-console.log(PI);           // 3.14159
-
-// Default Import (ไม่ต้องใส่ { })
-import Calculator from "./math.mjs";
-console.log(Calculator.add(3, 7)); // 10
-
-// Import ทั้งหมดเป็น Object
-import * as math from "./math.mjs";
-console.log(math.add(1, 2)); // 3
-```
-
-> ⚠️ **ESM ใน Node.js:** ต้องใส่ **นามสกุลไฟล์** ใน path! (`"./math.mjs"` ไม่ใช่ `"./math"`)
-
-
-
-## 4. 📊 CommonJS vs ESM — เปรียบเทียบ
+### CJS vs ESM — เปรียบเทียบ
 
 | Feature | **CommonJS (CJS)** | **ESM** |
 |:--------|:-------------------|:--------|
 | **Syntax** | `require()` / `module.exports` | `import` / `export` |
-| **Loading** | **Synchronous** (โหลดทีละตัว) | **Asynchronous** (โหลดพร้อมกัน) |
-| **Default ใน Node.js** | ✅ (ถ้าไม่ตั้ง type) | ❌ (ต้องตั้ง `"type": "module"`) |
+| **Loading** | **Synchronous** (โหลดทีละตัว บล็อกรอ) | **Asynchronous** (โหลดพร้อมกัน) |
+| **Default ใน Node.js** | ✅ ไฟล์ `.js` ธรรมดา | ❌ ต้องตั้ง `"type": "module"` หรือใช้ `.mjs` |
 | **Browser Support** | ❌ ไม่รองรับ | ✅ รองรับ (`<script type="module">`) |
-| **File Extension** | `.js` / `.cjs` | `.mjs` หรือ `.js` + type:module |
+| **`__dirname`** | ✅ มีให้ใช้ | ❌ ไม่มี (ใช้ `import.meta.url` แทน) |
 | **Top-level await** | ❌ ไม่ได้ | ✅ ได้ |
-| **`__dirname`** | ✅ มี | ❌ ไม่มี (ใช้ `import.meta.url` แทน) |
-| **Tree Shaking** | ❌ ไม่ได้ | ✅ ได้ (Bundler ตัด Code ที่ไม่ใช้) |
-| **ใช้เมื่อ** | Legacy code, npm packages เก่า | โปรเจกต์ใหม่, Modern code |
+| **Tree Shaking** | ❌ ไม่ได้ | ✅ ได้ (Bundler ตัดโค้ดที่ไม่ใช้) |
+| **Live Binding** | ❌ Copy ค่ามา | ✅ Reference จริง (ค่าอัปเดตตาม) |
+| **Dynamic Import** | ✅ `require()` ทุกที่ | ✅ `import()` แบบ dynamic ได้ |
 
-### ใช้อันไหนดี?
-
-```
-โปรเจกต์ใหม่ → ✅ ESM (import/export)    — มาตรฐาน, อนาคต
-โปรเจกต์เก่า → ✅ CommonJS (require)      — ยังใช้ได้ปกติ
-npm Package  → 🤔 ดู Docs ว่ารองรับอะไร   — บาง Package ยังไม่รองรับ ESM
-```
-
-> 💡 **ในคอร์สนี้** เราจะใช้ **CommonJS เป็นหลัก** เพราะ Express.js และ Package ส่วนใหญ่ยังใช้ CommonJS — แต่จะแสดง ESM เปรียบเทียบด้วย
-
-
-
-## 5. Built-in Modules — Module ที่มาพร้อม Node.js 🧰
-
-Node.js มี Module **ในตัว** ที่ไม่ต้อง `npm install` — แค่ `require()` ใช้ได้เลย!
-
-```javascript
-// ✅ Built-in Modules (ไม่ต้อง install!)
-const path = require("path");     // จัดการ Path ไฟล์
-const fs = require("fs");         // อ่าน/เขียนไฟล์
-const os = require("os");         // ข้อมูล OS
-const http = require("http");     // สร้าง HTTP Server
-const crypto = require("crypto"); // เข้ารหัส, Hash
-
-// ตัวอย่าง: os module
-console.log("Hostname:", os.hostname());
-console.log("Platform:", os.platform());
-console.log("CPUs:", os.cpus().length, "cores");
-console.log("Total RAM:", (os.totalmem() / 1024 ** 3).toFixed(1), "GB");
-console.log("Free RAM:", (os.freemem() / 1024 ** 3).toFixed(1), "GB");
-console.log("Home Dir:", os.homedir());
-```
-
-### 📊 Built-in Modules สำคัญ
-
-| Module | ใช้ทำอะไร | เรียนใน Module |
-|:-------|:---------|:-------------|
-| `fs` | อ่าน/เขียน/ลบไฟล์ | Module 3 |
-| `path` | จัดการ Path ไฟล์ | Module 3 |
-| `http` | สร้าง HTTP Server | Module 4 |
-| `os` | ข้อมูล OS | Module 1 (นี้!) |
-| `crypto` | Hash, Encrypt | Module 9, 11 |
-| `url` | Parse URL | Module 4 |
-| `events` | Event Emitter | Module 3 |
-| `util` | Utility functions | ทั่วไป |
-
-
-
-## 6. Module Resolution — Node.js หาไฟล์อย่างไร? 🔍
-
-เมื่อเรียก `require("xxx")` Node.js ค้นหาตามลำดับนี้:
-
-```javascript
-// 1. Built-in Module (ชื่อตรง)
-require("fs");      // → Node.js Built-in ✅
-
-// 2. ไฟล์ในโปรเจกต์ (ขึ้นต้น ./ หรือ ../)
-require("./math");  // → ./math.js ✅
-
-// 3. npm Package (ไม่มี ./)
-require("express"); // → node_modules/express/ ✅
-```
-
-### ลำดับการค้นหาไฟล์
+### ข้อควรระวัง (Mixed Usage Pitfalls)
 
 ```
-require("./math")
-  ↓
-1. ./math.js          ← หาไฟล์ .js ก่อน
-2. ./math.json         ← ถ้าไม่เจอ → หา .json
-3. ./math/index.js     ← ถ้าเป็นโฟลเดอร์ → หา index.js
+⚠️ ปัญหาที่พบบ่อย:
+
+1. ใช้ require() ใน .mjs ไฟล์
+   ❌ // taskHelper.mjs
+      const fs = require("fs")  // SyntaxError!
+   ✅ // taskHelper.mjs
+      import fs from "fs"       // ถูกต้อง
+
+2. ใช้ import ใน .js โดยไม่ตั้ง type:module
+   ❌ // scoreHelper.js (ไม่มี type:module)
+      import { add } from "./math.js"  // SyntaxError!
+   ✅ แก้ได้ด้วย: เพิ่ม "type":"module" ใน package.json
+      หรือเปลี่ยนนามสกุลเป็น .mjs
+
+3. ลืมใส่นามสกุลไฟล์ใน ESM
+   ❌ import { fn } from "./helper"     // Error ใน Node.js ESM!
+   ✅ import { fn } from "./helper.mjs" // ต้องใส่ .mjs เสมอ
+
+4. __dirname ใน ESM
+   ❌ console.log(__dirname)  // ReferenceError!
+   ✅ import { fileURLToPath } from "url"
+      import { dirname } from "path"
+      const __filename = fileURLToPath(import.meta.url)
+      const __dirname = dirname(__filename)
 ```
 
+---
 
+## 💻 ตัวอย่างโค้ด (Code Implementation)
 
-## 7. เทคนิคที่มีประโยชน์: `require.main === module` 🎯
+สร้าง Helper Module สำหรับระบบ WSA2026 — ทั้งแบบ CommonJS และ ESM
 
-บางครั้งเราอยากให้ไฟล์ **ทั้งเป็น Module และรันได้เอง** — ใช้ Pattern นี้:
+::: code-group
+```js [submissionHelper.js (CommonJS)]
+// ============================================================
+// submissionHelper.js — CommonJS Module
+// WSA2026: ตรวจสอบและจัดรูปข้อมูล Submission ของ Candidate
+// ============================================================
 
-```javascript
-// helpers.js
-function greet(name) {
-    return `Hello, ${name}!`;
+/**
+ * ตรวจสอบว่า submission URL ถูกต้องหรือไม่
+ * @param {string} submissionUrl - URL ที่ candidate ส่งมา
+ * @returns {{ valid: boolean, message: string }}
+ */
+function validateSubmissionUrl(submissionUrl) {
+  if (!submissionUrl || typeof submissionUrl !== "string") {
+    return { valid: false, message: "submissionUrl ต้องเป็น String" };
+  }
+
+  const urlPattern = /^https?:\/\/.+\..+/;
+  if (!urlPattern.test(submissionUrl)) {
+    return { valid: false, message: `URL ไม่ถูกต้อง: ${submissionUrl}` };
+  }
+
+  return { valid: true, message: "URL ถูกต้อง" };
 }
 
-module.exports = { greet };
+/**
+ * สร้าง Submission Record สำหรับบันทึกลงระบบ
+ * @param {string} candidateId  - รหัส candidate
+ * @param {string} submissionUrl - URL ที่ส่งมา
+ * @param {string} taskTitle    - ชื่อ task ที่ submit
+ * @returns {object} Submission record พร้อม timestamp
+ */
+function createSubmissionRecord(candidateId, submissionUrl, taskTitle) {
+  const validation = validateSubmissionUrl(submissionUrl);
 
-// ✅ ถ้ารันไฟล์นี้ตรง (ไม่ได้ require มาจากที่อื่น) → รัน Demo
+  if (!validation.valid) {
+    throw new Error(`ไม่สามารถสร้าง Submission: ${validation.message}`);
+  }
+
+  return {
+    id: `SUB-${Date.now()}`,
+    candidateId,
+    submissionUrl,
+    taskTitle,
+    submittedAt: new Date().toISOString(),
+    status: "pending", // pending | scored | rejected
+  };
+}
+
+/**
+ * กรอง Submission ตาม candidateId
+ * @param {Array} submissions - รายการ submission ทั้งหมด
+ * @param {string} candidateId - รหัส candidate ที่ต้องการ
+ * @returns {Array} รายการ submission ของ candidate นั้น
+ */
+function getSubmissionsByCandidate(submissions, candidateId) {
+  return submissions.filter((sub) => sub.candidateId === candidateId);
+}
+
+/**
+ * แสดงสรุป Submission ในรูปแบบอ่านง่าย
+ * @param {object} record - Submission record
+ * @returns {string} ข้อความสรุป
+ */
+function formatSubmissionSummary(record) {
+  return (
+    `[${record.status.toUpperCase()}] ` +
+    `Candidate: ${record.candidateId} | ` +
+    `Task: ${record.taskTitle} | ` +
+    `URL: ${record.submissionUrl}`
+  );
+}
+
+// ✅ Export ทุกฟังก์ชัน (CommonJS style)
+module.exports = {
+  validateSubmissionUrl,
+  createSubmissionRecord,
+  getSubmissionsByCandidate,
+  formatSubmissionSummary,
+};
+
+// ✅ Demo: รันตรงเพื่อทดสอบ (ไม่ทำงานตอนถูก require)
 if (require.main === module) {
-    // โค้ดนี้ทำงานเฉพาะตอน `node helpers.js` ตรงๆ
-    // ไม่ทำงานตอนถูก require จากไฟล์อื่น
-    console.log(greet("Dolar"));  // Hello, Dolar!
+  console.log("=== Testing submissionHelper.js ===\n");
+
+  // ทดสอบ validateSubmissionUrl
+  console.log(validateSubmissionUrl("https://myproject.netlify.app"));
+  // { valid: true, message: 'URL ถูกต้อง' }
+
+  console.log(validateSubmissionUrl("not-a-url"));
+  // { valid: false, message: 'URL ไม่ถูกต้อง: not-a-url' }
+
+  // ทดสอบ createSubmissionRecord
+  const record = createSubmissionRecord(
+    "C001",
+    "https://myproject.netlify.app",
+    "Front-End Development"
+  );
+  console.log("\nSubmission Record:");
+  console.log(record);
+
+  // ทดสอบ formatSubmissionSummary
+  console.log("\nFormatted:");
+  console.log(formatSubmissionSummary(record));
 }
 ```
 
-> 💡 **`require.main === module`** คือเช็คว่า "ไฟล์นี้ถูกรันตรงหรือเปล่า?" — ดีสำหรับทำไฟล์ที่เป็นทั้ง Module และรันได้เดี่ยวด้วย
+```js [taskHelper.mjs (ESM)]
+// ============================================================
+// taskHelper.mjs — ES Module
+// WSA2026: จัดการข้อมูล Task สำหรับการแข่งขัน
+// ============================================================
 
+// ข้อมูล Task ของการแข่งขัน WSA2026
+// รูปแบบ: { id, title, time_limit_minutes, max_score }
+const TASKS = [
+  {
+    id: "T01",
+    title: "Front-End Development",
+    time_limit_minutes: 360,
+    max_score: 100,
+  },
+  {
+    id: "T02",
+    title: "Back-End Development",
+    time_limit_minutes: 300,
+    max_score: 100,
+  },
+  {
+    id: "T03",
+    title: "Responsive Design",
+    time_limit_minutes: 180,
+    max_score: 50,
+  },
+];
 
-
-## 8. Challenges 🏆
-
-### 🎯 Challenge 1: ทำไมต้องแยก Module? (หัวข้อ 1)
-ตอบคำถาม: การแยกโค้ดเป็น Module มีข้อดีอะไรบ้าง? (ยกมา 3 ข้อ):
-
-::: details ✨ ดูเฉลย
-1. **อ่านง่าย** (Readable) — โฟกัสแก้ทีละจุด
-2. **Re-usable** — เขียนครั้งเดียว เรียกใช้ได้หลายที่
-3. **Test ง่าย** — ทดสอบแยกส่วนได้
-:::
-
-### 🎯 Challenge 2: CommonJS Basic (หัวข้อ 2)
-สร้างไฟล์ `math.js` ที่ export ฟังก์ชัน `add` และ `PI` แบบ CommonJS แล้วนำมาใช้ใน `app.js`:
-
-::: details ✨ ดูเฉลย
-สร้างไฟล์ `math.js`:
-```javascript
-function add(a, b) { return a + b; }
-const PI = 3.14;
-
-module.exports = { add, PI };
-```
-
-สร้างไฟล์ `app.js`:
-```javascript
-const math = require("./math");
-
-console.log(math.add(10, 20)); // 30
-console.log(math.PI);          // 3.14
-```
-
-ทดสอบด้วยคำสั่ง:
-```bash
-node app.js
-```
-:::
-
-### 🎯 Challenge 3: ESM Basic (หัวข้อ 3)
-สร้างไฟล์ `greet.mjs` (ESM) ที่ export ฟังก์ชัน `sayHello` แล้ว import มาใช้ใน `main.mjs`:
-
-::: details ✨ ดูเฉลย
-สร้างไฟล์ `greet.mjs`:
-```javascript
-export function sayHello(name) {
-    return `Hello, ${name}!`;
-}
-```
-
-สร้างไฟล์ `main.mjs`:
-```javascript
-import { sayHello } from "./greet.mjs";
-
-console.log(sayHello("Dolar"));
-```
-
-ทดสอบด้วยคำสั่ง:
-```bash
-node main.mjs
-```
-:::
-
-### 🎯 Challenge 4: CJS vs ESM (หัวข้อ 4)
-ตอบคำถาม:
-1. ถ้าจะใช้ `import` ในไฟล์ `.js` ธรรมดา ต้องตั้งค่าอะไรใน `package.json`?
-2. `require()` โหลดไฟล์แบบไหน (Sync/Async)?
-3. `import` โหลดไฟล์แบบไหน (Sync/Async)?
-
-::: details ✨ ดูเฉลย
-1. ต้องเพิ่ม **`"type": "module"`** ใน `package.json`
-2. `require()` เป็น **Synchronous** (โหลดทีละตัว รอจนเสร็จ)
-3. `import` เป็น **Asynchronous** (โหลดพร้อมกันได้)
-:::
-
-### 🎯 Challenge 5: Built-in Modules (หัวข้อ 5)
-สร้างไฟล์ `os-info.js` โดยใช้ `require("os")` แสดงชื่อเครื่อง (Hostname) และจำนวน CPU Cores:
-
-::: details ✨ ดูเฉลย
-สร้างไฟล์ `os-info.js`:
-```javascript
-const os = require("os");
-
-console.log("Hostname:", os.hostname());
-console.log("CPU Cores:", os.cpus().length);
-```
-
-ทดสอบด้วยคำสั่ง:
-```bash
-node os-info.js
-```
-:::
-
-### 🎯 Challenge 6: Module Resolution (หัวข้อ 6)
-ตอบคำถาม: ถ้าเขียน `require("./config")` Node.js จะหาไฟล์ตามลำดับอย่างไร? (3 ขั้นตอน)
-
-::: details ✨ ดูเฉลย
-1. หา `./config.js`
-2. หา `./config.json`
-3. หา `./config.node`
-4. (ถ้าเป็น Folder) หา `./config/index.js`
-:::
-
-### 🎯 Challenge 7: require.main (หัวข้อ 7)
-สร้างไฟล์ `cli.js` ที่ถ้า **รันตรงๆ** ให้แสดงคำว่า "Running CLI..." แต่ถ้า **ถูก require** ไม่ต้องแสดงอะไร:
-
-::: details ✨ ดูเฉลย
-สร้างไฟล์ `cli.js`:
-```javascript
-function run() {
-    console.log("Running CLI...");
+/**
+ * ค้นหา Task ด้วย id
+ * @param {string} taskId - รหัส task
+ * @returns {object|null} Task object หรือ null ถ้าไม่เจอ
+ */
+export function findTaskById(taskId) {
+  return TASKS.find((task) => task.id === taskId) || null;
 }
 
-module.exports = run;
-
-if (require.main === module) {
-    run();
+/**
+ * ดึงรายการ Task ทั้งหมด
+ * @returns {Array} รายการ task ทั้งหมด
+ */
+export function getAllTasks() {
+  return [...TASKS]; // Return copy เพื่อป้องกันการแก้ไขข้อมูลต้นฉบับ
 }
+
+/**
+ * ตรวจสอบว่าคะแนนที่ judge ให้อยู่ในขอบเขตที่ถูกต้องหรือไม่
+ * @param {string} taskId - รหัส task
+ * @param {number} score  - คะแนนที่ต้องการตรวจสอบ
+ * @returns {{ valid: boolean, message: string }}
+ */
+export function validateScore(taskId, score) {
+  const task = findTaskById(taskId);
+
+  if (!task) {
+    return { valid: false, message: `ไม่พบ Task ID: ${taskId}` };
+  }
+
+  if (typeof score !== "number" || isNaN(score)) {
+    return { valid: false, message: "score ต้องเป็นตัวเลข" };
+  }
+
+  if (score < 0 || score > task.max_score) {
+    return {
+      valid: false,
+      message: `score ต้องอยู่ระหว่าง 0 - ${task.max_score} สำหรับ Task: ${task.title}`,
+    };
+  }
+
+  return { valid: true, message: "คะแนนถูกต้อง" };
+}
+
+/**
+ * คำนวณเปอร์เซ็นต์คะแนน
+ * @param {string} taskId - รหัส task
+ * @param {number} score  - คะแนนที่ได้
+ * @returns {number} เปอร์เซ็นต์ (0-100)
+ */
+export function calcScorePercent(taskId, score) {
+  const task = findTaskById(taskId);
+  if (!task) return 0;
+  return Math.round((score / task.max_score) * 100);
+}
+
+/**
+ * Default export — สรุปข้อมูลการแข่งขัน
+ */
+export default {
+  totalTasks: TASKS.length,
+  totalMaxScore: TASKS.reduce((sum, t) => sum + t.max_score, 0),
+  tasks: TASKS,
+};
 ```
 
-ทดสอบด้วยคำสั่ง:
-```bash
-node cli.js          # → Running CLI...
-node -e "require('./cli')"  # (เงียบ)
+```js [app.js (ใช้งาน CJS)]
+// ============================================================
+// app.js — ใช้ submissionHelper.js แบบ CommonJS
+// WSA2026: Demo การทำงานร่วมกันของ Module
+// ============================================================
+
+const {
+  validateSubmissionUrl,
+  createSubmissionRecord,
+  getSubmissionsByCandidate,
+  formatSubmissionSummary,
+} = require("./submissionHelper");
+
+// ข้อมูล Candidate ในรูปแบบ { id, username, name, role, country }
+const candidates = [
+  { id: "C001", username: "somchai_th", name: "สมชาย ใจดี", role: "candidate", country: "Thailand" },
+  { id: "C002", username: "juan_ph",   name: "Juan Dela Cruz", role: "candidate", country: "Philippines" },
+];
+
+// สร้าง submission จำลอง
+const allSubmissions = [];
+
+console.log("=== WSA2026 Submission System ===\n");
+
+// Candidate C001 ส่งงาน
+try {
+  const sub1 = createSubmissionRecord(
+    "C001",
+    "https://somchai-wsa2026.netlify.app",
+    "Front-End Development"
+  );
+  allSubmissions.push(sub1);
+  console.log("✅ Submission 1:", formatSubmissionSummary(sub1));
+} catch (err) {
+  console.error("❌", err.message);
+}
+
+// Candidate C002 ส่งงาน
+try {
+  const sub2 = createSubmissionRecord(
+    "C002",
+    "https://juan-wsa2026.vercel.app",
+    "Front-End Development"
+  );
+  allSubmissions.push(sub2);
+  console.log("✅ Submission 2:", formatSubmissionSummary(sub2));
+} catch (err) {
+  console.error("❌", err.message);
+}
+
+// ทดสอบ URL ไม่ถูกต้อง
+try {
+  const sub3 = createSubmissionRecord("C003", "localhost:3000", "Back-End Development");
+  allSubmissions.push(sub3);
+} catch (err) {
+  console.error("❌ ส่งงานล้มเหลว:", err.message);
+}
+
+// กรองหา submission ของ C001
+const c001Submissions = getSubmissionsByCandidate(allSubmissions, "C001");
+console.log(`\nC001 มี ${c001Submissions.length} submission(s)`);
+```
+
+```js [app.mjs (ใช้งาน ESM)]
+// ============================================================
+// app.mjs — ใช้ taskHelper.mjs แบบ ES Module
+// WSA2026: Demo Named + Default Import
+// ============================================================
+
+import taskSummary, { findTaskById, validateScore, calcScorePercent, getAllTasks } from "./taskHelper.mjs";
+
+// Judge ข้อมูล { id, username, name, role, country }
+const judge = {
+  id: "J001",
+  username: "judge_wsa",
+  name: "Mr. Expert Judge",
+  role: "judge",
+  country: "Singapore",
+};
+
+console.log("=== WSA2026 Task & Scoring System ===\n");
+console.log("Competition Summary:", taskSummary);
+
+// แสดง Task ทั้งหมด
+console.log("\n--- All Tasks ---");
+getAllTasks().forEach((task) => {
+  console.log(
+    `[${task.id}] ${task.title} | ` +
+      `Time: ${task.time_limit_minutes} min | ` +
+      `Max Score: ${task.max_score}`
+  );
+});
+
+// Judge ให้คะแนน
+const judgeId = judge.id;
+const taskTitle = "Front-End Development";
+const score = 87;
+
+const taskFound = getAllTasks().find((t) => t.title === taskTitle);
+
+if (taskFound) {
+  const check = validateScore(taskFound.id, score);
+  if (check.valid) {
+    const percent = calcScorePercent(taskFound.id, score);
+    console.log(`\n✅ Judge ${judgeId} ให้คะแนน: ${score}/${taskFound.max_score} (${percent}%)`);
+    console.log(`   Task: ${taskTitle}`);
+  } else {
+    console.error("❌ คะแนนไม่ถูกต้อง:", check.message);
+  }
+}
 ```
 :::
 
+---
 
+## 🎯 โจทย์ฝึกปฏิบัติเสริมความเข้าใจ (Mini Exercise)
 
-> **📖 คำศัพท์เทคนิค (Glossary):**
-> *   **Module:** ไฟล์ JavaScript ที่ Export ฟังก์ชัน/ค่า ให้ไฟล์อื่นใช้ได้
-> *   **CommonJS (CJS):** ระบบ Module ดั้งเดิมของ Node.js (`require` / `module.exports`)
-> *   **ESM (ES Modules):** ระบบ Module มาตรฐานของ JavaScript (`import` / `export`)
-> *   **`require()`:** คำสั่ง Import ของ CommonJS
-> *   **`module.exports`:** คำสั่ง Export ของ CommonJS
-> *   **Named Export:** Export หลายตัวจากไฟล์เดียว (`export function foo()`)
-> *   **Default Export:** Export ตัวหลัก 1 ตัว (`export default class X`)
-> *   **Built-in Module:** Module ที่มาพร้อม Node.js ไม่ต้อง install
-> *   **Module Resolution:** กระบวนการที่ Node.js ค้นหาไฟล์ Module
-> *   **Tree Shaking:** Bundler ตัด Code ที่ไม่ได้ใช้ออก (ESM only)
+**โจทย์:** สร้างไฟล์ `judgeHelper.js` แบบ CommonJS ที่ export ฟังก์ชันต่อไปนี้:
+1. `isValidJudge(user)` — รับ object `{ id, username, name, role, country }` แล้วเช็คว่า `role === "judge"` หรือไม่ ส่งคืน `true/false`
+2. `formatJudgeName(user)` — คืนชื่อในรูปแบบ `"Mr/Ms. Name (Country)"` เช่น `"Mr. Expert Judge (Singapore)"`
 
+จากนั้นทดสอบใน `testJudge.js` โดย require มาใช้และแสดงผล
+
+::: details 💡 คำใบ้ (Hint)
+- ใช้ `module.exports = { isValidJudge, formatJudgeName }` เพื่อ export
+- ใช้ `const { isValidJudge, formatJudgeName } = require("./judgeHelper")` เพื่อ import
+- ตรวจ role ด้วย `user.role === "judge"`
+- ใช้ Template Literal สร้าง String: `` `${user.name} (${user.country})` ``
+- อย่าลืม `if (require.main === module)` เพื่อ demo เมื่อรันตรง
+:::
+
+---
+
+## 🔥 Challenge (โจทย์ท้าทาย!)
+
+**โจทย์:** สร้าง `scoreHelper.mjs` แบบ ESM ที่มีฟังก์ชัน:
+1. `createScoreRecord(judgeId, candidateId, taskTitle, score)` — สร้าง object `{ id, judgeId, candidateId, taskTitle, score, scoredAt }`
+2. `calcGrade(score, maxScore)` — คำนวณเกรด: 90%+ = "Gold", 75%+ = "Silver", 60%+ = "Bronze", ต่ำกว่า = "No Medal"
+3. Export ทั้งสองฟังก์ชันแบบ Named Export
+
+จากนั้นสร้าง `main.mjs` ที่ import มาใช้ — ให้ Judge J001 ให้คะแนน Candidate C001 และ C002 แล้วแสดง Grade ของแต่ละคน
+
+::: details 💡 คำใบ้ (Hint)
+- ใช้ `export function createScoreRecord(...)` และ `export function calcGrade(...)`
+- คำนวณ percent ด้วย `(score / maxScore) * 100`
+- ใช้ `if-else if` chain ตรวจ percent เพื่อ return เกรด
+- ใน `main.mjs` ใช้ `import { createScoreRecord, calcGrade } from "./scoreHelper.mjs"`
+- ลอง Top-level await ใน .mjs: `const result = await Promise.resolve(createScoreRecord(...))`
+:::
+
+---
+
+## 🗣️ ทบทวน (Review)
+
+::: details ❓ คำถามทบทวนความเข้าใจ
+
+**คำถาม 1:** ถ้าเขียน `module.exports = { fn1, fn2 }` ใน `helper.js` และในไฟล์อื่นเขียน `const helper = require("./helper")` — ถ้าอยากเรียก `fn1` ต้องเขียนอย่างไร? มีวิธีที่ง่ายกว่านั้นไหม?
+
+**แนวคำตอบ:** เรียกได้ทั้ง `helper.fn1()` หรือใช้ Destructuring ที่ง่ายกว่าคือ `const { fn1, fn2 } = require("./helper")` แล้วเรียก `fn1()` ตรงๆ
+
+**คำถาม 2:** ในระบบ WSA2026 ถ้า `submissionHelper.js` ใช้ CommonJS และ `taskHelper.mjs` ใช้ ESM — สามารถ `require("./taskHelper.mjs")` ได้ไหม? และ `import` จาก CommonJS module ได้ไหม?
+
+**แนวคำตอบ:** `require()` จาก CommonJS ไม่สามารถ require `.mjs` ไฟล์ได้โดยตรง (จะ Error) แต่สามารถใช้ Dynamic Import แทน: `const mod = await import("./taskHelper.mjs")` ส่วน ESM สามารถ `import` จาก CommonJS module ได้ (Node.js จะแปลง `module.exports` เป็น default export)
+
+**คำถาม 3:** `exports.fn = ...` กับ `module.exports.fn = ...` ต่างกันอย่างไร? และทำไม `exports = { fn }` ถึงไม่ทำงาน?
+
+**แนวคำตอบ:** `exports` เป็นแค่ Reference ที่ชี้ไปที่ `module.exports` — การเพิ่ม property เช่น `exports.fn = ...` ทำได้ปกติเพราะแก้ที่ object ตัวเดิม แต่ `exports = { fn }` คือการเปลี่ยน Reference ให้ชี้ไปที่ object ใหม่ ทำให้ `module.exports` ยังคงเป็น empty object เดิม Node.js จะส่ง `module.exports` กลับไป (ไม่ใช่ `exports` ใหม่) ดังนั้นจึงควรใช้ `module.exports = { fn }` เสมอเมื่อต้องการ replace ทั้งหมด
+:::
+
+---
 
 👉 **[ไปต่อ: 2.2 - File System](/node/02-02-file-system)**

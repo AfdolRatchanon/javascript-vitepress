@@ -1,359 +1,429 @@
-# Module 1.1: Node.js Architecture 🖥️
+# Node.js Architecture 🖥️
 
-> **"Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine."**
-> — *nodejs.org*
+> 💡 **เป้าหมาย:** ทำความเข้าใจว่า Node.js คืออะไร — ตั้งแต่ V8 Engine, libuv, Event Loop ไปจนถึงวิธีที่ JavaScript ทำงานแบบ Non-blocking ใน Server สำหรับระบบ WSA2026 Test Submission Management System เราจำเป็นต้องเข้าใจสถาปัตยกรรม Node.js เพื่อออกแบบ API ที่รับ Submission พร้อมกันได้หลายร้อยคนโดยไม่ค้าง
 
-ถ้า JavaScript เป็นภาษา → **Node.js คือสถานที่ใหม่ที่ JavaScript สามารถอยู่ได้!** ก่อนหน้านี้ JavaScript ทำงานได้แค่ใน Browser แต่ Node.js ทำให้ JavaScript รันบน **Server, Desktop, Terminal** ได้ทุกที่!
+## 📖 ทฤษฎีและแนวคิด (Theory & Concepts)
 
-> **💡 Analogy (เปรียบเทียบ):**
-> ลองนึกภาพ JavaScript เป็น **"ปลา" 🐟**:
-> - **Browser** = ตู้ปลา (ที่เดิมที่ปลาอยู่)
-> - **Node.js** = มหาสมุทร! 🌊 (ปลาว่ายได้ทุกที่ — Server, CLI, IoT, Desktop App)
-> - ปลาตัวเดิม (JavaScript) แต่ที่อยู่ใหม่ (Node.js) ทำให้ทำอะไรได้มากกว่าเดิมมาก!
+### JavaScript Runtime คืออะไร?
 
+**Runtime** คือ **สภาพแวดล้อมที่ให้โค้ดทำงานได้** เหมือนเวทีที่นักแสดง (JavaScript) ขึ้นไปแสดง
 
-## 1. JavaScript Runtime คืออะไร? ⚡
-
-ตาม [Node.js Official Docs](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs): **Runtime** คือ **สภาพแวดล้อมที่ให้โค้ดทำงานได้** — เหมือน "เวที" ที่นักแสดง (JavaScript) ขึ้นไปแสดง
-
-### Browser vs Node.js
-
-ทั้งสองรัน JavaScript ได้ แต่ **สิ่งที่ทำได้ต่างกัน**:
-
-| Feature | 🌐 Browser | 🖥️ Node.js |
-|:--------|:----------|:----------|
-| **JavaScript** | ✅ รันได้ | ✅ รันได้ |
-| **DOM** (document, window) | ✅ มี | ❌ **ไม่มี!** |
-| **File System** (อ่าน/เขียนไฟล์) | ❌ ไม่ได้ | ✅ **ได้!** |
-| **HTTP Server** | ❌ ไม่ได้ | ✅ **สร้างได้!** |
-| **Database** | ❌ ไม่ตรง | ✅ **เชื่อมต่อได้!** |
-| **alert(), confirm()** | ✅ มี | ❌ ไม่มี |
-| **console.log()** | ✅ มี | ✅ มี |
-| **Modules (import/export)** | ✅ ESM | ✅ ESM + CommonJS |
-
-> 💡 **Key Insight:** ใน Browser เราใช้ JS จัดการ **หน้าเว็บ** (DOM) แต่ใน Node.js เราใช้ JS จัดการ **Server, ไฟล์, Database** แทน!
-
-
-## 2. V8 Engine — หัวใจของ Node.js 🏎️
-
-**V8** คือ JavaScript Engine ที่ Google สร้างสำหรับ Chrome — เป็นตัวแปลง JavaScript ให้เป็น Machine Code (ภาษาที่คอมพิวเตอร์เข้าใจ)
+ก่อนมี Node.js → JavaScript ทำงานได้แค่ใน Browser เท่านั้น
+หลังมี Node.js → JavaScript ทำงานได้บน Server, Terminal, Desktop ทุกที่!
 
 ```
-JavaScript Code  →  V8 Engine  →  Machine Code  →  CPU จัดการ
-   "1 + 1"          (แปล)         001010101        (คำนวณ)
++---------------------------+       +---------------------------+
+|        BROWSER            |       |         NODE.JS           |
+|                           |       |                           |
+|  JavaScript Code          |       |  JavaScript Code          |
+|         |                 |       |         |                 |
+|         v                 |       |         v                 |
+|     V8 Engine             |       |     V8 Engine             |
+|         |                 |       |         |                 |
+|         v                 |       |         v                 |
+|  Browser APIs             |       |  Node.js APIs             |
+|  (DOM, window, fetch)     |       |  (fs, http, path, os)     |
+|         |                 |       |         |                 |
+|         v                 |       |         v                 |
+|  Web Page UI              |       |  Server / CLI / API       |
++---------------------------+       +---------------------------+
+```
+
+### V8 Engine — หัวใจของ Node.js
+
+**V8** คือ JavaScript Engine ที่ Google สร้างสำหรับ Chrome ทำหน้าที่แปลง JavaScript ให้เป็น Machine Code ที่ CPU เข้าใจได้
+
+```
+JavaScript Source Code
+        |
+        v
+  +------------+
+  |  Parsing   |  --> แปลง Code เป็น AST (Abstract Syntax Tree)
+  +------------+
+        |
+        v
+  +------------+
+  | Ignition   |  --> Interpreter: แปลเป็น Bytecode ก่อน
+  | (Bytecode) |
+  +------------+
+        |
+        v
+  +------------+
+  | TurboFan   |  --> JIT Compiler: แปลเป็น Machine Code (เร็วมาก!)
+  | (Machine   |
+  |   Code)    |
+  +------------+
+        |
+        v
+     CPU ประมวลผล
 ```
 
 **ทำไม V8 เร็ว?**
-- ใช้ **JIT Compilation** (Just-In-Time) — แปลโค้ดขณะทำงานเลย ไม่ต้องแปลก่อนทั้งหมด
+- ใช้ **JIT Compilation** (Just-In-Time) — แปลโค้ดขณะทำงาน ไม่ต้องรอแปลทั้งหมดก่อน
+- **Hidden Classes** — เพิ่มประสิทธิภาพการเข้าถึง Object Property
+- **Garbage Collection** — จัดการหน่วยความจำอัตโนมัติ
 - เขียนด้วย **C++** — ประสิทธิภาพสูง
-- **Ryan Dahl** (ผู้สร้าง Node.js) นำ V8 ออกจาก Chrome แล้วเพิ่มความสามารถ (File I/O, Network) → เกิดเป็น Node.js!
 
-### ไทม์ไลน์ Node.js
+### libuv — ส่วนที่ทำให้ Node.js ไม่ blocking
 
-| ปี | เหตุการณ์ |
-|:---|:---------|
-| 2008 | Google สร้าง V8 Engine สำหรับ Chrome |
-| **2009** | **Ryan Dahl สร้าง Node.js** — เอา V8 มารันนอก Browser |
-| 2010 | npm (Node Package Manager) เปิดตัว |
-| 2015 | Node.js Foundation ก่อตั้ง, io.js รวมกลับ |
-| 2023+ | Node.js v20+ LTS — ใช้กันทั่วโลก |
+**libuv** คือ Library ที่เขียนด้วย C ทำหน้าที่จัดการ **Asynchronous I/O** — นี่คือสิ่งที่ทำให้ Node.js แตกต่างจาก Runtime อื่น!
 
-
-## 3. ติดตั้ง Node.js 📦
-
-### ดาวน์โหลด
-
-ไปที่ [nodejs.org](https://nodejs.org/) แล้วดาวน์โหลด **LTS** (Long Term Support):
-
-> ⚠️ **เลือก LTS เสมอ!** อย่าเลือก Current — LTS เสถียรกว่า, บริษัทใช้ LTS กัน
-
-### ตรวจสอบว่าติดตั้งสำเร็จ
-
-เปิด Terminal (Command Prompt, PowerShell, หรือ VS Code Terminal) แล้วพิมพ์:
-
-```bash
-# เช็ค Node.js version
-node -v
-# ตัวอย่าง output: v20.11.0
-
-# เช็ค npm version (มาพร้อม Node.js)
-npm -v
-# ตัวอย่าง output: 10.2.4
+```
++--------------------------------------------------+
+|                   NODE.JS                        |
+|                                                  |
+|  JavaScript Code (Single Thread)                 |
+|         |                                        |
+|         v                                        |
+|  +------+------+                                 |
+|  |  V8 Engine  |  <-- รัน JS Code                |
+|  +------+------+                                 |
+|         |                                        |
+|         v                                        |
+|  +------+------+     +--------------------+      |
+|  | Node.js API |---->|      libuv         |      |
+|  | (fs, http)  |     |                    |      |
+|  +-------------+     |  Thread Pool (4)   |      |
+|                       |  Event Loop        |      |
+|                       |  OS Async I/O      |      |
+|                       +--------------------+      |
++--------------------------------------------------+
 ```
 
-ถ้าเห็นเลข version = **ติดตั้งสำเร็จ!** 🎉
+libuv ทำงาน 2 ส่วนหลัก:
+1. **Event Loop** — วนรับและส่ง callback งานที่เสร็จแล้ว
+2. **Thread Pool** (4 threads default) — ทำงาน CPU-intensive หรือ File I/O ในเบื้องหลัง
 
+### Event Loop — หัวใจการทำงาน Non-blocking
 
-## 4. ทดลองรัน JavaScript ในNode.js 🧪
+Node.js ใช้ **Single Thread** แต่ทำงานพร้อมกันได้เพราะ **Event Loop**
 
-### วิธี 1: REPL (Read-Eval-Print Loop)
+```
+                    +------------------+
+                    |  JavaScript Code |
+                    |  (Call Stack)    |
+                    +--------+---------+
+                             |
+            +----------------v-----------------+
+            |           EVENT LOOP             |
+            |                                  |
+            |  Phase 1: timers                 |
+            |  --> setTimeout, setInterval     |
+            |                                  |
+            |  Phase 2: pending callbacks      |
+            |  --> I/O errors                  |
+            |                                  |
+            |  Phase 3: idle, prepare          |
+            |  --> internal use                |
+            |                                  |
+            |  Phase 4: poll                   |
+            |  --> รับ I/O events ใหม่ (**หลัก**) |
+            |                                  |
+            |  Phase 5: check                  |
+            |  --> setImmediate callbacks      |
+            |                                  |
+            |  Phase 6: close callbacks        |
+            |  --> socket.on('close', ...)     |
+            +------------------+---------------+
+                               |
+               +---------------v--------------+
+               |  Microtask Queue             |
+               |  --> Promise.then()          |
+               |  --> process.nextTick()      |
+               |  (รันก่อน Phase ถัดไปเสมอ!) |
+               +------------------------------+
+```
 
-**REPL** คือ "Interactive Mode" — พิมพ์โค้ดแล้วเห็นผลทันที! เหมือน Console ใน Browser DevTools:
+### Call Stack, Callback Queue, Microtask Queue
+
+**ลำดับการทำงาน:**
+
+```
+[1] Call Stack ทำงานก่อน (Synchronous Code)
+       |
+       v
+[2] Microtask Queue (process.nextTick, Promise.then)
+       |
+       v
+[3] Callback Queue / Event Loop Phases (setTimeout, I/O)
+```
+
+**ตัวอย่างลำดับการทำงาน:**
+
+```
+console.log("A");                    // [1] Call Stack --> พิมพ์ A
+
+setTimeout(() => {
+  console.log("B");                  // [3] Timer Queue --> พิมพ์ B ทีหลัง
+}, 0);
+
+Promise.resolve().then(() => {
+  console.log("C");                  // [2] Microtask Queue --> พิมพ์ C ก่อน B
+});
+
+console.log("D");                    // [1] Call Stack --> พิมพ์ D
+
+// Output: A, D, C, B
+```
+
+### Browser vs Node.js
+
+ทั้งสองรัน JavaScript ได้ แต่ **สิ่งที่ทำได้ต่างกันมาก**:
+
+| Feature | Browser | Node.js |
+|:--------|:--------|:--------|
+| JavaScript Engine | V8 (Chrome), SpiderMonkey (Firefox) | V8 |
+| DOM (document, window) | มี | ไม่มี |
+| File System (fs) | ไม่ได้ | ได้ |
+| HTTP Server | ไม่ได้ | ได้ |
+| Database | ต้องผ่าน API | เชื่อมตรงได้ |
+| alert(), confirm() | มี | ไม่มี |
+| process.env | ไม่มี | มี |
+| require() / CommonJS | ไม่รองรับ | รองรับ |
+| import / ESM | รองรับ | รองรับ |
+| \_\_dirname, \_\_filename | ไม่มี | มี |
+
+### Node.js REPL — วิธีใช้
+
+**REPL** ย่อมาจาก **Read-Eval-Print Loop** คือ Interactive Mode สำหรับทดลองโค้ดทันที เหมือน Console ใน Browser DevTools
 
 ```bash
 # เปิด REPL
 node
 
-# พิมพ์โค้ด JavaScript ได้เลย!
+# ตัวอย่างการใช้งาน
 > 1 + 1
 2
-> "Hello" + " Node!"
-'Hello Node!'
-> Math.random()
-0.7235891726381
-> const name = "Dolar"
-> `สวัสดี ${name}!`
-'สวัสดี Dolar!'
-
-# ออกจาก REPL
-> .exit
+> "Hello WSA" + "2026"
+'Hello WSA2026'
+> [1, 2, 3].map(x => x * 2)
+[ 2, 4, 6 ]
+> .help          # ดูคำสั่ง REPL
+> .exit          # ออกจาก REPL
 ```
 
-> 💡 **REPL ดีสำหรับ:** ทดลองโค้ดเร็วๆ, เช็ค syntax, คำนวณง่ายๆ — **ไม่เหมาะสำหรับ** เขียนโปรแกรมจริง
+คำสั่ง REPL พิเศษ:
+- `.help` — แสดงคำสั่งทั้งหมด
+- `.exit` — ออกจาก REPL
+- `.break` — ยกเลิก Multi-line input
+- `.load <file>` — โหลดไฟล์เข้า REPL
+- `Ctrl+C` — ยกเลิก / ออก
 
-### วิธี 2: รันไฟล์ (แนะนำ!)
+### ไฟล์แรก: node hello.js
 
 สร้างไฟล์ `hello.js`:
 
 ```javascript
 // hello.js
-const message = "🖥️ สวัสดีจาก Node.js!";
+const message = "สวัสดีจาก Node.js!";
 console.log(message);
 
-// ⭐ สิ่งที่ Browser ไม่มี → Node.js มี!
-console.log("Node version:", process.version);   // เวอร์ชัน Node.js
-console.log("Platform:", process.platform);      // win32 / darwin / linux
-console.log("Current directory:", process.cwd()); // โฟลเดอร์ปัจจุบัน
+// สิ่งที่ Browser ไม่มี แต่ Node.js มี
+console.log("Node version:", process.version);
+console.log("Platform:", process.platform);
+console.log("Current directory:", process.cwd());
 ```
 
 รันในTerminal:
-
 ```bash
 node hello.js
 ```
 
 Output:
 ```
-🖥️ สวัสดีจาก Node.js!
+สวัสดีจาก Node.js!
 Node version: v20.11.0
 Platform: win32
-Current directory: C:\Users\dolar\projects
+Current directory: C:\projects\wsa2026
 ```
 
-> 💡 **`process`** คือ Global Object พิเศษของ Node.js (เหมือน `window` ใน Browser) — ให้ข้อมูลเกี่ยวกับ Process ปัจจุบัน
+### Global Objects ใน Node.js
 
-### process.argv — รับ Arguments จาก Command Line
-
-เราสามารถส่งข้อมูลเข้าไปตอนรันไฟล์ได้! ผ่าน **`process.argv`** (argument values):
-
-```javascript
-// args.js
-console.log(process.argv);
-```
-
-```bash
-node args.js hello 123
-# Output:
-# [
-#   'C:\\Program Files\\nodejs\\node.exe',  ← argv[0] = path ของ node
-#   'C:\\projects\\args.js',                ← argv[1] = path ของไฟล์
-#   'hello',                                ← argv[2] = argument แรก ✅
-#   '123'                                   ← argv[3] = argument ที่สอง ✅
-# ]
-```
-
-> 💡 **สังเกต:** `argv[0]` และ `argv[1]` เป็น path ของ node และไฟล์ — ข้อมูลจริงเริ่มจาก **`argv[2]`** เป็นต้นไป! และค่าที่ได้จะเป็น **String เสมอ** (ต้อง `Number()` ถ้าอยากได้ตัวเลข)
-
-### process.exit() — หยุดโปรแกรม
-
-```javascript
-// ปิดโปรแกรมด้วย Exit Code:
-process.exit(0); // 0 = สำเร็จ (OK)
-process.exit(1); // 1 = มี Error
-```
-
-> 💡 **Exit Code** ใช้บอกว่าโปรแกรมจบแบบไหน — `0` = ปกติ, `1` = มีปัญหา (ใช้ใน CI/CD, Script อัตโนมัติ)
-
-
-## 5. Global Objects ใน Node.js 🌍
-
-ใน Browser มี `window`, `document` แต่ใน Node.js มี **Global Objects ชุดใหม่**:
-
-```javascript
-// 🌐 Browser Globals (ใน Node.js → ไม่มี!)
-// window     → ❌
-// document   → ❌
-// alert()    → ❌
-
-// 🖥️ Node.js Globals (ใน Browser → ไม่มี!)
-console.log(__dirname);   // โฟลเดอร์ของไฟล์นี้
-console.log(__filename);  // Path เต็มของไฟล์นี้
-console.log(process.env); // Environment Variables ทั้งหมด
-```
-
-### 📊 สรุป Global Objects
-
-| Node.js Global | คืออะไร | เทียบเท่า Browser |
-|:---------------|:--------|:-----------------|
+| Global | คืออะไร | เทียบ Browser |
+|:-------|:--------|:-------------|
 | `global` | Global scope | `window` |
 | `process` | ข้อมูล Process ปัจจุบัน | `navigator` (คล้ายๆ) |
-| `__dirname` | โฟลเดอร์ของไฟล์ | ❌ ไม่มี |
-| `__filename` | Path เต็มของไฟล์ | ❌ ไม่มี |
+| `__dirname` | โฟลเดอร์ของไฟล์ | ไม่มี |
+| `__filename` | Path เต็มของไฟล์ | ไม่มี |
 | `require()` | Import Module (CommonJS) | `import` (ESM) |
-| `module` | ข้อมูล Module ปัจจุบัน | ❌ ไม่มี |
-| `Buffer` | ข้อมูล Binary (รูป, ไฟล์) | `Blob` / `ArrayBuffer` |
-| `setTimeout()` | ⏰ Timer | ✅ เหมือนกัน |
+| `Buffer` | ข้อมูล Binary | `Blob` / `ArrayBuffer` |
+| `setTimeout()` | Timer | เหมือนกัน |
+| `setImmediate()` | รันหลัง I/O events | ไม่มีใน Browser |
+| `process.nextTick()` | รันก่อน Microtask อื่น | ไม่มีใน Browser |
 
+---
 
-## 6. ทำไมต้อง Node.js? 🤔
+## 💻 ตัวอย่างโค้ด (Code Implementation)
 
-### ข้อดี
+สร้าง CLI Script ที่แสดงข้อมูล Candidate ของระบบ WSA2026 จาก command-line arguments
 
-| ข้อดี | อธิบาย |
-|:------|:------|
-| **ภาษาเดียว Full-Stack** | ใช้ JavaScript ทั้ง Frontend + Backend |
-| **npm = โลกของ Packages** | 2.1+ ล้าน Packages ใน npm Registry |
-| **Non-blocking I/O** | จัดการ Concurrent Requests ได้ดี |
-| **เร็ว (V8)** | JIT Compilation ประสิทธิภาพสูง |
-| **Community ใหญ่** | StackOverflow, GitHub, Tutorial มากมาย |
+::: code-group
+```js [candidate-info.js]
+// candidate-info.js
+// WSA2026 Test Submission Management System
+// ใช้: node candidate-info.js <candidateId> <name> <country>
 
-### ข้อจำกัด
+// ==========================================
+// 1. รับ Arguments จาก Command Line
+// ==========================================
+const args = process.argv.slice(2); // ตัด argv[0] (node) และ argv[1] (ไฟล์) ออก
 
-| ข้อจำกัด | อธิบาย |
-|:---------|:------|
-| **Single Thread** | ไม่เหมาะกับงาน CPU-intensive (เช่น Video Encoding) |
-| **Callback Hell** | (แก้ได้ด้วย Async/Await ที่เรียนมาแล้ว!) |
-| **ไม่เหมาะกับ** | Machine Learning, Game Engine, System Programming |
+const candidateId = args[0];
+const name        = args[1];
+const country     = args[2];
+const role        = args[3] || "candidate"; // default role
 
-### ใครใช้ Node.js?
-
-| บริษัท | ใช้ทำอะไร |
-|:-------|:---------|
-| **Netflix** | API Server, Microservices |
-| **LinkedIn** | Mobile Backend |
-| **Uber** | Real-time Matching |
-| **PayPal** | Payment API |
-| **NASA** | Data Access Application |
-
-
-## 7. Challenges 🏆
-
-### 🎯 Challenge 1: Browser vs Node.js (หัวข้อ 1)
-ตอบคำถาม: จากตารางเปรียบเทียบที่เรียนมา — สิ่งไหนทำได้ใน Node.js แต่ทำไม่ได้ใน Browser? (เลือก 3 ข้อ)
-
-::: details ✨ ดูเฉลย
-1. **File System** — อ่าน/เขียนไฟล์ได้ (Browser ทำไม่ได้)
-2. **HTTP Server** — สร้าง Server ได้ (Browser ทำไม่ได้)
-3. **Database** — เชื่อมต่อ Database ได้ตรง (Browser ต้องผ่าน API)
-
-สิ่งที่ Node.js **ไม่มี**: `window`, `document`, `alert()`, `confirm()` — เพราะไม่มีหน้าเว็บ!
-:::
-
-### 🎯 Challenge 2: V8 Engine (หัวข้อ 2)
-ตอบคำถาม 3 ข้อจากเนื้อหาที่เรียน:
-1. V8 คืออะไร?
-2. JIT Compilation คืออะไร?
-3. ใครสร้าง Node.js สร้างเมื่อปีไหน?
-
-::: details ✨ ดูเฉลย
-1. **V8** → JavaScript Engine ที่ Google สร้างสำหรับ Chrome — แปลง JavaScript เป็น Machine Code
-2. **JIT Compilation** → Just-In-Time Compilation — แปลโค้ดขณะทำงานเลย ไม่ต้องแปลทั้งหมดก่อน
-3. **Ryan Dahl** สร้างในปี **2009** โดยนำ V8 ออกจาก Chrome แล้วเพิ่มความสามารถ File I/O, Network
-:::
-
-### 🎯 Challenge 3: ตรวจสอบการติดตั้ง (หัวข้อ 3)
-เปิด Terminal แล้วรันคำสั่งเช็คว่า Node.js กับ npm ติดตั้งสำเร็จหรือยัง:
-
-::: details ✨ ดูเฉลย
-รันคำสั่งนี้ใน Terminal:
-```bash
-node -v
-# ตัวอย่าง output: v20.11.0
-
-npm -v
-# ตัวอย่าง output: 10.2.4
-```
-
-ถ้าเห็นเลข version = ติดตั้งสำเร็จ! ☑️
-ถ้าเห็น `'node' is not recognized...` = ยังไม่ได้ติดตั้ง ให้ไปดาวน์โหลด LTS จาก [nodejs.org](https://nodejs.org/) ก่อน
-:::
-
-### 🎯 Challenge 4: ทดลองรัน JavaScript (หัวข้อ 4)
-สร้างไฟล์ `greet.js` ที่รับ **ชื่อ** จาก `process.argv` แล้วทักทาย — ถ้าไม่ใส่ชื่อ ให้แสดง Error แล้วจบด้วย `process.exit(1)`:
-
-::: details ✨ ดูเฉลย
-สร้างไฟล์ `greet.js`:
-```javascript
-// greet.js
-const name = process.argv[2];
-
-if (!name) {
-    console.error("❌ กรุณาใส่ชื่อ: node greet.js <ชื่อ>");
-    process.exit(1);
+// ==========================================
+// 2. แสดงข้อมูล System Environment
+// ==========================================
+function showSystemInfo() {
+  console.log("===========================================");
+  console.log("  WSA2026 Test Submission Management System");
+  console.log("===========================================");
+  console.log(`  Node.js Version : ${process.version}`);
+  console.log(`  Platform        : ${process.platform}`);
+  console.log(`  Architecture    : ${process.arch}`);
+  console.log(`  Working Dir     : ${process.cwd()}`);
+  console.log("===========================================");
 }
 
-console.log(`🎉 สวัสดี ${name}!`);
-console.log(`📂 รันจาก: ${process.cwd()}`);
-console.log(`🖥️ Node ${process.version} on ${process.platform}`);
-```
+// ==========================================
+// 3. แสดงข้อมูล Candidate
+// ==========================================
+function showCandidateInfo(id, candidateName, candidateCountry, candidateRole) {
+  const validRoles = ["candidate", "judge", "manager"];
 
-ทดสอบด้วยคำสั่ง:
+  if (!validRoles.includes(candidateRole)) {
+    console.error(`ERROR: role "${candidateRole}" ไม่ถูกต้อง`);
+    console.error(`       ต้องเป็น: ${validRoles.join(", ")}`);
+    process.exit(1);
+  }
+
+  console.log("\n--- Candidate Information ---");
+  console.log(`  ID      : ${id}`);
+  console.log(`  Name    : ${candidateName}`);
+  console.log(`  Country : ${candidateCountry}`);
+  console.log(`  Role    : ${candidateRole.toUpperCase()}`);
+
+  // แสดงข้อมูลต่างกันตาม Role
+  if (candidateRole === "candidate") {
+    console.log(`  Access  : Submit tasks, View own scores`);
+  } else if (candidateRole === "judge") {
+    console.log(`  Access  : Score submissions, View all candidates`);
+  } else if (candidateRole === "manager") {
+    console.log(`  Access  : Full system access, Manage competition`);
+  }
+
+  console.log("----------------------------\n");
+}
+
+// ==========================================
+// 4. แสดง Usage ถ้าไม่ใส่ Arguments
+// ==========================================
+function showUsage() {
+  console.log("Usage:");
+  console.log("  node candidate-info.js <id> <name> <country> [role]");
+  console.log("");
+  console.log("Arguments:");
+  console.log("  id       - Candidate ID (เช่น C001)");
+  console.log("  name     - ชื่อ Candidate");
+  console.log("  country  - ประเทศ (เช่น Thailand)");
+  console.log("  role     - บทบาท: candidate | judge | manager (default: candidate)");
+  console.log("");
+  console.log("Examples:");
+  console.log("  node candidate-info.js C001 Somchai Thailand candidate");
+  console.log("  node candidate-info.js J001 Tanaka Japan judge");
+  console.log("  node candidate-info.js M001 Chen China manager");
+}
+
+// ==========================================
+// 5. Main Logic
+// ==========================================
+showSystemInfo();
+
+if (!candidateId || !name || !country) {
+  console.error("ERROR: กรุณาใส่ข้อมูลให้ครบ");
+  console.log("");
+  showUsage();
+  process.exit(1); // Exit Code 1 = Error
+}
+
+showCandidateInfo(candidateId, name, country, role);
+
+// แสดง process uptime (บอกว่า script ทำงานมานานแค่ไหน)
+console.log(`Script ran in ${process.uptime().toFixed(3)} seconds`);
+process.exit(0); // Exit Code 0 = Success
+```
+:::
+
+ทดสอบรัน:
 ```bash
-node greet.js Dolar    # → 🎉 สวัสดี Dolar!
-node greet.js          # → ❌ กรุณาใส่ชื่อ...
-```
-:::
+# รันปกติ
+node candidate-info.js C001 Somchai Thailand candidate
 
-### 🎯 Challenge 5: Global Objects (หัวข้อ 5)
-สร้างไฟล์ `globals.js` ที่แสดง `__dirname`, `__filename`, และจำนวน Environment Variables:
+# รัน judge
+node candidate-info.js J001 Tanaka Japan judge
 
-::: details ✨ ดูเฉลย
-สร้างไฟล์ `globals.js`:
-```javascript
-// globals.js
-console.log("=== Node.js Globals ===");
-console.log("📂 __dirname:", __dirname);
-console.log("📄 __filename:", __filename);
-console.log("🔢 Environment Variables:", Object.keys(process.env).length, "ตัว");
+# ไม่ใส่ Arguments
+node candidate-info.js
 ```
 
-ทดสอบด้วยคำสั่ง:
-```bash
-node globals.js
+ตัวอย่าง Output:
 ```
+===========================================
+  WSA2026 Test Submission Management System
+===========================================
+  Node.js Version : v20.11.0
+  Platform        : win32
+  Architecture    : x64
+  Working Dir     : C:\projects\wsa2026
+===========================================
+
+--- Candidate Information ---
+  ID      : C001
+  Name    : Somchai
+  Country : Thailand
+  Role    : CANDIDATE
+  Access  : Submit tasks, View own scores
+----------------------------
+
+Script ran in 0.012 seconds
+```
+
+---
+
+## 🎯 โจทย์ฝึกปฏิบัติเสริมความเข้าใจ (Mini Exercise)
+
+- **โจทย์:** สร้างไฟล์ `task-info.js` ที่รับ task ID และ time limit (นาที) จาก `process.argv` แล้วแสดงข้อมูล Task ของ WSA2026 พร้อม validation ว่า time limit ต้องเป็นตัวเลขบวก ถ้า time limit เกิน 120 นาที ให้แสดง warning และถ้าไม่ใส่ Arguments ให้แสดง usage แล้วจบด้วย `process.exit(1)`
+
+::: details 💡 คำใบ้ (Hint)
+- ใช้ `process.argv.slice(2)` เพื่อรับเฉพาะ arguments ที่ต้องการ
+- ใช้ `Number()` หรือ `parseInt()` แปลง String เป็น Number และ `isNaN()` เช็คว่าเป็นตัวเลขหรือไม่
+- ใช้ `process.exit(0)` เมื่อสำเร็จ และ `process.exit(1)` เมื่อมี Error — สำคัญมากสำหรับ automation scripts
 :::
 
-### 🎯 Challenge 6: ทำไมต้อง Node.js? (หัวข้อ 6)
-ตอบคำถามจากเนื้อหาที่เรียน:
-1. บอกข้อดีของ Node.js มา 3 ข้อ
-2. Node.js **ไม่เหมาะ** กับงานประเภทไหน?
-3. บริษัทไหนที่ใช้ Node.js? (บอก 2 บริษัท พร้อมบอกว่าใช้ทำอะไร)
+## 🔥 Challenge (โจทย์ท้าทาย!)
 
-::: details ✨ ดูเฉลย
-**ข้อดี 3 ข้อ** (เลือกจากตาราง):
-1. ภาษาเดียว Full-Stack — ใช้ JavaScript ทั้ง Frontend + Backend
-2. npm — มี Package มากกว่า 2.1 ล้านตัว
-3. Non-blocking I/O — จัดการ Concurrent Requests ได้ดี
+- **โจทย์:** สร้างไฟล์ `submission-status.js` ที่จำลอง Event Loop ของ WSA2026 — เมื่อรัน ให้แสดงข้อความ "Checking submission..." ทันที จากนั้นใช้ `setTimeout` จำลองการ delay 2 วินาที (เหมือน query database) แล้วแสดงผล "Submission found: score = 85, status = approved" และใช้ `Promise.resolve().then()` แทรกข้อความ "Validating token..." ระหว่างกลาง เพื่อสาธิตลำดับ Call Stack → Microtask → Timer
 
-**ไม่เหมาะกับ:** งาน CPU-intensive เช่น Video Encoding, Machine Learning, Game Engine (เพราะเป็น Single Thread)
+---
 
-**บริษัทที่ใช้** (เลือก 2):
-- **Netflix** — API Server, Microservices
-- **PayPal** — Payment API
+## 🗣️ ทบทวน (Review)
+
+::: details ❓ คำถามทบทวนความเข้าใจ
+
+**คำถาม 1:** Node.js ประกอบด้วย Component หลักอะไรบ้าง และแต่ละ Component ทำหน้าที่อะไร?
+
+**แนวคำตอบ:** Node.js ประกอบด้วย 3 ส่วนหลัก: (1) **V8 Engine** — แปลง JavaScript เป็น Machine Code โดยใช้ JIT Compilation (2) **libuv** — Library C ที่จัดการ Event Loop และ Asynchronous I/O รวมถึง Thread Pool สำหรับงาน blocking (3) **Node.js Core APIs** — เช่น `fs`, `http`, `path` ที่เพิ่มความสามารถให้ JavaScript ทำงานนอก Browser ได้
+
+**คำถาม 2:** Event Loop ทำงานอย่างไร และทำไมถึงทำให้ Node.js จัดการ Concurrent Requests ได้ดีทั้งที่เป็น Single Thread?
+
+**แนวคำตอบ:** Event Loop วนตรวจ Queue หลายระดับ — เมื่อ JavaScript ส่งคำขอ I/O (เช่น query database) libuv จะรับไปทำในเบื้องหลังโดย Node.js ไม่ต้องรอ Call Stack ว่างก็รับคำขอใหม่ได้ต่อเนื่อง เมื่องานเสร็จ Callback จะถูกใส่เข้า Queue แล้ว Event Loop นำไปรัน ทำให้ Node.js รับ Request ได้พร้อมกันหลายพันคำขอโดยไม่ block
+
+**คำถาม 3:** `process.argv` คืออะไร และทำไม arguments จริงถึงเริ่มที่ index 2 ไม่ใช่ index 0?
+
+**แนวคำตอบ:** `process.argv` เป็น Array ที่เก็บ command-line arguments ทั้งหมด โดย `argv[0]` = path ของ Node.js executable, `argv[1]` = path ของ script ที่รัน, และ `argv[2]` เป็นต้นไปคือ arguments ที่ผู้ใช้พิมพ์จริง — ดังนั้นต้องใช้ `process.argv.slice(2)` หรือเริ่มที่ index 2 เสมอ
+
 :::
 
-
-> **📖 คำศัพท์เทคนิค (Glossary):**
-> *   **Node.js:** JavaScript Runtime ที่ทำงานนอก Browser (บน Server, Terminal)
-> *   **V8 Engine:** JavaScript Engine ของ Google Chrome ที่แปล JS เป็น Machine Code
-> *   **Runtime:** สภาพแวดล้อมที่ให้โค้ดทำงานได้
-> *   **REPL:** Read-Eval-Print Loop — Interactive Mode สำหรับทดลองโค้ด
-> *   **npm:** Node Package Manager — ตัวจัดการ Library/Package
-> *   **LTS:** Long Term Support — เวอร์ชันเสถียรที่ได้รับการดูแลระยะยาว
-> *   **`process`:** Global Object ใน Node.js ที่ให้ข้อมูลเกี่ยวกับ Process ปัจจุบัน
-> *   **`process.argv`:** Array ที่เก็บ Arguments จาก Command Line
-> *   **`__dirname`:** Path ของโฟลเดอร์ที่ไฟล์ปัจจุบันอยู่
-> *   **JIT Compilation:** แปลโค้ดขณะทำงาน (Just-In-Time) — เร็วกว่าแปลทั้งหมดก่อน
-> *   **Non-blocking I/O:** ไม่ต้องรอ I/O เสร็จก่อน → ทำงานอื่นได้พร้อมกัน
-
-👉 **[ไปต่อ: 1.2 - npm & package.json](/node/01-02-npm-and-packages)**
+👉 **[ไปต่อ: 1.2 - npm & Packages](/node/01-02-npm-and-packages)**

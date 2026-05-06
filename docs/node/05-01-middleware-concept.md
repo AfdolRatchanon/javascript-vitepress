@@ -1,277 +1,433 @@
-# Module 5.1: Middleware Concepts 🛣️
+# Middleware Concept 🛣️
 
-> **"If Route is the destination, Middleware is the journey."**
-
-ในโลกของ Express.js คำว่า **Middleware** คือหัวใจสำคัญที่ทำให้ Framework นี้ทรงพลังและยืดหยุ่นมากๆ
-ถ้าเปรียบ Controller เป็น "ปลายทาง" ที่ทำงานหลัก... Middleware ก็คือ "ด่านตรวจ" ระหว่างทาง
-ที่คอยกรอง, ตรวจสอบ, หรือแปลงสภาพ Request ก่อนจะไปถึงปลายทาง
-
-บทนี้จะพาคุณเจาะลึกระบบ Middleware แบบถึงแก่น (Deep Dive) ให้เข้าใจว่ามันทำงานยังไง และจะเขียนให้ Pro ได้ยังไงครับ
+> 💡 **เป้าหมาย:** เข้าใจกลไก Middleware Pipeline ของ Express.js และนำไปใช้งานในระบบ WSA2026 Test Submission Management System ได้อย่างถูกต้อง เพื่อจัดการ Request ที่เข้ามาก่อนถึง Controller เช่น การ Log, ตรวจสอบสิทธิ์, และ Validate ข้อมูล Submission
 
 ---
 
-## 🏗️ 1. What is Middleware? (The Pipeline)
+## 📖 ทฤษฎีและแนวคิด (Theory & Concepts)
 
-### Definition
-**Middleware** คือ function ที่มีสิทธิ์เข้าถึง:
-1.  **Request Object** (`req`) - ข้อมูลขาเข้า
-2.  **Response Object** (`res`) - ข้อมูลขาออก
-3.  **Next Function** (`next`) - คำสั่งให้ "ไปต่อ"
+### Middleware คืออะไร?
 
-### The Request-Response Cycle
-ปกติ Request จะวิ่งตรงไปหา Controller แล้วจบที่ Response
-แต่ใน Express เราสามารถวาง Middleware ขวางทางไว้กี่ตัวก็ได้ เป็นเหมือน **ท่อ (Pipeline)**
-
-```text
-Request  ---> [ Middleware 1 ] ---> [ Middleware 2 ] ---> [ Controller ] ---> Response
-                (Logger)              (Auth)              (Logic)
-```
-
-**หน้าที่ของ Middleware:**
-*   **Execute Code**: รันโค้ดอะไรก็ได้ (เช่น `console.log`)
-*   **Modify Req/Res**: แก้ไขข้อมูลใน `req` หรือ `res` (เช่น `req.user = decodedToken`)
-*   **End Cycle**: จบการทำงานและส่ง Response กลับเลย (เช่น "คุณไม่มีสิทธิ์เข้าถึง!")
-*   **Call Next**: ส่งไม้ต่อให้คนถัดไปทำงาน (`next()`)
-
----
-
-## 🚦 2. Middleware Internals: How `next()` works
-
-สิ่งที่หลายคนงงคือ `next()` มันคืออะไร?
-มันคือ "Callback Function" ที่ Express ส่งมาให้เราเรียก
+**Middleware** คือ `function(req, res, next)` — ฟังก์ชันที่คั่นอยู่กลางระหว่าง Request กับ Response
+มันมีสิทธิ์เข้าถึง:
+- `req` — ข้อมูลขาเข้า (Request Object)
+- `res` — ข้อมูลขาออก (Response Object)
+- `next` — ฟังก์ชันที่บอกว่า "ทำงานเสร็จแล้ว ส่งต่อได้เลย"
 
 ```javascript
 function myMiddleware(req, res, next) {
-    console.log('Middleware A: Start');
-    
-    // ทำงานบางอย่าง...
-    
-    next(); // <--- จุดเปลี่ยนชีวิต!
-    
-    // ถ้ามีโค้ดต่อจากนี้ มันจะรัน "หลังจาก" Middleware ตัวถัดไปทำงานเสร็จแล้ว (ในบางกรณี)
-    // แต่ใน Express ปกติเราจะไม่เขียนโค้ดหลัง next()
+    // ทำงานบางอย่าง
+    next(); // ส่งต่อให้ Middleware ตัวถัดไป
 }
 ```
 
-### The Stack structure
-Express เก็บ Middleware ทั้งหมดไว้ใน Array (Stack)
-เมื่อมี Request เข้ามา มันจะ Loop เรียกทีละตัว
-ถ้าตัวไหนลืมเรียก `next()`... **Browser จะหมุนติ้วๆ (Hang)** เพราะ Request ไปไม่ถึงเส้นชัย!
+ถ้าลืมเรียก `next()` — Request จะ **Hang** (Browser หมุนวน ไม่ได้รับ Response)
+ถ้าเรียก `next(error)` — Express จะข้ามไปยัง **Error-handling Middleware** ทันที
 
 ---
 
-## 🎨 3. Types of Middleware
+### Middleware Pipeline (ท่อน้ำ)
 
-Express แบ่ง Middleware เป็น 5 ประเภทใหญ่ๆ ตามการใช้งาน:
-
-### 3.1 Application-level Middleware
-ใช้กับทั้ง App (`app.use`) จะทำงานกับ **ทุก Request** (หรือตาม path ที่ระบุ)
-เหมาะสำหรับ Logic กลาง เช่น Logging, Security Headers, Body Parsing
-
-```javascript
-/* app.js */
-const express = require('express');
-const app = express();
-
-// 1. Logger: ทำงานทุกครั้งที่มี request
-app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
-    next();
-});
-
-// 2. Body Parser: แปลง JSON
-app.use(express.json());
+```
+Request เข้ามา
+     │
+     ▼
+┌──────────────────────────────────────────────────────┐
+│                  Express Pipeline                    │
+│                                                      │
+│  ┌────────────┐   ┌────────────┐   ┌────────────┐   │
+│  │ Middleware │──▶│ Middleware │──▶│ Middleware │   │
+│  │     1      │   │     2      │   │     3      │   │
+│  │  (Logger)  │   │  (Auth)    │   │ (Validate) │   │
+│  └────────────┘   └────────────┘   └────────────┘   │
+│         │                │                │          │
+│       next()           next()           next()       │
+│                                            │          │
+│                                     ┌─────▼──────┐  │
+│                                     │ Controller │  │
+│                                     │  (Logic)   │  │
+│                                     └─────┬──────┘  │
+└───────────────────────────────────────────┼──────────┘
+                                            │
+                                     ┌──────▼──────┐
+                                     │  Response   │
+                                     └─────────────┘
 ```
 
-### 3.2 Router-level Middleware
-ใช้กับเฉพาะกลุ่ม Route นั้นๆ (`router.use`)
-เหมาะสำหรับ Logic ที่ใช้แค่บาง Feature เช่น Auth สำหรับ Admin Module
+**ลำดับสำคัญมาก!** Express จะรัน Middleware ตามลำดับบรรทัดที่เขียน `app.use()`
 
-```javascript
-/* routes/admin.js */
-const router = express.Router();
+---
 
-// ทำงานเฉพาะ request ที่เข้ามาทาง /admin/*
-router.use((req, res, next) => {
-    if (!req.isAdmin) { // สมมติ
-        return res.status(403).send('Admins only!');
-    }
-    next();
-});
-```
+### ประเภทของ Middleware
 
-### 3.3 Error-handling Middleware
-พระเอกขี่ม้าขาว! ตัวนี้มี **4 Arguments**: `(err, req, res, next)`
-Express จะรู้ทันทีว่าเป็น Error Handler และจะข้าม Middleware ปกติมาหาตัวนี้เมื่อเกิด Error
+**1. Built-in Middleware** — Express เตรียมมาให้:
+| Middleware | หน้าที่ |
+|:---|:---|
+| `express.json()` | Parse JSON body จาก `Content-Type: application/json` |
+| `express.urlencoded()` | Parse Form data |
+| `express.static()` | เสิร์ฟไฟล์ Static (รูป, CSS, JS) |
 
+**2. Third-party Middleware** — ติดตั้งผ่าน npm:
+| Package | หน้าที่ |
+|:---|:---|
+| `morgan` | Log HTTP requests สวยงาม |
+| `cors` | จัดการ Cross-Origin Resource Sharing |
+| `helmet` | เพิ่ม Security Headers |
+| `express-rate-limit` | จำกัดจำนวน Request ต่อวินาที |
+
+**3. Custom Middleware** — เขียนเอง ตรงตามความต้องการของระบบ
+
+**4. Error-handling Middleware** — มี **4 parameters** `(err, req, res, next)`:
 ```javascript
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send('Something broke!');
+    res.status(500).json({ error: 'Internal Server Error' });
 });
 ```
 
-### 3.4 Built-in Middleware
-Express เตรียมมาให้แล้ว (ตั้งแต่ v4.x):
-*   `express.static`: เสิร์ฟไฟล์ Static (รูป, css, js)
-*   `express.json`: Parse JSON payload
-*   `express.urlencoded`: Parse Form data (`x-www-form-urlencoded`)
+---
 
-### 3.5 Third-party Middleware
-ของดีจากชุมชน (Community) ที่เรา `npm install` มาใช้:
-*   `morgan`: HTTP request logger (สวยกว่าเขียนเอง)
-*   `helmet`: Security headers (กัน XSS, Clickjacking)
-*   `cors`: Cross-Origin Resource Sharing
-*   `compression`: Gzip response
+### Order Matters! ลำดับทำให้พัง
+
+```javascript
+// ❌ ผิด: cors() อยู่หลัง Routes — CORS จะไม่ทำงาน!
+app.use('/api/submissions', submissionRoutes); // Routes ก่อน
+app.use(cors());                               // cors ทีหลัง — ไม่มีผล!
+
+// ✅ ถูก: cors() ต้องมาก่อน Routes เสมอ
+app.use(cors());
+app.use(express.json());
+app.use('/api/submissions', submissionRoutes);
+app.use(errorHandler); // Error handler ต้องอยู่ล่างสุด
+```
+
+```javascript
+// ❌ ผิด: requireAuth ไว้หลัง Route — ไม่ถูก protect เลย!
+app.get('/api/tasks', getTasksHandler);   // Route นี้ไม่ได้ถูก protect
+app.use(requireAuth);                     // Auth มาทีหลัง — ไม่มีผล!
+
+// ✅ ถูก: requireAuth ต้องอยู่ก่อน Route ที่ต้องการ protect
+app.use('/api/tasks', requireAuth, taskRoutes);
+```
 
 ---
 
-## 🛠️ 4. Advanced Middleware Patterns
+### Error-handling Middleware (4 Parameters)
 
-### 🔹 The "Configurable Middleware" (Factory Pattern)
-บางทีเราอยากส่ง Parameter ให้ Middleware (เช่น Role ที่อนุญาต)
-เราต้องใช้ Function ที่ Return Function (Higher-Order Function)
+Express จะรู้ว่าเป็น Error Handler เมื่อเห็น **4 parameters** พอดี:
 
 ```javascript
-// Function หลักรับ config
-const checkRole = (allowedRole) => {
-    // Return Middleware ตัวจริง
-    return (req, res, next) => {
-        if (req.user.role === allowedRole) {
-            next(); // ผ่าน
-        } else {
-            res.status(403).send('Forbidden'); // ไม่ผ่าน
-        }
-    };
-};
+// Error Handler ต้องอยู่ล่างสุดของ app.js เสมอ
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const message = err.message || 'Internal Server Error';
 
-// เวลาใช้
-app.get('/delete-db', checkRole('admin'), deleteHandler);
-app.get('/view-profile', checkRole('user'), viewHandler);
+    console.error(`[ERROR] ${req.method} ${req.path} — ${message}`);
+
+    res.status(statusCode).json({
+        success: false,
+        error: message
+    });
+});
 ```
 
-### 🔹 Request Enrichment (Context)
-Middleware ไม่ใช่แค่ตรวจ แต่ "ฝากของ" ได้ด้วย
-เรานิยมเพิ่ม Custom Property ใส่ `req` object เพื่อส่งข้อมูลไปให้ Controller
-
+วิธีส่ง Error ไปยัง Error Handler:
 ```javascript
-const addTimestamp = (req, res, next) => {
-    req.requestTime = Date.now();
-    req.requestId = generateUUID(); // สร้าง ID ให้ request นี้ไว้ trace log
+// ใน Middleware หรือ Controller ปกติ
+next(new Error('Something went wrong'));
+
+// หรือสร้าง Custom Error พร้อม statusCode
+const err = new Error('Submission not found');
+err.statusCode = 404;
+next(err);
+```
+
+---
+
+## 💻 ตัวอย่างโค้ด (Code Implementation)
+
+Custom Middleware สำหรับ WSA2026 Test Submission Management System:
+
+::: code-group
+
+```js [middlewares/requestLogger.js]
+/**
+ * requestLogger — บันทึก Method และ URL ทุก Request
+ * ใช้ใน: ทุก Request ที่เข้าสู่ระบบ TP2026
+ */
+const requestLogger = (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${req.method} ${req.originalUrl}`);
+    next(); // ส่งต่อให้ Middleware ถัดไปเสมอ
+};
+
+module.exports = requestLogger;
+```
+
+```js [middlewares/requireAuth.js]
+/**
+ * requireAuth — ตรวจสอบว่ามี x-user-id header ส่งมาหรือไม่
+ * ใช้ใน: Route ที่ต้องการ authentication เช่น /api/submissions, /api/tasks
+ */
+const requireAuth = (req, res, next) => {
+    const userId = req.headers['x-user-id'];
+
+    if (!userId) {
+        // ส่ง Error กลับทันที ไม่ต้องเรียก next()
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized: missing x-user-id header'
+        });
+    }
+
+    // ฝาก userId ไว้ใน req เพื่อให้ Controller ใช้ต่อได้
+    req.userId = userId;
     next();
 };
 
-const controller = (req, res) => {
-    // Controller ใช้งานได้เลย
-    res.send(`Served at ${req.requestTime}`);
-};
+module.exports = requireAuth;
 ```
 
-### 🔹 Conditional Middleware (Skip)
-บางทีเราอยากรัน Middleware เฉพาะบางเงื่อนไข
+```js [middlewares/validateSubmission.js]
+/**
+ * validateSubmission — ตรวจสอบว่า body มี submission_url หรือไม่
+ * ใช้ใน: POST /api/submissions ก่อนบันทึก Submission ลงระบบ
+ */
+const validateSubmission = (req, res, next) => {
+    const { submission_url } = req.body;
 
-```javascript
-const unless = (paths, middleware) => {
-    return (req, res, next) => {
-        if (paths.includes(req.path)) {
-            return next(); // ข้าม middleware นี้ไปเลย
-        } else {
-            return middleware(req, res, next); // รัน middleware ปกติ
-        }
-    };
+    if (!submission_url) {
+        return res.status(400).json({
+            success: false,
+            error: 'Bad Request: submission_url is required'
+        });
+    }
+
+    // ตรวจสอบรูปแบบ URL อย่างง่าย
+    const urlPattern = /^https?:\/\/.+/;
+    if (!urlPattern.test(submission_url)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Bad Request: submission_url must be a valid URL (http:// or https://)'
+        });
+    }
+
+    next(); // URL ถูกต้อง ส่งต่อให้ Controller
 };
+
+module.exports = validateSubmission;
 ```
 
----
+```js [middlewares/errorHandler.js]
+/**
+ * errorHandler — Error-handling Middleware (4 params)
+ * ต้องอยู่ล่างสุดของ app.js เสมอ
+ */
+const errorHandler = (err, req, res, next) => {
+    // Log เพื่อ debug
+    console.error(`[ERROR] ${err.stack}`);
 
-## ⚠️ 5. Common Pitfalls & Best Practices
+    // กำหนด status code จาก Error หรือ default 500
+    const statusCode = err.statusCode || 500;
 
-1.  **Losing the `return`**:
-    *   Error ยอดฮิต: ส่ง Response แล้วแต่โค้ดยังรันต่อ
-    *   ❌ `if (error) res.send('Error'); next();` => พัง! มันจะรัน next() ต่อทั้งที่ส่ง response แล้ว
-    *   ✅ `if (error) return res.send('Error');`
-
-2.  **Order Matters!**:
-    *   Middleware ทำงานตามลำดับบรรทัด
-    *   ถ้าเอา `errorHandler` ไปไว้บนสุด -> มันจะไม่ดักจับอะไรเลย
-    *   ถ้าเอา `authMiddleware` ไว้หลัง `route` -> route นั้นจะไม่ถูก protect
-
-3.  **Blocking the Loop**:
-    *   อย่าเขียน Logic คำนวณหนักๆ (CPU Intensive) ใน Middleware
-    *   เช่น `while(true)` หรือ loop 1 ล้านรอบ -> Node.js จะค้างทั้ง Server โดย Middleware ตัวเดียว
-
-4.  **Async Middleware**:
-    *   ถ้า Middleware เป็น `async` ต้องระวังเรื่อง Error Handling
-    *   ✅ วิธีที่ถูก: `async (req, res, next) => { try { await ...; next(); } catch(err) { next(err); } }`
-    *   (หรือใช้ `express-async-handler` มาช่วย)
-
----
-
-## 🆚 Comparison: Express vs Koa (The Onion Model)
-
-ถ้าคุณเคยได้ยิน Koa (Framework อีกตัวจากผู้สร้าง Express)
-Core Concept เรื่อง Middleware จะต่างกันนิดหน่อย
-
-*   **Express (Linear)**:
-    *   ท่อตรงๆ: A -> B -> C -> Controller
-    *   Response ส่งที่ Controller แล้วจบเลย
-
-*   **Koa (Onion/Stack)**:
-    *   หัวหอม: Request เจาะผ่าน A -> B -> C -> Controller
-    *   **และ** C -> B -> A ตอนขาออกด้วย! (สามารถแก้ Response ขาออกได้ที่ Middleware A)
-    *   Express ทำแบบนี้ได้ยากกว่า (ต้อง monkey patch `res.send`)
-
----
-
-## ⚡ Challenge: Build Your Own "Morgan" 📝
-
-จงเขียน Custom Middleware ชื่อ `myLogger` ที่ทำงานดังนี้:
-1.  เก็บเวลาเริ่ม (Start Time)
-2.  เรียก `next()`
-3.  รอจนกว่า Request จะจบ (ใช้ Event `res.on('finish', ...)`)
-4.  คำนวณเวลาที่ใช้ (Duration)
-5.  Log ออกมา: `[GET] /api/users - 200 OK (25ms)`
-
-::: details ✨ เฉลย
-```javascript
-const myLogger = (req, res, next) => {
-    const start = Date.now(); // 1. จับเวลาเริ่ม
-
-    // 3. ดักจับ Event ตอนส่ง Response เสร็จ
-    res.on('finish', () => {
-        const duration = Date.now() - start; // 4. คำนวณเวลา
-        const status = res.statusCode;
-        
-        // 5. Log
-        console.log(`[${req.method}] ${req.originalUrl} - ${status} (${duration}ms)`);
+    res.status(statusCode).json({
+        success: false,
+        error: err.message || 'Internal Server Error'
     });
-
-    next(); // 2. ปล่อย request ไปทำงานต่อ
 };
 
-app.use(myLogger);
+module.exports = errorHandler;
 ```
+
+```js [app.js]
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const morgan = require('morgan');
+
+const requestLogger = require('./middlewares/requestLogger');
+const requireAuth = require('./middlewares/requireAuth');
+const validateSubmission = require('./middlewares/validateSubmission');
+const errorHandler = require('./middlewares/errorHandler');
+
+const submissionRoutes = require('./routes/submissionRoutes');
+
+const app = express();
+
+// ────────────────────────────────────────────────
+// 1. Global Middleware (ทำงานกับทุก Request)
+// ────────────────────────────────────────────────
+app.use(cors());                 // CORS ก่อนสุด
+app.use(express.json());         // Parse JSON body
+app.use(morgan('dev'));           // HTTP logger (third-party)
+app.use(requestLogger);          // Custom logger (TP2026)
+
+// ────────────────────────────────────────────────
+// 2. Routes (พร้อม Middleware เฉพาะ Route)
+// ────────────────────────────────────────────────
+
+// Route ที่ต้องการ Auth — requireAuth ทำงานก่อน Controller
+app.use('/api/submissions', requireAuth, submissionRoutes);
+
+// Route สาธารณะ — ไม่ต้องการ Auth
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', system: 'TP2026' });
+});
+
+// ────────────────────────────────────────────────
+// 3. 404 Handler
+// ────────────────────────────────────────────────
+app.use((req, res) => {
+    res.status(404).json({ error: `Not found: ${req.originalUrl}` });
+});
+
+// ────────────────────────────────────────────────
+// 4. Error Handler — ต้องอยู่ล่างสุดเสมอ!
+// ────────────────────────────────────────────────
+app.use(errorHandler);
+
+module.exports = app;
+```
+
+```js [routes/submissionRoutes.js]
+const express = require('express');
+const router = express.Router();
+const validateSubmission = require('../middlewares/validateSubmission');
+
+// Controller (placeholder)
+const submissionController = require('../controllers/submissionController');
+
+// GET /api/submissions — ดูรายการ submissions ทั้งหมด
+router.get('/', submissionController.getAll);
+
+// POST /api/submissions — ส่ง submission ใหม่ (validateSubmission ก่อน)
+router.post('/', validateSubmission, submissionController.create);
+
+// GET /api/submissions/:id — ดู submission เฉพาะชิ้น
+router.get('/:id', submissionController.getById);
+
+module.exports = router;
+```
+
+:::
+
+ทดสอบ Middleware ด้วย cURL:
+```bash
+# ไม่มี x-user-id header -> 401 Unauthorized
+curl -X GET http://localhost:3000/api/submissions
+
+# มี x-user-id header -> ผ่าน requireAuth
+curl -X GET http://localhost:3000/api/submissions \
+  -H "x-user-id: candidate-001"
+
+# POST ไม่มี submission_url -> 400 Bad Request
+curl -X POST http://localhost:3000/api/submissions \
+  -H "Content-Type: application/json" \
+  -H "x-user-id: candidate-001" \
+  -d '{"task_id": "task-01"}'
+
+# POST มีครบ -> ผ่าน validateSubmission
+curl -X POST http://localhost:3000/api/submissions \
+  -H "Content-Type: application/json" \
+  -H "x-user-id: candidate-001" \
+  -d '{"task_id": "task-01", "submission_url": "https://github.com/user/repo"}'
+```
+
+---
+
+## 🎯 โจทย์ฝึกปฏิบัติเสริมความเข้าใจ (Mini Exercise)
+
+- **โจทย์:** สร้าง Middleware ชื่อ `ipWhitelist` ที่อนุญาตเฉพาะ IP ที่กำหนดไว้ใน Array เท่านั้น
+  - ถ้า IP อยู่ใน whitelist → ส่งต่อด้วย `next()`
+  - ถ้า IP ไม่อยู่ใน whitelist → ตอบกลับ `403 Forbidden` พร้อม message
+  - Hint: ดึง IP ของ Client จาก `req.ip` หรือ `req.socket.remoteAddress`
+  - กำหนดให้อนุญาต: `['127.0.0.1', '::1', '192.168.1.100']`
+
+::: details 💡 คำใบ้ (Hint)
+
+```javascript
+// โครงสร้าง Middleware
+const ipWhitelist = (req, res, next) => {
+    const clientIp = req.ip || req.socket.remoteAddress;
+    const allowed = ['127.0.0.1', '::1', '192.168.1.100'];
+
+    // ตรวจสอบว่า clientIp อยู่ใน allowed หรือไม่
+    // ถ้าใช่ → next()
+    // ถ้าไม่ใช่ → res.status(403).json(...)
+};
+```
+
+วิธีทดสอบ — เพิ่ม IP ที่ไม่อยู่ใน whitelist แล้วลอง request ดู:
+```javascript
+// ใช้งานใน app.js
+app.use('/api/admin', ipWhitelist, adminRoutes);
+```
+
 :::
 
 ---
 
-## 📚 FAQ
+## 🔥 Challenge (โจทย์ท้าทาย!)
 
-**Q: ใช้ Middleware ซ้อนกันได้กี่ตัว?**
-A: ไม่จำกัดครับ แต่ยิ่งเยอะยิ่งช้า (Overhead) ควรใช้เท่าที่จำเป็น
+- **โจทย์:** สร้าง **Configurable Middleware Factory** ชื่อ `requireRole` ที่รับ role ที่อนุญาตเป็น Array แล้ว return Middleware
 
-**Q: ถ้า Middleware ตัวแรกส่ง Response แล้ว ตัวที่ 2 จะทำงานไหม?**
-A: ถ้าตัวแรกไม่เรียก `next()` ตัวที่ 2 ก็จะไม่ได้ทำงานครับ (ตัดจบ)
+ตัวอย่างการใช้งาน:
+```javascript
+// อนุญาตเฉพาะ 'judge' และ 'manager' เท่านั้น
+router.get('/scores', requireRole(['judge', 'manager']), getScoresHandler);
 
-**Q: `app.use('/api', ...)` ต่างกับ `app.use(...)` ยังไง?**
-A: แบบแรกจะทำงานเฉพาะ request ที่ขึ้นต้นด้วย `/api` (เช่น `/api/users`, `/api/products`)
-ส่วนแบบหลังทำงานกับ **ทุก** request ใน Server (Global)
+// อนุญาตเฉพาะ 'manager'
+router.delete('/tasks/:id', requireRole(['manager']), deleteTaskHandler);
+```
+
+**Requirement:**
+1. ตรวจสอบ `req.headers['x-user-role']`
+2. ถ้าไม่มี header → 401 Unauthorized
+3. ถ้า role ไม่อยู่ใน allowedRoles → 403 Forbidden
+4. ถ้าผ่าน → บันทึก role ไว้ใน `req.userRole` แล้วเรียก `next()`
+5. ต้องทำงานร่วมกับ `requireAuth` ได้ (ใช้พร้อมกันได้)
+
+ทดสอบด้วย:
+```bash
+# role ไม่ตรง → 403
+curl -H "x-user-id: u1" -H "x-user-role: candidate" \
+  http://localhost:3000/api/scores
+
+# role ตรง → ผ่าน
+curl -H "x-user-id: u1" -H "x-user-role: judge" \
+  http://localhost:3000/api/scores
+```
 
 ---
 
-## 🔗 References
-- [Express Middleware Guide](https://expressjs.com/en/guide/using-middleware.html) - คู่มือทางการ
-- [Writing Middleware](https://expressjs.com/en/guide/writing-middleware.html) - วิธีเขียน Custom Middleware
-- [Middleware Best Practices](https://strongloop.com/strongblog/best-practices-for-express-in-production-part-two-middleware/)
+## 🗣️ ทบทวน (Review)
 
-> 👉 **บทต่อไป: [Module 5.2 - Layered Architecture (MVC)](/node/05-02-layered-architecture)**
+::: details ❓ คำถามทบทวนความเข้าใจ
+
+**คำถาม 1:** ถ้า Middleware ไม่เรียก `next()` และไม่ส่ง Response กลับ จะเกิดอะไรขึ้น?
+
+**แนวคำตอบ:** Request จะ "Hang" — Browser จะแสดงการหมุน Loading ตลอดไปโดยไม่ได้รับ Response เพราะ Express รอการตัดสินใจจาก Middleware นั้นอยู่ ต้องเรียก `next()` หรือ `res.send()`/`res.json()` เสมอ
+
+---
+
+**คำถาม 2:** Error-handling Middleware ต่างจาก Middleware ปกติอย่างไร?
+
+**แนวคำตอบ:** Error-handling Middleware มี **4 parameters** `(err, req, res, next)` ในขณะที่ Middleware ปกติมีเพียง 3 parameters `(req, res, next)` Express จะรู้ว่าเป็น Error Handler จาก signature นี้ และจะเรียกมันโดยอัตโนมัติเมื่อมีการเรียก `next(error)` หรือ `throw` ภายใน async handler
+
+---
+
+**คำถาม 3:** ทำไม `cors()` ต้องอยู่ก่อน Routes ทุกตัว?
+
+**แนวคำตอบ:** เพราะ CORS Headers ต้องถูกเพิ่มลง Response ทุกครั้ง รวมถึง OPTIONS Preflight Request ด้วย ถ้าวาง `cors()` หลัง Routes Browser จะได้รับ Response โดยไม่มี `Access-Control-Allow-Origin` header และ JavaScript ฝั่ง Client จะอ่านข้อมูลไม่ได้
+
+---
+
+**คำถาม 4:** อะไรคือความแตกต่างระหว่าง `app.use(middleware)` กับ `app.use('/path', middleware)`?
+
+**แนวคำตอบ:** `app.use(middleware)` จะทำงานกับ **ทุก Request** ที่เข้ามา (Global Middleware) ส่วน `app.use('/path', middleware)` จะทำงานเฉพาะ Request ที่ URL ขึ้นต้นด้วย `/path` เท่านั้น เหมาะสำหรับ Middleware เฉพาะกลุ่ม เช่น Auth เฉพาะ `/api/admin`
+
+:::
+
+---
+
+> 👉 **บทต่อไป: [05-02 Layered Architecture](/node/05-02-layered-architecture)**
